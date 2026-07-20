@@ -96,3 +96,6 @@ memory/daily-notes/
 
 # Legacy llm/ — consolidated into .ai/ (docs, specs, runs)
 llm/
+
+# Coolify deploy env (contains secrets)
+.env.coolify

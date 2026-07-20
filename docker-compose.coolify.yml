@@ -1,0 +1,195 @@
+# Coolify deployment for Carbon (ERP + MES) — PREBUILT images.
+#
+# Architecture:
+#   - Carbon publishes no public images. You build carbon/erp + carbon/mes
+#     yourself and push them to a registry; Coolify just PULLS them (via
+#     CARBON_IMAGE_ERP / CARBON_IMAGE_MES). Build/push commands at the bottom.
+#   - Because the images are prebuilt, the Coolify resource does NOT need the
+#     Carbon source repo — this single compose file is all it reads.
+#   - Supabase is EXTERNAL — a separate host reached over the network. This stack
+#     runs only the app tier (erp, mes) + Redis (cache) + Inngest (jobs). The
+#     Supabase DB must already hold Carbon's schema + edge functions.
+#   - Domains are assigned to the `erp`/`mes` services in the Coolify UI; Coolify
+#     injects the Traefik labels. No published host ports — proxy talks to :3000.
+#   - SUPABASE_URL is your Supabase's PUBLIC API URL (e.g. https://supabase.ledex.ca),
+#     reachable by both this server and end-user browsers. SUPABASE_DB_URL points
+#     straight at the Supabase Postgres; it is only used by tooling, not app runtime.
+#
+# Usage in Coolify:
+#   1. Build & push the images (see bottom). For a PRIVATE registry, Coolify has
+#      no creds UI — run `docker login ghcr.io -u <user> --password-stdin` on the
+#      Coolify host so its Docker daemon can pull.
+#   2. New resource → Docker Based → "Docker Compose (Empty)" → paste THIS file.
+#   3. Assign a domain to the `erp` service (and `mes` if you keep it).
+#   4. Paste the env vars below into Coolify's Env Vars tab; mark secrets.
+#   5. Deploy.
+#
+# Required Coolify env vars:
+#   CARBON_IMAGE_ERP            registry ref, e.g. registry.example.com/carbon/erp:latest
+#   CARBON_IMAGE_MES            registry ref, e.g. registry.example.com/carbon/mes:latest
+#   DOMAIN                      base domain, e.g. example.com
+#   ERP_URL                     https://<erp domain assigned in step 3>
+#   MES_URL                     https://<mes domain> (or = ERP_URL if no MES)
+#   AUTH_PROVIDERS              email   (or email,google,passkey)
+#   SESSION_SECRET     (secret) 32+ random chars (Coolify "Generate")
+#   SUPABASE_URL                public API URL of your Supabase, e.g. https://api.example.com
+#   SUPABASE_ANON_KEY  (secret) from your Supabase
+#   SUPABASE_SERVICE_ROLE_KEY (secret) from your Supabase
+#   SUPABASE_JWT_SECRET (secret) the JWT secret your Supabase signs tokens with
+#   SUPABASE_DB_URL    (secret) postgresql://postgres:<pw>@<host>:5432/postgres
+#   INNGEST_EVENT_KEY  (secret) random; SAME value reaches apps + inngest
+#   INNGEST_SIGNING_KEY (secret) random signkey-...; SAME on both
+#   RESEND_API_KEY     (secret) re_...   (needed for invites / magic links)
+#   RESEND_DOMAIN               your sending domain
+#
+# Optional integrations (add as env vars only if you use them):
+#   POSTHOG_API_HOST / POSTHOG_PROJECT_PUBLIC_KEY, STRIPE_SECRET_KEY /
+#   STRIPE_WEBHOOK_SECRET, CLOUDFLARE_TURNSTILE_SITE_KEY / _SECRET_KEY,
+#   ANTHROPIC_API_KEY / OPENAI_API_KEY, GOOGLE_PLACES_API_KEY.
+
+services:
+  erp:
+    image: "${CARBON_IMAGE_ERP}"
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks:
+      - carbon
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+      CARBON_EDITION: "community"
+      AUTH_PROVIDERS: "${AUTH_PROVIDERS:-email}"
+      DOMAIN: "${DOMAIN}"
+      ERP_URL: "${ERP_URL}"
+      MES_URL: "${MES_URL}"
+      SESSION_SECRET: "${SESSION_SECRET}"
+      # ---- your existing Supabase ----
+      SUPABASE_URL: "${SUPABASE_URL}"
+      SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
+      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
+      SUPABASE_JWT_SECRET: "${SUPABASE_JWT_SECRET}"
+      SUPABASE_DB_URL: "${SUPABASE_DB_URL}"
+      # ---- cache + jobs (internal to this stack) ----
+      REDIS_URL: "redis://redis:6379"
+      INNGEST_SIGNING_KEY: "${INNGEST_SIGNING_KEY}"
+      INNGEST_EVENT_KEY: "${INNGEST_EVENT_KEY}"
+      # Point the SDK at the self-hosted Inngest API. Without this, a production
+      # build validates the signing key against Inngest Cloud → the server's sync
+      # PUT comes back 401. The inngest service serves its API on :8288.
+      INNGEST_BASE_URL: "http://inngest:8288"
+      # ---- email ----
+      RESEND_API_KEY: "${RESEND_API_KEY}"
+      RESEND_DOMAIN: "${RESEND_DOMAIN}"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # node:22-slim has no curl; use Node's global fetch against /health.
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 6s
+      retries: 6
+      start_period: 60s
+
+  # Optional — delete this service (and the mes --sdk-url line under inngest) if
+  # you only want the ERP.
+  mes:
+    image: "${CARBON_IMAGE_MES}"
+    restart: unless-stopped
+    expose:
+      - "3000"
+    networks:
+      - carbon
+    environment:
+      NODE_ENV: "production"
+      PORT: "3000"
+      CARBON_EDITION: "community"
+      AUTH_PROVIDERS: "${AUTH_PROVIDERS:-email}"
+      DOMAIN: "${DOMAIN}"
+      ERP_URL: "${ERP_URL}"
+      MES_URL: "${MES_URL}"
+      SESSION_SECRET: "${SESSION_SECRET}"
+      SUPABASE_URL: "${SUPABASE_URL}"
+      SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY}"
+      SUPABASE_SERVICE_ROLE_KEY: "${SUPABASE_SERVICE_ROLE_KEY}"
+      SUPABASE_JWT_SECRET: "${SUPABASE_JWT_SECRET}"
+      SUPABASE_DB_URL: "${SUPABASE_DB_URL}"
+      REDIS_URL: "redis://redis:6379"
+      INNGEST_SIGNING_KEY: "${INNGEST_SIGNING_KEY}"
+      INNGEST_EVENT_KEY: "${INNGEST_EVENT_KEY}"
+      INNGEST_BASE_URL: "http://inngest:8288"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 6s
+      retries: 6
+      start_period: 60s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - carbon
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  inngest:
+    image: inngest/inngest:v1.19.4
+    restart: unless-stopped
+    command:
+      - inngest
+      - start
+      - --sqlite-dir
+      - /data
+      - --sdk-url
+      - http://erp:3000/api/inngest
+      # NOTE: MES has no /api/inngest route — only ERP serves Inngest functions.
+      # Pointing an --sdk-url at mes just 404s, so we don't.
+    networks:
+      - carbon
+    environment:
+      INNGEST_EVENT_KEY: "${INNGEST_EVENT_KEY}"
+      INNGEST_SIGNING_KEY: "${INNGEST_SIGNING_KEY}"
+    volumes:
+      - inngest-data:/data
+    depends_on:
+      erp:
+        condition: service_healthy
+
+networks:
+  carbon:
+    driver: bridge
+
+volumes:
+  redis-data:
+  inngest-data:
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build & push the images. Run from the Carbon repo root, on a machine with
+# Docker and ~8 GB free RAM (the Dockerfile sets an 8 GB Node heap per app).
+#
+#   REG=registry.example.com                 # your registry host/namespace
+#   docker build --build-arg APP=erp -t $REG/carbon/erp:latest .
+#   docker build --build-arg APP=mes -t $REG/carbon/mes:latest .
+#   docker push $REG/carbon/erp:latest
+#   docker push $REG/carbon/mes:latest
+#
+# Building on a different CPU arch than the server (e.g. Apple Silicon → amd64
+# host) — use buildx so the image matches the server:
+#   docker buildx build --platform linux/amd64 --build-arg APP=erp \
+#     -t $REG/carbon/erp:latest --push .
+#
+# Then set CARBON_IMAGE_ERP / CARBON_IMAGE_MES in Coolify to those refs.
+# Prefer an immutable tag (e.g. the git SHA) over :latest so redeploys are
+# deterministic and Coolify actually pulls the new image.
+# ─────────────────────────────────────────────────────────────────────────────
