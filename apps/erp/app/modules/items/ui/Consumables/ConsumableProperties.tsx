@@ -130,7 +130,13 @@ const ConsumableProperties = ({ data }: ConsumablePropertiesProps) => {
         | "itemPostingGroupId"
         | "consumableId"
         | "active"
+<<<<<<< HEAD
         | "mpn",
+=======
+        | "mpn"
+        | "requiresInspection"
+        | "taxable",
+>>>>>>> d0bcd4028 (feat(tax): item taxable switch)
       value: string | null
     ) => {
       const formData = new FormData();
@@ -461,6 +467,26 @@ const ConsumableProperties = ({ data }: ConsumablePropertiesProps) => {
           variant="small"
           onChange={(value) => {
             onUpdate("active", value ? "on" : "off");
+          }}
+        />
+      </ValidatedForm>
+      <ValidatedForm
+        defaultValues={{
+          taxable:
+            (routeData?.consumableSummary as { taxable?: boolean } | undefined)
+              ?.taxable ?? true
+        }}
+        validator={z.object({
+          taxable: zfd.checkbox()
+        })}
+        className="w-full"
+      >
+        <Boolean
+          label={t`Taxable`}
+          name="taxable"
+          variant="small"
+          onChange={(value) => {
+            onUpdate("taxable", value ? "on" : "off");
           }}
         />
       </ValidatedForm>
