@@ -1,6 +1,8 @@
 import { useCarbon } from "@carbon/auth";
-import { ValidatedForm } from "@carbon/form";
+import { useControlField, ValidatedForm } from "@carbon/form";
 import {
+  Alert,
+  AlertDescription,
   Button,
   Card,
   CardContent,
@@ -13,23 +15,43 @@ import {
 import { isEoriCountry } from "@carbon/utils";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { nanoid } from "nanoid";
-import { useCallback, useState } from "react";
-import { LuPaperclip } from "react-icons/lu";
+import { useCallback, useMemo, useState } from "react";
+import { LuInfo, LuPaperclip } from "react-icons/lu";
 import type { z } from "zod";
 import { FileDropzone } from "~/components";
 import { Enumerable } from "~/components/Enumerable";
-import { Boolean, Hidden, Input, Select, Submit } from "~/components/Form";
+import {
+  Boolean,
+  Combobox,
+  Hidden,
+  Input,
+  Select,
+  Submit
+} from "~/components/Form";
 import { usePermissions, useUser } from "~/hooks";
 import { taxExemptionReasons } from "~/modules/shared";
 import { customerTaxValidator } from "../../sales.models";
+
+export type TaxCodeSuggestion = {
+  id: string;
+  name: string;
+  country: string;
+  state: string | null;
+};
 
 type CustomerTaxFormProps = {
   initialValues: z.infer<typeof customerTaxValidator> & {
     taxExemptionCertificatePath?: string | null;
   };
+  taxCodes?: { id: string; name: string }[];
+  taxCodeSuggestion?: TaxCodeSuggestion | null;
 };
 
-const CustomerTaxForm = ({ initialValues }: CustomerTaxFormProps) => {
+const CustomerTaxForm = ({
+  initialValues,
+  taxCodes = [],
+  taxCodeSuggestion = null
+}: CustomerTaxFormProps) => {
   const { t } = useLingui();
   const taxExemptionReasonOptions = taxExemptionReasons.map((reason) => ({
     label: <Enumerable value={reason} />,
@@ -95,6 +117,10 @@ const CustomerTaxForm = ({ initialValues }: CustomerTaxFormProps) => {
             ) : (
               <div />
             )}
+            <TaxCodeField
+              taxCodes={taxCodes}
+              taxCodeSuggestion={taxCodeSuggestion}
+            />
             <div className="col-span-3">
               <Boolean
                 name="taxExempt"
@@ -165,5 +191,77 @@ const CustomerTaxForm = ({ initialValues }: CustomerTaxFormProps) => {
     </ValidatedForm>
   );
 };
+
+function TaxCodeField({
+  taxCodes,
+  taxCodeSuggestion
+}: {
+  taxCodes: { id: string; name: string }[];
+  taxCodeSuggestion: TaxCodeSuggestion | null;
+}) {
+  const { t } = useLingui();
+  const [taxCodeId, setTaxCodeId] = useControlField<string | undefined>(
+    "taxCodeId"
+  );
+  const [isDismissed, setIsDismissed] = useState(false);
+
+  const options = useMemo(
+    () => taxCodes.map(({ id, name }) => ({ value: id, label: name })),
+    [taxCodes]
+  );
+
+  // Never auto-applied: taxes always resolve from what was explicitly assigned
+  const showSuggestion =
+    !!taxCodeSuggestion &&
+    !isDismissed &&
+    taxCodeSuggestion.id !== (taxCodeId || undefined);
+
+  const place = taxCodeSuggestion
+    ? [taxCodeSuggestion.state, taxCodeSuggestion.country]
+        .filter((part) => !!part)
+        .join(", ")
+    : "";
+
+  return (
+    <>
+      <Combobox
+        name="taxCodeId"
+        label={t`Tax Code`}
+        options={options}
+        placeholder={t`Select Tax Code`}
+      />
+      {showSuggestion && (
+        <div className="col-span-3">
+          <Alert variant="info">
+            <LuInfo />
+            <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
+              <span>
+                <Trans>
+                  This address is in {place} — apply {taxCodeSuggestion.name}?
+                </Trans>
+              </span>
+              <HStack spacing={2}>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setTaxCodeId(taxCodeSuggestion.id)}
+                >
+                  <Trans>Apply</Trans>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setIsDismissed(true)}
+                >
+                  <Trans>Dismiss</Trans>
+                </Button>
+              </HStack>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default CustomerTaxForm;

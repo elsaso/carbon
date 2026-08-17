@@ -1944,6 +1944,7 @@ export async function insertCustomerLocation(
     customerId: string;
     companyId: string;
     name: string;
+    taxCodeId?: string | null;
     address: {
       addressLine1?: string;
       addressLine2?: string;
@@ -1979,6 +1980,7 @@ export async function insertCustomerLocation(
         addressId,
         name: customerLocation.name,
         companyId: customerLocation.companyId,
+        taxCodeId: customerLocation.taxCodeId || null,
         customFields: customerLocation.customFields
       }
     ])
@@ -3020,6 +3022,7 @@ export async function updateCustomerLocation(
   customerLocation: {
     addressId: string;
     name: string;
+    taxCodeId?: string | null;
     address: {
       addressLine1?: string;
       addressLine2?: string;
@@ -3031,19 +3034,24 @@ export async function updateCustomerLocation(
     customFields?: Json;
   }
 ) {
-  if (customerLocation.customFields) {
-    const customFieldUpdate = await client
-      .from("customerLocation")
-      .update({
-        name: customerLocation.name,
-        customFields: customerLocation.customFields
-      })
-      .eq("addressId", customerLocation.addressId);
+  // taxCodeId lives on `customerLocation`, never on the `address` row
+  const locationUpdate = await client
+    .from("customerLocation")
+    .update({
+      taxCodeId: customerLocation.taxCodeId || null,
+      ...(customerLocation.customFields
+        ? {
+            name: customerLocation.name,
+            customFields: customerLocation.customFields
+          }
+        : {})
+    })
+    .eq("addressId", customerLocation.addressId);
 
-    if (customFieldUpdate.error) {
-      return customFieldUpdate;
-    }
+  if (locationUpdate.error) {
+    return locationUpdate;
   }
+
   return client
     .from("address")
     .update(sanitize(customerLocation.address))
@@ -3082,10 +3090,24 @@ export async function updateCustomerTax(
     taxExemptionCertificatePath?: string | null;
   }
 ) {
-  return client
+  // taxCodeId lives on `customer`, not on the `customerTax` satellite table
+  const { taxCodeId, ...tax } = customerTax;
+
+  const update = await client
     .from("customerTax")
-    .update(sanitize(customerTax))
-    .eq("customerId", customerTax.customerId);
+    .update(sanitize(tax))
+    .eq("customerId", tax.customerId);
+
+  if (update.error) return update;
+
+  return client
+    .from("customer")
+    .update({
+      taxCodeId: taxCodeId || null,
+      updatedBy: customerTax.updatedBy,
+      updatedAt: new Date().toISOString()
+    })
+    .eq("id", tax.customerId);
 }
 
 export async function updatePricingRule(

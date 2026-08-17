@@ -1387,10 +1387,24 @@ export async function updateSupplierTax(
     taxExemptionCertificatePath?: string | null;
   }
 ) {
-  return client
+  // taxCodeId lives on `supplier`, not on the `supplierTax` satellite table
+  const { taxCodeId, ...tax } = supplierTax;
+
+  const update = await client
     .from("supplierTax")
-    .update(sanitize(supplierTax))
-    .eq("supplierId", supplierTax.supplierId);
+    .update(sanitize(tax))
+    .eq("supplierId", tax.supplierId);
+
+  if (update.error) return update;
+
+  return client
+    .from("supplier")
+    .update({
+      taxCodeId: taxCodeId || null,
+      updatedBy: supplierTax.updatedBy,
+      updatedAt: new Date().toISOString()
+    })
+    .eq("id", tax.supplierId);
 }
 
 export async function insertPurchaseOrder(

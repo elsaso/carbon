@@ -130,13 +130,8 @@ const ConsumableProperties = ({ data }: ConsumablePropertiesProps) => {
         | "itemPostingGroupId"
         | "consumableId"
         | "active"
-<<<<<<< HEAD
-        | "mpn",
-=======
         | "mpn"
-        | "requiresInspection"
         | "taxable",
->>>>>>> d0bcd4028 (feat(tax): item taxable switch)
       value: string | null
     ) => {
       const formData = new FormData();
