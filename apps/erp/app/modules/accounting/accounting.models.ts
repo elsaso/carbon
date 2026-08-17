@@ -1033,6 +1033,7 @@ export const taxCodeValidator = z.object({
   invoiceMessage: zfd.text(z.string().optional()),
   countryCode: zfd.text(z.string().optional()),
   state: zfd.text(z.string().optional()),
+  active: zfd.checkbox(),
   // JSON-serialized child rows: the route action parses this string and
   // validates it with z.array(taxCodeComponentValidator).min(1)
   components: zfd.text(z.string())

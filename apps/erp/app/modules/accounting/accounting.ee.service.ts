@@ -44,8 +44,16 @@ import type {
   periodCloseTaskSeverities,
   periodCloseTaskStatuses,
   periodCloseTaskTypes,
-  taxDepreciationMethods
+  taxAuthorityValidator,
+  taxCodeComponentValidator,
+  taxCodeValidator,
+  taxDepreciationMethods,
+  taxRegistrationValidator
 } from "./accounting.models";
+import {
+  computeEffectiveTaxPercent,
+  filterEffectiveComponents
+} from "./accounting.utils";
 import type {
   AccountLedgerLine,
   ChartPeriodSeries,
@@ -5960,4 +5968,530 @@ export async function getAccountingSyncTieOutCell(
   );
 
   return { data: { cell, journals, truncated }, error: null };
+}
+
+// -- Tax Authorities --
+
+export async function getTaxAuthority(
+  client: SupabaseClient<Database>,
+  taxAuthorityId: string,
+  companyId: string
+) {
+  return client
+    .from("taxAuthority")
+    .select("*")
+    .eq("id", taxAuthorityId)
+    .eq("companyId", companyId)
+    .single();
+}
+
+export async function getTaxAuthorities(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: GenericQueryFilters & {
+    search: string | null;
+  }
+) {
+  let query = client
+    .from("taxAuthority")
+    .select("*", {
+      count: "exact"
+    })
+    .eq("companyId", companyId);
+
+  if (args.search) {
+    query = query.ilike("name", `%${args.search}%`);
+  }
+
+  query = setGenericQueryFilters(query, args, [
+    { column: "name", ascending: true }
+  ]);
+  return query;
+}
+
+export async function getTaxAuthoritiesList(
+  client: SupabaseClient<Database>,
+  companyId: string
+) {
+  return client
+    .from("taxAuthority")
+    .select("id, name")
+    .eq("companyId", companyId)
+    .order("name", { ascending: true });
+}
+
+export async function upsertTaxAuthority(
+  client: SupabaseClient<Database>,
+  taxAuthority:
+    | (Omit<z.infer<typeof taxAuthorityValidator>, "id"> & {
+        companyId: string;
+        createdBy: string;
+        customFields?: Json;
+      })
+    | (Omit<z.infer<typeof taxAuthorityValidator>, "id"> & {
+        id: string;
+        companyId: string;
+        updatedBy: string;
+        customFields?: Json;
+      })
+) {
+  if ("createdBy" in taxAuthority) {
+    return client
+      .from("taxAuthority")
+      .insert([taxAuthority])
+      .select("id")
+      .single();
+  }
+  return client
+    .from("taxAuthority")
+    .update(sanitize(taxAuthority))
+    .eq("id", taxAuthority.id)
+    .eq("companyId", taxAuthority.companyId)
+    .select("id")
+    .single();
+}
+
+// Hard delete: taxCodeComponent.taxAuthorityId is a FK, so Postgres rejects the
+// delete when the authority is still referenced by a tax code component — which
+// is the guard we want (no orphaned components, no silent detach).
+export async function deleteTaxAuthority(
+  client: SupabaseClient<Database>,
+  taxAuthorityId: string,
+  companyId: string
+) {
+  return client
+    .from("taxAuthority")
+    .delete()
+    .eq("id", taxAuthorityId)
+    .eq("companyId", companyId);
+}
+
+// -- Tax Codes --
+
+export async function getTaxCode(
+  client: SupabaseClient<Database>,
+  taxCodeId: string,
+  companyId: string
+) {
+  const taxCode = await client
+    .from("taxCode")
+    .select("*")
+    .eq("id", taxCodeId)
+    .eq("companyId", companyId)
+    .single();
+
+  if (taxCode.error) return { data: null, error: taxCode.error };
+
+  const components = await client
+    .from("taxCodeComponent")
+    .select("*")
+    .eq("taxCodeId", taxCodeId)
+    .eq("companyId", companyId)
+    .order("sequence", { ascending: true });
+
+  if (components.error) return { data: null, error: components.error };
+
+  return {
+    data: { ...taxCode.data, components: components.data ?? [] },
+    error: null
+  };
+}
+
+/**
+ * The tax-code list, each row carrying the blended rate it charges on `date`.
+ *
+ * Inactive codes are INCLUDED. Deactivating a code is a soft delete that exists
+ * precisely so posted documents keep resolving it; dropping those rows from the
+ * only screen that lists codes made them unreachable — you could deactivate a
+ * code but never see or reactivate it again. The table renders `active` as a
+ * column and a filter instead.
+ */
+export async function getTaxCodes(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: GenericQueryFilters & {
+    search: string | null;
+  },
+  date: string
+) {
+  let query = client
+    .from("taxCode")
+    .select("*, taxCodeComponent(*)", {
+      count: "exact"
+    })
+    .eq("companyId", companyId);
+
+  if (args.search) {
+    query = query.ilike("name", `%${args.search}%`);
+  }
+
+  query = setGenericQueryFilters(query, args, [
+    { column: "name", ascending: true }
+  ]);
+
+  const { data, count, error } = await query;
+  if (error) return { data: null, count, error };
+
+  return {
+    data: (data ?? []).map(({ taxCodeComponent, ...taxCode }) => ({
+      ...taxCode,
+      effectiveRate: computeEffectiveTaxPercent(
+        1,
+        filterEffectiveComponents(taxCodeComponent ?? [], date)
+      )
+    })),
+    count,
+    error: null
+  };
+}
+
+export async function getTaxCodesList(
+  client: SupabaseClient<Database>,
+  companyId: string
+) {
+  return client
+    .from("taxCode")
+    .select("id, name")
+    .eq("companyId", companyId)
+    .eq("active", true)
+    .order("name", { ascending: true });
+}
+
+/** How specifically a suggested code matches the address it was suggested for. */
+export type TaxCodeSuggestionMatch = "state" | "country" | "global";
+
+export type TaxCodeSuggestion = {
+  id: string;
+  name: string;
+  countryCode: string | null;
+  state: string | null;
+  match: TaxCodeSuggestionMatch;
+};
+
+/** Most specific first: a TX code beats a US-wide code beats a global code. */
+const TAX_CODE_MATCH_RANK: Record<TaxCodeSuggestionMatch, number> = {
+  state: 0,
+  country: 1,
+  global: 2
+};
+
+export const MAX_TAX_CODE_SUGGESTIONS = 5;
+
+/**
+ * Suggests the tax codes that match an address, most specific first.
+ *
+ * A code is a candidate when its country is unset (a global code — it applies
+ * anywhere) or equals the address country, AND its state is unset or matches the
+ * address state case-insensitively ("tx" and "TX" are the same jurisdiction).
+ * All tiers are returned together and ranked by specificity rather than the
+ * state tier shadowing the country tier — a customer with both a state code and
+ * a country-wide code should see both, in that order. Top
+ * {@link MAX_TAX_CODE_SUGGESTIONS}.
+ *
+ * Purely advisory — nothing consumes this to auto-assign a code.
+ */
+export async function suggestTaxCode(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  address: { countryCode?: string | null; state?: string | null }
+): Promise<{
+  data: TaxCodeSuggestion[] | null;
+  error: PostgrestError | null;
+}> {
+  let query = client
+    .from("taxCode")
+    .select("id, name, countryCode, state")
+    .eq("companyId", companyId)
+    .eq("active", true);
+
+  query = address.countryCode
+    ? query.or(`countryCode.is.null,countryCode.eq.${address.countryCode}`)
+    : query.is("countryCode", null);
+
+  const { data, error } = await query.order("name", { ascending: true });
+  if (error) return { data: null, error };
+
+  const state = address.state?.trim().toLowerCase();
+
+  const suggestions = (data ?? []).flatMap<TaxCodeSuggestion>((code) => {
+    // A code scoped to a state only applies when that state matches; a code with
+    // no state applies to the whole country (or everywhere, if global too).
+    if (code.state) {
+      if (!state || code.state.trim().toLowerCase() !== state) return [];
+      return [{ ...code, match: "state" }];
+    }
+    return [{ ...code, match: code.countryCode ? "country" : "global" }];
+  });
+
+  suggestions.sort(
+    (a, b) =>
+      TAX_CODE_MATCH_RANK[a.match] - TAX_CODE_MATCH_RANK[b.match] ||
+      a.name.localeCompare(b.name)
+  );
+
+  return { data: suggestions.slice(0, MAX_TAX_CODE_SUGGESTIONS), error: null };
+}
+
+/**
+ * Writes a tax code and its full component set as one unit.
+ *
+ * A tax code is only meaningful together with its components — a code whose
+ * parent row was updated but whose components were half-rewritten is a wrong
+ * rate, and rates end up on posted documents. So this runs through Kysely in a
+ * single transaction rather than as a sequence of independent PostgREST calls,
+ * each of which commits on its own and cannot be rolled back.
+ *
+ * Kysely bypasses RLS: every statement is explicitly scoped to `companyId`, and
+ * the caller must have gone through `requirePermissions` first. Throws on
+ * rollback (the route try/catches), matching the other Kysely services.
+ */
+/**
+ * Has this company started assigning tax codes to parties?
+ *
+ * Drives the flat-`taxPercent` sunset banner (plan Task 12): once any customer
+ * or supplier carries a code, the legacy percent is no longer what determines
+ * tax, and leaving it presented as a live setting is how people end up with two
+ * competing sources of truth.
+ */
+export async function getCompanyUsesTaxCodes(
+  client: SupabaseClient<Database>,
+  companyId: string
+): Promise<boolean> {
+  const [customers, suppliers] = await Promise.all([
+    client
+      .from("customer")
+      .select("id")
+      .eq("companyId", companyId)
+      .not("taxCodeId", "is", null)
+      .limit(1),
+    client
+      .from("supplier")
+      .select("id")
+      .eq("companyId", companyId)
+      .not("taxCodeId", "is", null)
+      .limit(1)
+  ]);
+
+  return (customers.data?.length ?? 0) > 0 || (suppliers.data?.length ?? 0) > 0;
+}
+
+export async function upsertTaxCode(
+  db: Kysely<KyselyDatabase>,
+  companyId: string,
+  taxCode:
+    | (Omit<z.infer<typeof taxCodeValidator>, "id" | "components"> & {
+        createdBy: string;
+        customFields?: Json;
+      })
+    | (Omit<z.infer<typeof taxCodeValidator>, "id" | "components"> & {
+        id: string;
+        updatedBy: string;
+        customFields?: Json;
+      }),
+  components: z.infer<typeof taxCodeComponentValidator>[]
+): Promise<{ id: string }> {
+  const userId = "createdBy" in taxCode ? taxCode.createdBy : taxCode.updatedBy;
+
+  return db.transaction().execute(async (trx) => {
+    let taxCodeId: string;
+
+    if ("createdBy" in taxCode) {
+      const inserted = await trx
+        .insertInto("taxCode")
+        .values({ ...taxCode, companyId } as any)
+        .returning("id")
+        .executeTakeFirstOrThrow();
+      taxCodeId = inserted.id;
+    } else {
+      const updated = await trx
+        .updateTable("taxCode")
+        .set({
+          ...sanitize(taxCode),
+          updatedAt: new Date().toISOString()
+        } as any)
+        .where("id", "=", taxCode.id)
+        .where("companyId", "=", companyId)
+        .returning("id")
+        .executeTakeFirst();
+      if (!updated) {
+        throw new Error(`Tax code ${taxCode.id} not found`);
+      }
+      taxCodeId = updated.id;
+    }
+
+    const existing = await trx
+      .selectFrom("taxCodeComponent")
+      .select("id")
+      .where("taxCodeId", "=", taxCodeId)
+      .where("companyId", "=", companyId)
+      .execute();
+
+    const existingIds = new Set(existing.map((c) => c.id));
+    // Ignore a submitted id that isn't actually a component of this code — it
+    // would otherwise be treated as an update and reach across tax codes.
+    const submitted = components.map((component) => ({
+      component,
+      isUpdate: Boolean(component.id && existingIds.has(component.id))
+    }));
+
+    const keptIds = new Set(
+      submitted.filter((s) => s.isUpdate).map((s) => s.component.id as string)
+    );
+    const toDelete = existing.map((c) => c.id).filter((id) => !keptIds.has(id));
+
+    if (toDelete.length > 0) {
+      await trx
+        .deleteFrom("taxCodeComponent")
+        .where("id", "in", toDelete)
+        .where("companyId", "=", companyId)
+        .execute();
+    }
+
+    // Every column is written explicitly (never spread) — a present-but-undefined
+    // key would make PostgREST insert NULL instead of falling back to the column
+    // DEFAULT, which breaks the NOT NULL defaults on sequence / isCompound /
+    // isRecoverable (see .ai/lessons.md).
+    const columns = (component: z.infer<typeof taxCodeComponentValidator>) => ({
+      name: component.name,
+      taxAuthorityId: component.taxAuthorityId ?? null,
+      rate: component.rate,
+      sequence: component.sequence ?? 1,
+      isCompound: component.isCompound ?? false,
+      isRecoverable: component.isRecoverable ?? false,
+      salesTaxAccountId: component.salesTaxAccountId ?? null,
+      purchaseTaxAccountId: component.purchaseTaxAccountId ?? null,
+      effectiveDate: component.effectiveDate ?? null,
+      expirationDate: component.expirationDate ?? null
+    });
+
+    for (const { component, isUpdate } of submitted) {
+      if (!isUpdate) continue;
+      await trx
+        .updateTable("taxCodeComponent")
+        .set({
+          ...columns(component),
+          updatedBy: userId,
+          updatedAt: new Date().toISOString()
+        } as any)
+        .where("id", "=", component.id as string)
+        .where("companyId", "=", companyId)
+        .execute();
+    }
+
+    const toInsert = submitted
+      .filter((s) => !s.isUpdate)
+      .map(({ component }) => ({
+        taxCodeId,
+        companyId,
+        ...columns(component),
+        createdBy: userId
+      }));
+
+    if (toInsert.length > 0) {
+      await trx
+        .insertInto("taxCodeComponent")
+        .values(toInsert as any)
+        .execute();
+    }
+
+    return { id: taxCodeId };
+  });
+}
+
+// Soft delete (accounting config convention): posted documents and taxLedger
+// rows may reference a tax code forever, so the row stays and only drops out of
+// the active lists.
+export async function deleteTaxCode(
+  client: SupabaseClient<Database>,
+  taxCodeId: string,
+  companyId: string
+) {
+  return client
+    .from("taxCode")
+    .update({ active: false })
+    .eq("id", taxCodeId)
+    .eq("companyId", companyId);
+}
+
+// -- Tax Registrations --
+
+export async function getTaxRegistration(
+  client: SupabaseClient<Database>,
+  taxRegistrationId: string,
+  companyId: string
+) {
+  return client
+    .from("taxRegistration")
+    .select("*")
+    .eq("id", taxRegistrationId)
+    .eq("companyId", companyId)
+    .single();
+}
+
+export async function getTaxRegistrations(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: GenericQueryFilters & {
+    search: string | null;
+  }
+) {
+  let query = client
+    .from("taxRegistration")
+    .select("*", {
+      count: "exact"
+    })
+    .eq("companyId", companyId);
+
+  if (args.search) {
+    query = query.ilike("registrationNumber", `%${args.search}%`);
+  }
+
+  query = setGenericQueryFilters(query, args, [
+    { column: "countryCode", ascending: true }
+  ]);
+  return query;
+}
+
+export async function upsertTaxRegistration(
+  client: SupabaseClient<Database>,
+  taxRegistration:
+    | (Omit<z.infer<typeof taxRegistrationValidator>, "id"> & {
+        companyId: string;
+        createdBy: string;
+        customFields?: Json;
+      })
+    | (Omit<z.infer<typeof taxRegistrationValidator>, "id"> & {
+        id: string;
+        companyId: string;
+        updatedBy: string;
+        customFields?: Json;
+      })
+) {
+  if ("createdBy" in taxRegistration) {
+    return client
+      .from("taxRegistration")
+      .insert([taxRegistration])
+      .select("id")
+      .single();
+  }
+  return client
+    .from("taxRegistration")
+    .update(sanitize(taxRegistration))
+    .eq("id", taxRegistration.id)
+    .eq("companyId", taxRegistration.companyId)
+    .select("id")
+    .single();
+}
+
+// Hard delete: nothing references taxRegistration (it is reporting metadata).
+export async function deleteTaxRegistration(
+  client: SupabaseClient<Database>,
+  taxRegistrationId: string,
+  companyId: string
+) {
+  return client
+    .from("taxRegistration")
+    .delete()
+    .eq("id", taxRegistrationId)
+    .eq("companyId", companyId);
 }
