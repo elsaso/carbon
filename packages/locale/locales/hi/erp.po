@@ -1242,6 +1242,7 @@ msgstr "पता पंक्ति 1"
 
 msgid "Address line2"
 msgstr "पता पंक्ति 2"
+
 msgid "Address Match — Country"
 msgstr ""
 
@@ -2656,10 +2657,11 @@ msgstr "गणना की गई तैयार-माल की समाप
 msgid "Calculation Method"
 msgstr "गणना विधि"
 
-msgid "Calibration"
-msgstr "अंशांकन"
 msgid "Calculation Type"
 msgstr ""
+
+msgid "Calibration"
+msgstr "अंशांकन"
 
 msgid "Calibration Attempts"
 msgstr "कैलिब्रेशन प्रयास"
@@ -3238,15 +3240,6 @@ msgstr "पूर्ण बारकोड"
 msgid "Completion Time"
 msgstr "पूर्ण होने का समय"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "की गणना {0}"
-
-msgid "Computed At"
-msgstr "गणना समय"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "मार्जिन और मुख्य उप-योग के साथ संक्षिप्त P&L"
 msgid "Component Name"
 msgstr ""
 
@@ -3258,6 +3251,16 @@ msgstr ""
 
 msgid "Compound"
 msgstr ""
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "की गणना {0}"
+
+msgid "Computed At"
+msgstr "गणना समय"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "मार्जिन और मुख्य उप-योग के साथ संक्षिप्त P&L"
 
 msgid "Conditions"
 msgstr "शर्तें"
@@ -5778,6 +5781,15 @@ msgstr "वेबहुक संपादित करें"
 msgid "Edit Work Center"
 msgstr "कार्य केंद्र संपादित करें"
 
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
+
 msgid "Eliminated"
 msgstr "समाप्त किया गया"
 
@@ -5789,11 +5801,6 @@ msgstr "अन्यथा यदि {position}"
 
 msgid "email"
 msgstr "ईमेल"
-msgid "Effective Date"
-msgstr ""
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
 
 msgid "Email"
 msgstr "ईमेल"
@@ -6889,6 +6896,12 @@ msgstr "फिक्सचर आईडी"
 msgid "Flags"
 msgstr "झंडे"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
+
 msgid "for anything. They'll pull in the right person."
 msgstr "किसी भी चीज़ के लिए। वे सही व्यक्ति को शामिल करेंगे।"
 
@@ -7631,6 +7644,9 @@ msgstr "निष्क्रिय"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "निष्क्रिय क्रियाएं चयन सूचियों में दिखाई नहीं देंगी"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "इनबाउंड निरीक्षण"
@@ -10027,6 +10043,7 @@ msgstr "अभी तक कोई आपूर्तिकर्ता नह�
 
 msgid "No sync operations yet"
 msgstr "अभी तक कोई सिंक परिचालन नहीं है"
+
 msgid "No tax authorities"
 msgstr ""
 
@@ -12124,7 +12141,6 @@ msgid "Registered"
 msgstr "पुन: आदेश बिंदु"
 
 msgid "Registration Number"
-msgstr "पंजीकरण संख्या"
 msgstr ""
 
 msgid "Reject"
@@ -12202,6 +12218,7 @@ msgstr "हटाएँ {label}"
 
 msgid "Remove clause"
 msgstr "खंड हटाएं"
+
 msgid "Remove component"
 msgstr ""
 
@@ -12335,10 +12352,11 @@ msgstr "रिपोर्ट"
 msgid "Reporting"
 msgstr "रिपोर्टिंग"
 
-msgid "Reporting dimension"
-msgstr "रिपोर्टिंग आयाम"
 msgid "Reporting Category"
 msgstr ""
+
+msgid "Reporting dimension"
+msgstr "रिपोर्टिंग आयाम"
 
 msgid "Reports"
 msgstr "रिपोर्ट"
@@ -13368,6 +13386,7 @@ msgstr "यह दस्तावेज़ सक्रिय होने स�
 
 msgid "Sent complete date"
 msgstr "भेजे गए पूर्ण दिनांक"
+
 msgid "Sequence"
 msgstr ""
 
@@ -14714,6 +14733,7 @@ msgstr "प्रत्येक स्टॉक आंदोलन का क�
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Onshape में प्राधिकरण अस्वीकार कर दिया गया। दोबारा कनेक्ट करने का प्रयास करें।"
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr ""
 
@@ -15432,6 +15452,16 @@ msgstr "इन कार्यों के पास इस कार्य क
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "ये जर्नल प्रविष्टियाँ अभी भी ड्राफ्ट हैं, इसलिए उनके डेबिट और क्रेडिट इस अवधि के लिए लेजर में नहीं हैं। प्रत्येक को पोस्ट करें, या इसे बाद की खुली अवधि में पुनः दिनांकित करें।"
 
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "इस Carbon इंस्टेंस में Onshape OAuth क्रेडेंशियल नहीं हैं। किसी व्यवस्थापक से उन्हें सेट करने के लिए कहें।"
 
@@ -15440,16 +15470,6 @@ msgstr "यह परिवर्तन सूचना लागू की ज�
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "यह परिवर्तन सूचना बंद है, इसलिए इसके परिवर्तन केवल पढ़ने के लिए हैं।"
-msgid "These registrations have no matching active tax code:"
-msgstr ""
-
-msgid "These tax codes have no matching registration:"
-msgstr ""
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "यह Discovery चरण को पूरा करता है।"

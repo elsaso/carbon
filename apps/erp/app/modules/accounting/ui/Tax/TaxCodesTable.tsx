@@ -16,7 +16,7 @@ import {
 import { useNavigate } from "react-router";
 import { Hyperlink, New, Table } from "~/components";
 import { Enumerable } from "~/components/Enumerable";
-import { usePermissions, useUrlParams } from "~/hooks";
+import { usePercentFormatter, usePermissions, useUrlParams } from "~/hooks";
 import { useCustomColumns } from "~/hooks/useCustomColumns";
 import { path } from "~/utils/path";
 import {
@@ -24,14 +24,6 @@ import {
   taxReportingCategories
 } from "../../accounting.models";
 import type { TaxCode } from "../../types";
-
-// 4 fraction digits so a compound rate like 0.1547375 reads as 15.4738%
-// instead of collapsing to 15.47% and hiding the difference between two codes.
-const percentFormatter = new Intl.NumberFormat(undefined, {
-  style: "percent",
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 4
-});
 
 type TaxCodesTableProps = {
   data: TaxCode[];
@@ -43,6 +35,7 @@ const TaxCodesTable = memo(({ data, count }: TaxCodesTableProps) => {
   const [params] = useUrlParams();
   const navigate = useNavigate();
   const permissions = usePermissions();
+  const percentFormatter = usePercentFormatter();
   const customColumns = useCustomColumns<TaxCode>("taxCode");
 
   const columns = useMemo<ColumnDef<TaxCode>[]>(() => {
@@ -141,7 +134,7 @@ const TaxCodesTable = memo(({ data, count }: TaxCodesTableProps) => {
       }
     ];
     return [...defaultColumns, ...customColumns];
-  }, [params, customColumns, t]);
+  }, [params, customColumns, percentFormatter, t]);
 
   const renderContextMenu = useCallback(
     (row: TaxCode) => {

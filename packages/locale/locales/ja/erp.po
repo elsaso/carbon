@@ -1242,6 +1242,7 @@ msgstr "住所 行1"
 
 msgid "Address line2"
 msgstr "住所 行2"
+
 msgid "Address Match — Country"
 msgstr ""
 
@@ -2656,10 +2657,11 @@ msgstr "計算済み完成品の有効期限"
 msgid "Calculation Method"
 msgstr "計算方法"
 
-msgid "Calibration"
-msgstr "キャリブレーション"
 msgid "Calculation Type"
 msgstr ""
+
+msgid "Calibration"
+msgstr "キャリブレーション"
 
 msgid "Calibration Attempts"
 msgstr "キャリブレーション試行"
@@ -3238,15 +3240,6 @@ msgstr "完了バーコード"
 msgid "Completion Time"
 msgstr "完了時間"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "{0}で計算済み"
-
-msgid "Computed At"
-msgstr "計算日時"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "マージンと主要小計を含む圧縮P&L"
 msgid "Component Name"
 msgstr ""
 
@@ -3258,6 +3251,16 @@ msgstr ""
 
 msgid "Compound"
 msgstr ""
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "{0}で計算済み"
+
+msgid "Computed At"
+msgstr "計算日時"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "マージンと主要小計を含む圧縮P&L"
 
 msgid "Conditions"
 msgstr "条件"
@@ -5778,6 +5781,15 @@ msgstr "Webhookを編集"
 msgid "Edit Work Center"
 msgstr "ワークセンターを編集"
 
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
+
 msgid "Eliminated"
 msgstr "削除済み"
 
@@ -5789,11 +5801,6 @@ msgstr "その他の場合 {position}"
 
 msgid "email"
 msgstr "メール"
-msgid "Effective Date"
-msgstr ""
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
 
 msgid "Email"
 msgstr "メール"
@@ -6889,6 +6896,12 @@ msgstr "フィクスチャID"
 msgid "Flags"
 msgstr "フラグ"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
+
 msgid "for anything. They'll pull in the right person."
 msgstr "何でも構いません。彼らが適切な人を連れてきます。"
 
@@ -7631,6 +7644,9 @@ msgstr "非アクティブ"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "非アクティブなアクションは選択リストに表示されません"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "受入検査"
@@ -10027,6 +10043,7 @@ msgstr "まだサプライヤーがありません"
 
 msgid "No sync operations yet"
 msgstr "同期操作がまだありません"
+
 msgid "No tax authorities"
 msgstr ""
 
@@ -12124,7 +12141,6 @@ msgid "Registered"
 msgstr "再注文点"
 
 msgid "Registration Number"
-msgstr "登録番号"
 msgstr ""
 
 msgid "Reject"
@@ -12202,6 +12218,7 @@ msgstr "{label}を削除"
 
 msgid "Remove clause"
 msgstr "句を削除"
+
 msgid "Remove component"
 msgstr ""
 
@@ -12335,10 +12352,11 @@ msgstr "レポート"
 msgid "Reporting"
 msgstr "レポーティング"
 
-msgid "Reporting dimension"
-msgstr "報告ディメンション"
 msgid "Reporting Category"
 msgstr ""
+
+msgid "Reporting dimension"
+msgstr "報告ディメンション"
 
 msgid "Reports"
 msgstr "レポート"
@@ -13368,6 +13386,7 @@ msgstr "このドキュメントを承認のために送信してから、アク
 
 msgid "Sent complete date"
 msgstr "送信完了日"
+
 msgid "Sequence"
 msgstr ""
 
@@ -14714,6 +14733,7 @@ msgstr "すべての在庫移動の追加専用レコード。手持在庫はそ
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Onshape で認可が拒否されました。もう一度接続してください。"
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr ""
 
@@ -15432,6 +15452,16 @@ msgstr "これらのジョブにはこのワークセンターに割り当てら
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "これらの仕訳はまだ下書きであるため、それらの借方と貸方は当期の元帳に含まれていません。各仕訳を転記するか、後の開いている期間に再度日付を付け直してください。"
 
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "この Carbon インスタンスには Onshape の OAuth 認証情報がありません。管理者に設定を依頼してください。"
 
@@ -15440,16 +15470,6 @@ msgstr "この変更通知は実装中であるため、変更がロックされ
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "この変更通知は閉じられているため、変更は読み取り専用です。"
-msgid "These registrations have no matching active tax code:"
-msgstr ""
-
-msgid "These tax codes have no matching registration:"
-msgstr ""
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "これはDiscoveryステップを完了します。"

@@ -1242,6 +1242,7 @@ msgstr "Adres satırı 1"
 
 msgid "Address line2"
 msgstr "Adres satırı 2"
+
 msgid "Address Match — Country"
 msgstr ""
 
@@ -2656,10 +2657,11 @@ msgstr "Hesaplanan bitmiş ürün son kullanma tarihi"
 msgid "Calculation Method"
 msgstr "Hesaplama Yöntemi"
 
-msgid "Calibration"
-msgstr "Kalibrasyon"
 msgid "Calculation Type"
 msgstr ""
+
+msgid "Calibration"
+msgstr "Kalibrasyon"
 
 msgid "Calibration Attempts"
 msgstr "Kalibrasyon denemeleri"
@@ -3238,15 +3240,6 @@ msgstr "Tamamlama Barkodu"
 msgid "Completion Time"
 msgstr "Tamamlama Süresi"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "hesaplanan {0}"
-
-msgid "Computed At"
-msgstr "Hesaplama Tarihi"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "Marjlar ve kilit alt toplamlarla sıkıştırılmış P&L"
 msgid "Component Name"
 msgstr ""
 
@@ -3258,6 +3251,16 @@ msgstr ""
 
 msgid "Compound"
 msgstr ""
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "hesaplanan {0}"
+
+msgid "Computed At"
+msgstr "Hesaplama Tarihi"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "Marjlar ve kilit alt toplamlarla sıkıştırılmış P&L"
 
 msgid "Conditions"
 msgstr "Koşullar"
@@ -5778,6 +5781,15 @@ msgstr "Webhook Düzenle"
 msgid "Edit Work Center"
 msgstr "İş Merkezi Düzenle"
 
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
+
 msgid "Eliminated"
 msgstr "Ortadan Kaldırılmış"
 
@@ -5789,11 +5801,6 @@ msgstr "Aksi takdirde {position}"
 
 msgid "email"
 msgstr "e-posta"
-msgid "Effective Date"
-msgstr ""
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
 
 msgid "Email"
 msgstr "E-posta"
@@ -6889,6 +6896,12 @@ msgstr "Demirbaş ID"
 msgid "Flags"
 msgstr "Bayraklar"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
+
 msgid "for anything. They'll pull in the right person."
 msgstr "herhangi bir şey için. Doğru kişiyi çekerler."
 
@@ -7631,6 +7644,9 @@ msgstr "Pasif"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "Etkin olmayan eylemler seçim listelerinde görünmeyecektir"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "Gelen Muhasebesi"
@@ -10027,6 +10043,7 @@ msgstr "Henüz tedarikçi yok"
 
 msgid "No sync operations yet"
 msgstr "Henüz hiçbir eşitleme işlemi yok"
+
 msgid "No tax authorities"
 msgstr ""
 
@@ -12124,7 +12141,6 @@ msgid "Registered"
 msgstr "Kayıtlı"
 
 msgid "Registration Number"
-msgstr "Sicil Numarası"
 msgstr ""
 
 msgid "Reject"
@@ -12202,6 +12218,7 @@ msgstr "{label}'i Kaldır"
 
 msgid "Remove clause"
 msgstr "Maddeyi kaldır"
+
 msgid "Remove component"
 msgstr ""
 
@@ -12335,10 +12352,11 @@ msgstr "Rapor"
 msgid "Reporting"
 msgstr "Raporlama"
 
-msgid "Reporting dimension"
-msgstr "Raporlama boyutu"
 msgid "Reporting Category"
 msgstr ""
+
+msgid "Reporting dimension"
+msgstr "Raporlama boyutu"
 
 msgid "Reports"
 msgstr "Raporlar"
@@ -13368,6 +13386,7 @@ msgstr "Bu belge aktif hale gelmeden önce onay için gönderilir."
 
 msgid "Sent complete date"
 msgstr "Gönderilen tamamlama tarihi"
+
 msgid "Sequence"
 msgstr ""
 
@@ -14714,6 +14733,7 @@ msgstr "Her stok hareketinin yalnızca ekleme kaydı; eldeki tutar, imzalı gird
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Yetkilendirme Onshape'te reddedildi. Yeniden bağlanmayı deneyin."
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr ""
 
@@ -15432,6 +15452,16 @@ msgstr "Bu işler bu iş merkezine atanmış işlemlere sahiptir:"
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "Bu muhasebe kayıtları hâlâ Taslak durumundadır, bu nedenle borç ve alacakları bu dönem için defteri kebir'de değildir. Her birini deftere geçirin veya daha sonraki bir açık döneme yeniden tarihlendiriniz."
 
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "Bu Carbon örneğinde Onshape OAuth kimlik bilgileri eksik. Bir yöneticiden bunları ayarlamasını isteyin."
 
@@ -15440,16 +15470,6 @@ msgstr "Bu değişiklik bildirimi uygulanmakta olduğundan, değişiklikleri kil
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "Bu değişiklik bildirimi kapalı olduğundan, değişiklikleri salt okunurdur."
-msgid "These registrations have no matching active tax code:"
-msgstr ""
-
-msgid "These tax codes have no matching registration:"
-msgstr ""
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "Bu, Keşif adımını tamamlar."

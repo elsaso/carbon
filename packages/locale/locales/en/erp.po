@@ -1242,6 +1242,7 @@ msgstr "Address line1"
 
 msgid "Address line2"
 msgstr "Address line2"
+
 msgid "Address Match — Country"
 msgstr "Address Match — Country"
 
@@ -2656,10 +2657,11 @@ msgstr "Calculated finished-good expiry"
 msgid "Calculation Method"
 msgstr "Calculation Method"
 
-msgid "Calibration"
-msgstr "Calibration"
 msgid "Calculation Type"
 msgstr "Calculation Type"
+
+msgid "Calibration"
+msgstr "Calibration"
 
 msgid "Calibration Attempts"
 msgstr "Calibration Attempts"
@@ -3238,15 +3240,6 @@ msgstr "Completion Barcode"
 msgid "Completion Time"
 msgstr "Completion Time"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "computed {0}"
-
-msgid "Computed At"
-msgstr "Computed At"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "Condensed P&L with margins and key subtotals"
 msgid "Component Name"
 msgstr "Component Name"
 
@@ -3258,6 +3251,16 @@ msgstr "Components"
 
 msgid "Compound"
 msgstr "Compound"
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "computed {0}"
+
+msgid "Computed At"
+msgstr "Computed At"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "Condensed P&L with margins and key subtotals"
 
 msgid "Conditions"
 msgstr "Conditions"
@@ -5778,6 +5781,15 @@ msgstr "Edit Webhook"
 msgid "Edit Work Center"
 msgstr "Edit Work Center"
 
+msgid "Effective Date"
+msgstr "Effective Date"
+
+msgid "Effective Rate"
+msgstr "Effective Rate"
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr "Effective rate today: {effectiveRateLabel}"
+
 msgid "Eliminated"
 msgstr "Eliminated"
 
@@ -5789,11 +5801,6 @@ msgstr "Else if {position}"
 
 msgid "email"
 msgstr "email"
-msgid "Effective Date"
-msgstr "Effective Date"
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr "Effective rate today: {effectiveRateLabel}"
 
 msgid "Email"
 msgstr "Email"
@@ -6889,6 +6896,12 @@ msgstr "Fixture ID"
 msgid "Flags"
 msgstr "Flags"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+
 msgid "for anything. They'll pull in the right person."
 msgstr "for anything. They'll pull in the right person."
 
@@ -7631,6 +7644,9 @@ msgstr "Inactive"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "Inactive actions will not appear in selection lists"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
 
 msgid "Inbound inspection"
 msgstr "Inbound inspection"
@@ -10027,6 +10043,7 @@ msgstr "No suppliers yet"
 
 msgid "No sync operations yet"
 msgstr "No sync operations yet"
+
 msgid "No tax authorities"
 msgstr "No tax authorities"
 
@@ -12201,6 +12218,7 @@ msgstr "Remove {label}"
 
 msgid "Remove clause"
 msgstr "Remove clause"
+
 msgid "Remove component"
 msgstr "Remove component"
 
@@ -12334,10 +12352,11 @@ msgstr "Report"
 msgid "Reporting"
 msgstr "Reporting"
 
-msgid "Reporting dimension"
-msgstr "Reporting dimension"
 msgid "Reporting Category"
 msgstr "Reporting Category"
+
+msgid "Reporting dimension"
+msgstr "Reporting dimension"
 
 msgid "Reports"
 msgstr "Reports"
@@ -13367,6 +13386,7 @@ msgstr "Sends this document for approval before it can go active."
 
 msgid "Sent complete date"
 msgstr "Sent complete date"
+
 msgid "Sequence"
 msgstr "Sequence"
 
@@ -14713,6 +14733,7 @@ msgstr "The append-only record of every stock movement; on-hand is the sum of it
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "The authorization was refused in Onshape. Try connecting again."
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr "The body you remit this tax to, e.g. Revenu Québec"
 
@@ -15431,6 +15452,16 @@ msgstr "These jobs have operations assigned to this work center:"
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 
+msgid "These registrations have no matching active tax code:"
+msgstr "These registrations have no matching active tax code:"
+
+msgid "These tax codes have no matching registration:"
+msgstr "These tax codes have no matching registration:"
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr "This address is in {place} — apply {0}?"
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 
@@ -15439,16 +15470,6 @@ msgstr "This change notice is being implemented, so its changes are locked. Reop
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "This change notice is closed, so its changes are read-only."
-msgid "These registrations have no matching active tax code:"
-msgstr "These registrations have no matching active tax code:"
-
-msgid "These tax codes have no matching registration:"
-msgstr "These tax codes have no matching registration:"
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr "This address is in {place} — apply {0}?"
 
 msgid "This completes the Discovery step."
 msgstr "This completes the Discovery step."

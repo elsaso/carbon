@@ -19,6 +19,7 @@ import {
   toast,
   VStack
 } from "@carbon/react";
+import { INPUT_FORMAT, round } from "@carbon/utils";
 import { Trans, useLingui } from "@lingui/react/macro";
 import type { PostgrestResponse } from "@supabase/supabase-js";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -36,7 +37,7 @@ import {
   TextArea
 } from "~/components/Form";
 import Country from "~/components/Form/Country";
-import { usePermissions } from "~/hooks";
+import { usePercentFormatter, usePermissions } from "~/hooks";
 import { path } from "~/utils/path";
 import {
   taxCalculationTypes,
@@ -71,19 +72,30 @@ function newRowId() {
   return `new-${Math.random().toString(36).substring(2, 9)}`;
 }
 
-/** Fraction (0.09975) → percent (9.975), without binary-float noise. */
+/**
+ * Fraction (0.09975) → percentage POINTS (9.975) for the rate input.
+ *
+ * Deliberately unrounded: `0.09975 * 100` is `9.975000000000001` in IEEE-754,
+ * and the field's `INPUT_FORMAT.percentPoints` is what resolves that — rounding
+ * is a DISPLAY boundary, and the formatter owns it. react-aria commits
+ * `parse(format(x))`, so the value that comes back out of the field is already
+ * the clean 9.975.
+ */
 function rateToPercent(rate: number) {
-  return Math.round(rate * 1e10) / 1e8;
+  return rate * 100;
 }
 
-/** Percent (9.975) → fraction (0.09975), without binary-float noise. */
+/**
+ * Percentage points (9.975) → fraction (0.09975) for storage.
+ *
+ * This is the PERSIST boundary, so it rounds — at the standard's internal
+ * `SCALE`, which is exactly what a percent-points field can express (a scale-5
+ * fraction is 3 percent-digits, the same ceiling `PERCENT_POINTS_FORMAT` puts
+ * on the input). The DB `CHECK (rate <= 1)` and the compound cascade both read
+ * this value, so it has to be a real 5dp fact rather than a raw float.
+ */
 function percentToRate(percent: number) {
-  return Math.round(percent * 1e8) / 1e10;
-}
-
-/** Fraction (0.14975) → "14.975%". Locale-free so SSR and client agree. */
-function formatPercent(fraction: number) {
-  return `${Math.round(fraction * 1e10) / 1e8}%`;
+  return round(percent / 100);
 }
 
 function emptyComponentRow(sequence: number): ComponentRow {
@@ -184,7 +196,7 @@ const TaxCodeComponentRow = ({
               rate: percentToRate(Number.isNaN(value) ? 0 : value)
             })
           }
-          formatOptions={{ maximumFractionDigits: 4 }}
+          formatOptions={INPUT_FORMAT.percentPoints}
           minValue={0}
           maxValue={100}
           isDisabled={isDisabled}
@@ -194,6 +206,8 @@ const TaxCodeComponentRow = ({
             size="sm"
           />
         </NumberField>
+        {/* Sequence is an ordinal, not a measured value — it takes none of the
+            numeric standard's kinds, so it carries no formatOptions. */}
         <NumberField
           aria-label={t`Sequence`}
           value={row.sequence}
@@ -202,7 +216,6 @@ const TaxCodeComponentRow = ({
               sequence: Number.isNaN(value) ? index + 1 : Math.trunc(value)
             })
           }
-          formatOptions={{ maximumFractionDigits: 0 }}
           minValue={1}
           isDisabled={isDisabled}
         >
@@ -308,6 +321,7 @@ const TaxCodeForm = ({
 }: TaxCodeFormProps) => {
   const { t } = useLingui();
   const permissions = usePermissions();
+  const percentFormatter = usePercentFormatter();
   const fetcher = useFetcher<PostgrestResponse<{ id: string }>>();
 
   const [rows, setRows] = useState<ComponentRow[]>(() =>
@@ -376,7 +390,7 @@ const TaxCodeForm = ({
     () => computeEffectiveTaxPercent(1, filterEffectiveComponents(rows, today)),
     [rows, today]
   );
-  const effectiveRateLabel = formatPercent(effectiveRate);
+  const effectiveRateLabel = percentFormatter.format(effectiveRate);
 
   return (
     <ModalDrawerProvider type={type}>

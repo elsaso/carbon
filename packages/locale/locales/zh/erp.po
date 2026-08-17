@@ -1242,6 +1242,7 @@ msgstr "地址行1"
 
 msgid "Address line2"
 msgstr "地址行2"
+
 msgid "Address Match — Country"
 msgstr ""
 
@@ -2656,10 +2657,11 @@ msgstr "计算成品过期时间"
 msgid "Calculation Method"
 msgstr "计算方法"
 
-msgid "Calibration"
-msgstr "校准"
 msgid "Calculation Type"
 msgstr ""
+
+msgid "Calibration"
+msgstr "校准"
 
 msgid "Calibration Attempts"
 msgstr "校准尝试"
@@ -3238,15 +3240,6 @@ msgstr "完成条码"
 msgid "Completion Time"
 msgstr "完成时间"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "计算于 {0}"
-
-msgid "Computed At"
-msgstr "计算于"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "精简损益表，含利润率和关键小计"
 msgid "Component Name"
 msgstr ""
 
@@ -3258,6 +3251,16 @@ msgstr ""
 
 msgid "Compound"
 msgstr ""
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "计算于 {0}"
+
+msgid "Computed At"
+msgstr "计算于"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "精简损益表，含利润率和关键小计"
 
 msgid "Conditions"
 msgstr "条件"
@@ -5778,6 +5781,15 @@ msgstr "编辑 Webhook"
 msgid "Edit Work Center"
 msgstr "编辑工作中心"
 
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
+
 msgid "Eliminated"
 msgstr "已消除"
 
@@ -5789,11 +5801,6 @@ msgstr "否则如果 {position}"
 
 msgid "email"
 msgstr "邮件"
-msgid "Effective Date"
-msgstr ""
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
 
 msgid "Email"
 msgstr "电子邮件"
@@ -6889,6 +6896,12 @@ msgstr "夹具ID"
 msgid "Flags"
 msgstr "标志"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
+
 msgid "for anything. They'll pull in the right person."
 msgstr "用于任何事情。他们会找到合适的人。"
 
@@ -7631,6 +7644,9 @@ msgstr "未激活"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "不活跃的操作将不会出现在选择列表中"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "入站检验"
@@ -10027,6 +10043,7 @@ msgstr "还没有供应商"
 
 msgid "No sync operations yet"
 msgstr "尚无同步操作"
+
 msgid "No tax authorities"
 msgstr ""
 
@@ -12124,7 +12141,6 @@ msgid "Registered"
 msgstr "重新订购点"
 
 msgid "Registration Number"
-msgstr "注册号"
 msgstr ""
 
 msgid "Reject"
@@ -12202,6 +12218,7 @@ msgstr "移除 {label}"
 
 msgid "Remove clause"
 msgstr "移除条款"
+
 msgid "Remove component"
 msgstr ""
 
@@ -12335,10 +12352,11 @@ msgstr "报告"
 msgid "Reporting"
 msgstr "报表"
 
-msgid "Reporting dimension"
-msgstr "报告维度"
 msgid "Reporting Category"
 msgstr ""
+
+msgid "Reporting dimension"
+msgstr "报告维度"
 
 msgid "Reports"
 msgstr "报告"
@@ -13368,6 +13386,7 @@ msgstr "在文档激活前将其发送以供批准。"
 
 msgid "Sent complete date"
 msgstr "发送完成日期"
+
 msgid "Sequence"
 msgstr ""
 
@@ -14714,6 +14733,7 @@ msgstr "每个库存变动的追加专用记录；在手数量是其带符号条
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "授权在 Onshape 中被拒绝。请重新连接。"
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr ""
 
@@ -15432,6 +15452,16 @@ msgstr "这些工作有分配给此工作中心的操作："
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "这些日记账条目仍为草稿状态，因此其借贷金额不在本期分类账中。过账每一份，或将其重新标记日期至较晚的开放期间。"
 
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "此 Carbon 实例缺少 Onshape 的 OAuth 凭据。请让管理员进行设置。"
 
@@ -15440,16 +15470,6 @@ msgstr "此变更通知正在实施中，因此其更改已锁定。重新打开
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "此变更通知已关闭，因此其更改为只读。"
-msgid "These registrations have no matching active tax code:"
-msgstr ""
-
-msgid "These tax codes have no matching registration:"
-msgstr ""
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "这完成了发现步骤。"

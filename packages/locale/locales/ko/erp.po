@@ -1242,6 +1242,7 @@ msgstr "주소 라인1"
 
 msgid "Address line2"
 msgstr "주소 라인2"
+
 msgid "Address Match — Country"
 msgstr ""
 
@@ -2656,10 +2657,11 @@ msgstr "계산된 완제품 유효기한"
 msgid "Calculation Method"
 msgstr "계산 방법"
 
-msgid "Calibration"
-msgstr "교정"
 msgid "Calculation Type"
 msgstr ""
+
+msgid "Calibration"
+msgstr "교정"
 
 msgid "Calibration Attempts"
 msgstr "교정 시도"
@@ -3238,15 +3240,6 @@ msgstr "완료 바코드"
 msgid "Completion Time"
 msgstr "완료 시간"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "{0}에 계산됨"
-
-msgid "Computed At"
-msgstr "계산 시간"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "마진 및 주요 소계를 포함한 축약 손익계산"
 msgid "Component Name"
 msgstr ""
 
@@ -3258,6 +3251,16 @@ msgstr ""
 
 msgid "Compound"
 msgstr ""
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "{0}에 계산됨"
+
+msgid "Computed At"
+msgstr "계산 시간"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "마진 및 주요 소계를 포함한 축약 손익계산"
 
 msgid "Conditions"
 msgstr "조건"
@@ -5778,6 +5781,15 @@ msgstr "웹훅 수정"
 msgid "Edit Work Center"
 msgstr "작업장 수정"
 
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
+
 msgid "Eliminated"
 msgstr "제거됨"
 
@@ -5789,11 +5801,6 @@ msgstr "그 외 {position}인 경우"
 
 msgid "email"
 msgstr "이메일"
-msgid "Effective Date"
-msgstr ""
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
 
 msgid "Email"
 msgstr "이메일"
@@ -6889,6 +6896,12 @@ msgstr "픽스처 ID"
 msgid "Flags"
 msgstr "플래그"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
+
 msgid "for anything. They'll pull in the right person."
 msgstr "무엇이든지요. 적임자를 연결해 드립니다."
 
@@ -7631,6 +7644,9 @@ msgstr "비활성"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "비활성 조치는 선택 목록에 표시되지 않습니다"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "입고 검사"
@@ -10027,6 +10043,7 @@ msgstr "아직 공급업체가 없습니다"
 
 msgid "No sync operations yet"
 msgstr "아직 동기화 작업 없음"
+
 msgid "No tax authorities"
 msgstr ""
 
@@ -12124,7 +12141,6 @@ msgid "Registered"
 msgstr "등록됨"
 
 msgid "Registration Number"
-msgstr "등록 번호"
 msgstr ""
 
 msgid "Reject"
@@ -12202,6 +12218,7 @@ msgstr "제거 {label}"
 
 msgid "Remove clause"
 msgstr "절 제거"
+
 msgid "Remove component"
 msgstr ""
 
@@ -12335,10 +12352,11 @@ msgstr "보고서"
 msgid "Reporting"
 msgstr "보고"
 
-msgid "Reporting dimension"
-msgstr "보고 차원"
 msgid "Reporting Category"
 msgstr ""
+
+msgid "Reporting dimension"
+msgstr "보고 차원"
 
 msgid "Reports"
 msgstr "보고서"
@@ -13368,6 +13386,7 @@ msgstr "이 문서를 활성화하기 전에 승인을 위해 전송합니다."
 
 msgid "Sent complete date"
 msgstr "발송 완료 날짜"
+
 msgid "Sequence"
 msgstr ""
 
@@ -14714,6 +14733,7 @@ msgstr "모든 재고 이동을 추가 전용으로 기록한 원장으로, 보�
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Onshape에서 인증이 거부되었습니다. 다시 연결해 보세요."
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr ""
 
@@ -15432,6 +15452,16 @@ msgstr "다음 작업에 이 작업장이 지정된 공정작업이 있습니다
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "이 분개들은 아직 임시이므로 그 차변과 대변이 이 기간의 총계정원장에 없습니다. 각각을 전기하거나 나중의 개방된 기간으로 재날짜하세요."
 
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "이 Carbon 인스턴스에 Onshape OAuth 자격 증명이 없습니다. 관리자에게 설정을 요청하세요."
 
@@ -15440,16 +15470,6 @@ msgstr "이 변경 사항은 구현 중이므로 변경 사항이 잠겨 있습�
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "이 변경 사항은 닫혀 있으므로 변경 사항이 읽기 전용입니다."
-msgid "These registrations have no matching active tax code:"
-msgstr ""
-
-msgid "These tax codes have no matching registration:"
-msgstr ""
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "이것으로 발견(Discovery) 단계가 완료됩니다."

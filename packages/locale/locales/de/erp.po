@@ -1242,6 +1242,7 @@ msgstr "Adresszeile 1"
 
 msgid "Address line2"
 msgstr "Adresszeile 2"
+
 msgid "Address Match — Country"
 msgstr ""
 
@@ -2656,10 +2657,11 @@ msgstr "Berechnete Verfallsdatum für Fertigprodukte"
 msgid "Calculation Method"
 msgstr "Berechnungsmethode"
 
-msgid "Calibration"
-msgstr "Kalibrierung"
 msgid "Calculation Type"
 msgstr ""
+
+msgid "Calibration"
+msgstr "Kalibrierung"
 
 msgid "Calibration Attempts"
 msgstr "Kalibrierversuche"
@@ -3238,15 +3240,6 @@ msgstr "Fertigstellungs-Barcode"
 msgid "Completion Time"
 msgstr "Abschlusszeit"
 
-#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
-msgid "computed {0}"
-msgstr "berechnet {0}"
-
-msgid "Computed At"
-msgstr "Berechnet am"
-
-msgid "Condensed P&L with margins and key subtotals"
-msgstr "Komprimierte Gewinn- und Verlustrechnung mit Margen und wichtigen Zwischensummen"
 msgid "Component Name"
 msgstr ""
 
@@ -3258,6 +3251,16 @@ msgstr ""
 
 msgid "Compound"
 msgstr ""
+
+#. placeholder {0}: formatRelativeTime(tieOut.computedAt)
+msgid "computed {0}"
+msgstr "berechnet {0}"
+
+msgid "Computed At"
+msgstr "Berechnet am"
+
+msgid "Condensed P&L with margins and key subtotals"
+msgstr "Komprimierte Gewinn- und Verlustrechnung mit Margen und wichtigen Zwischensummen"
 
 msgid "Conditions"
 msgstr "Bedingungen"
@@ -5778,6 +5781,15 @@ msgstr "Webhook bearbeiten"
 msgid "Edit Work Center"
 msgstr "Arbeitszentrum bearbeiten"
 
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
+
 msgid "Eliminated"
 msgstr "Beseitigt"
 
@@ -5789,11 +5801,6 @@ msgstr "Sonst wenn {position}"
 
 msgid "email"
 msgstr "E-Mail"
-msgid "Effective Date"
-msgstr ""
-
-msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
 
 msgid "Email"
 msgstr "E-Mail"
@@ -6889,6 +6896,12 @@ msgstr "Vorrichtungs-ID"
 msgid "Flags"
 msgstr "Flaggen"
 
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
+
 msgid "for anything. They'll pull in the right person."
 msgstr "für alles. Sie werden die richtige Person hinzuziehen."
 
@@ -7631,6 +7644,9 @@ msgstr "Inaktiv"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "Inaktive Aktionen werden nicht in Auswahlisten angezeigt"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "Wareneingangsprüfung"
@@ -10027,6 +10043,7 @@ msgstr "Noch keine Lieferanten"
 
 msgid "No sync operations yet"
 msgstr "Noch keine Synchronisierungsoperationen"
+
 msgid "No tax authorities"
 msgstr ""
 
@@ -12124,7 +12141,6 @@ msgid "Registered"
 msgstr "Bestellpunkt"
 
 msgid "Registration Number"
-msgstr "Registrierungsnummer"
 msgstr ""
 
 msgid "Reject"
@@ -12202,6 +12218,7 @@ msgstr "Entfernen {label}"
 
 msgid "Remove clause"
 msgstr "Klausel entfernen"
+
 msgid "Remove component"
 msgstr ""
 
@@ -12335,10 +12352,11 @@ msgstr "Bericht"
 msgid "Reporting"
 msgstr "Berichtswesen"
 
-msgid "Reporting dimension"
-msgstr "Berichtsdimension"
 msgid "Reporting Category"
 msgstr ""
+
+msgid "Reporting dimension"
+msgstr "Berichtsdimension"
 
 msgid "Reports"
 msgstr "Berichte"
@@ -13368,6 +13386,7 @@ msgstr "Sendet dieses Dokument zur Genehmigung, bevor es aktiv werden kann."
 
 msgid "Sent complete date"
 msgstr "Versanddatum abgeschlossen"
+
 msgid "Sequence"
 msgstr ""
 
@@ -14714,6 +14733,7 @@ msgstr "Der unveränderliche Datensatz jeder Bestandsbewegung; der verfügbare B
 
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Die Autorisierung wurde in Onshape abgelehnt. Versuchen Sie die Verbindung erneut."
+
 msgid "The body you remit this tax to, e.g. Revenu Québec"
 msgstr ""
 
@@ -15432,6 +15452,16 @@ msgstr "Diese Aufträge haben Operationen, die diesem Arbeitszentrum zugewiesen 
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "Diese Journaleinträge sind noch im Entwurf, daher befinden sich ihre Belastungen und Gutschriften nicht im Ledger für diese Periode. Buchen Sie jeden Eintrag, oder buchen Sie ihn in eine spätere offene Periode um."
 
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
+
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "Dieser Carbon-Instanz fehlen die Onshape-OAuth-Anmeldedaten. Bitten Sie einen Administrator, sie einzurichten."
 
@@ -15440,16 +15470,6 @@ msgstr "Diese Änderungsmitteilung wird gerade implementiert, daher sind ihre Ä
 
 msgid "This change notice is closed, so its changes are read-only."
 msgstr "Diese Änderungsmitteilung ist geschlossen, daher sind ihre Änderungen schreibgeschützt."
-msgid "These registrations have no matching active tax code:"
-msgstr ""
-
-msgid "These tax codes have no matching registration:"
-msgstr ""
-
-#. placeholder {0}: suggestion.name
-#. placeholder {0}: taxCodeSuggestion.name
-msgid "This address is in {place} — apply {0}?"
-msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "Dies schließt den Discovery-Schritt ab."
