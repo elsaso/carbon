@@ -620,6 +620,9 @@ msgstr "Alt Depo Birimi Ekle"
 msgid "Add Company"
 msgstr "Şirket Ekle"
 
+msgid "Add Component"
+msgstr ""
+
 msgid "Add condition"
 msgstr "Koşul ekle"
 
@@ -746,6 +749,12 @@ msgstr "Adres Satırı 1"
 
 msgid "Address Line 2"
 msgstr "Adres Satırı 2"
+
+msgid "Address Match — Country"
+msgstr ""
+
+msgid "Address Match — State / Province"
+msgstr ""
 
 msgid "Adjustment Type"
 msgstr "Ayarlama Türü"
@@ -1299,6 +1308,18 @@ msgstr "Depolama birimini silmek istediğinizden emin misiniz: {0}? Bu geri alı
 #. placeholder {0}: supplierType.name
 msgid "Are you sure you want to delete the supplier type: {0}? This cannot be undone."
 msgstr "Tedarikçi türünü silmek istediğinizden emin misiniz: {0}? Bu geri alınamaz."
+
+#. placeholder {0}: taxAuthority.name
+msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
+msgstr ""
+
+#. placeholder {0}: taxCode.name
+msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
+msgstr ""
+
+#. placeholder {0}: taxRegistration.registrationNumber
+msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
+msgstr ""
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -1891,6 +1912,9 @@ msgstr "Hesaplanan bitmiş ürün son kullanma tarihi"
 msgid "Calculation Method"
 msgstr "Hesaplama Yöntemi"
 
+msgid "Calculation Type"
+msgstr ""
+
 msgid "Calibration Attempts"
 msgstr "Kalibrasyon denemeleri"
 
@@ -2383,6 +2407,18 @@ msgstr "Tamamlama Barkodu"
 
 msgid "Completion Time"
 msgstr "Tamamlama Süresi"
+
+msgid "Component Name"
+msgstr ""
+
+msgid "Component name, e.g. GST"
+msgstr ""
+
+msgid "Components"
+msgstr ""
+
+msgid "Compound"
+msgstr ""
 
 msgid "Conditions"
 msgstr "Koşullar"
@@ -3108,6 +3144,15 @@ msgstr "Depolama türü oluşturuldu"
 #. placeholder {0}: created.name
 msgid "Created supplier: {0}"
 msgstr "Oluşturulan tedarikçi: {0}"
+
+msgid "Created tax authority"
+msgstr ""
+
+msgid "Created tax code"
+msgstr ""
+
+msgid "Created tax registration"
+msgstr ""
 
 msgid "Created tool"
 msgstr "Oluşturulan araç"
@@ -3869,6 +3914,15 @@ msgstr "Tedarikçi Teklifini Sil"
 msgid "Delete Supplier Type"
 msgstr "Tedarikçi Türünü Sil"
 
+msgid "Delete Tax Authority"
+msgstr ""
+
+msgid "Delete Tax Code"
+msgstr ""
+
+msgid "Delete Tax Registration"
+msgstr ""
+
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
 msgstr "{0} miktarı için fiyat kırılımı silinsin mi? Bu işlem geri alınamaz."
@@ -4563,6 +4617,15 @@ msgstr "Tedarikçi sürecini düzenle"
 msgid "Edit Supplier Type"
 msgstr "Tedarikçi Türünü Düzenle"
 
+msgid "Edit Tax Authority"
+msgstr ""
+
+msgid "Edit Tax Code"
+msgstr ""
+
+msgid "Edit Tax Registration"
+msgstr ""
+
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "Kuralı düzenleyerek \"Tümüne uygulanır\" işaretini kaldırın"
 
@@ -4595,6 +4658,12 @@ msgstr "Webhook Düzenle"
 
 msgid "Edit Work Center"
 msgstr "İş Merkezi Düzenle"
+
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
 
 msgid "Email"
 msgstr "E-posta"
@@ -5171,6 +5240,18 @@ msgstr "Depolama türü oluşturulamadı: {0}"
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create supplier: {0}"
 msgstr "Tedarikçi oluşturulamadı: {0}"
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax authority: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax code: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax registration: {0}"
+msgstr ""
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6045,6 +6126,9 @@ msgstr "Bu ölçü nasıl kullanılır — Standart (düzenli kontroller), Ana (
 msgid "How this price was calculated"
 msgstr "Bu fiyat nasıl hesaplandı"
 
+msgid "How this treatment is grouped on tax returns"
+msgstr ""
+
 msgid "How to reach us"
 msgstr "Bize nasıl ulaşabilirsiniz"
 
@@ -6440,6 +6524,9 @@ msgstr "Fatura Kimlik Numarası"
 
 msgid "Invoice Location"
 msgstr "Fatura Konumu"
+
+msgid "Invoice Message"
+msgstr ""
 
 msgid "Invoice Number"
 msgstr "Fatura Numarası"
@@ -7869,6 +7956,15 @@ msgstr "Yeni Tedarikçi"
 msgid "New Supplier Part"
 msgstr "Yeni Tedarikçi Parçası"
 
+msgid "New Tax Authority"
+msgstr ""
+
+msgid "New Tax Code"
+msgstr ""
+
+msgid "New Tax Registration"
+msgstr ""
+
 msgid "New Timecard"
 msgstr "Yeni Vardiya"
 
@@ -8204,6 +8300,9 @@ msgstr "Önümüzdeki 48 haftada stok tükenmesi öngörülmemiştir"
 
 msgid "No suppliers yet"
 msgstr "Henüz tedarikçi yok"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "Bu hafta için zaman girişi yok"
@@ -8550,6 +8649,12 @@ msgstr "IAS 21'e göre özsermaye bakiyelerini çevirirken kullanılan isteğe b
 msgid "Optional pages & sections"
 msgstr "İsteğe bağlı sayfalar ve bölümler"
 
+msgid "Optional. Leave blank for a country-wide registration."
+msgstr ""
+
+msgid "Optional. The supplier record used to pay this authority."
+msgstr ""
+
 msgid "Options"
 msgstr "Seçenekler"
 
@@ -8670,6 +8775,9 @@ msgstr "Bir türdeki tüm müşteriler için fiyatı geçersiz kıl"
 
 msgid "Override the expiration on {label}."
 msgstr "Süre bitişini {label} üzerinde geçersiz kıl."
+
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
 
 msgid "Overtime"
 msgstr "Fazla Mesai"
@@ -9223,6 +9331,12 @@ msgstr "Etiket Yazdır"
 msgid "Print Output ({0})"
 msgstr "Yazdırma Çıktısı ({0})"
 
+msgid "Printed on documents that use this tax code"
+msgstr ""
+
+msgid "Printed on sales documents for this jurisdiction"
+msgstr ""
+
 msgid "Printer Settings"
 msgstr "Yazıcı Ayarları"
 
@@ -9468,6 +9582,9 @@ msgstr "Satın Alma Vergisi Ödenecek"
 msgid "Purchase Qty"
 msgstr "Satın Alma Miktarı"
 
+msgid "Purchase tax account"
+msgstr ""
+
 msgid "Purchase Tax Payable"
 msgstr "Satın Alma Vergisi Ödenecek (varsayılan)"
 
@@ -9677,6 +9794,9 @@ msgstr "Bunu haftalık durum çağrısında gündeme getir"
 msgid "raise it early and raise it plainly. A problem named in week 2 is a small fix; the same problem at go-live is a delay."
 msgstr "bunu erken ve açık bir şekilde dile getir. 2. haftada adı konulan bir sorun küçük bir düzeltmedir; go-live'da aynı sorun bir gecikmedir."
 
+msgid "Rate (%)"
+msgstr ""
+
 msgid "Rate Limit"
 msgstr "Hız Sınırı"
 
@@ -9864,6 +9984,9 @@ msgstr "Bu kalibrasyon sırasında göstergenin ayarlandığı kaydedildi; kalib
 msgid "Records"
 msgstr "Kayıtlar"
 
+msgid "Recoverable"
+msgstr ""
+
 msgid "Recovery Period"
 msgstr "Kayıt Yap"
 
@@ -9896,6 +10019,9 @@ msgstr "Kayıtlı"
 
 msgid "Registered"
 msgstr "Kayıtlı"
+
+msgid "Registration Number"
+msgstr ""
 
 msgid "Reject"
 msgstr "Reddet"
@@ -9963,6 +10089,9 @@ msgstr "Kaldır"
 #. placeholder {0}: item.label
 msgid "Remove {0}"
 msgstr "Kaldır {0}"
+
+msgid "Remove component"
+msgstr ""
 
 msgid "Remove condition"
 msgstr "Koşulu kaldır"
@@ -10065,6 +10194,9 @@ msgstr "Yenileştirme Sistemi"
 
 msgid "Report"
 msgstr "Rapor"
+
+msgid "Reporting Category"
+msgstr ""
 
 msgid "Reports"
 msgstr "Raporlar"
@@ -10214,6 +10346,9 @@ msgstr "Ters yükleme satış vergisi"
 
 msgid "Reverse Charge Sales Tax (default)"
 msgstr "Ters yükleme satış vergisi (varsayılan)"
+
+msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
+msgstr ""
 
 msgid "Reverse the related journal entries"
 msgstr "İlgili günlük girişlerini tersine çevir"
@@ -10468,6 +10603,9 @@ msgstr "Satış Temsilcisi"
 
 msgid "Sales Revenue"
 msgstr "Satış Geliri"
+
+msgid "Sales tax account"
+msgstr ""
 
 msgid "Sales Tax Payable"
 msgstr "Ödenmesi gereken satış vergisi"
@@ -10798,6 +10936,9 @@ msgstr "Tedarikçi Türü Seçin"
 msgid "Select surfaces"
 msgstr "Yüzeyleri seç"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "Bu eğitimi tamamlaması gereken grupları seçin"
 
@@ -10855,6 +10996,9 @@ msgstr "Hatalı ürünleri hurdalanması yerine, daha önceki bir operasyona dü
 
 msgid "Sends this document for approval before it can go active."
 msgstr "Bu belge aktif hale gelmeden önce onay için gönderilir."
+
+msgid "Sequence"
+msgstr ""
 
 msgid "Sequences"
 msgstr "Sıralamalar"
@@ -11600,6 +11744,12 @@ msgstr "Öneri"
 msgid "Suggestion Notifications"
 msgstr "Öneri Bildirimleri"
 
+msgid "Suggestion only. Leave blank to match every state in the country above."
+msgstr ""
+
+msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
+msgstr ""
+
 msgid "Suggestions"
 msgstr "Öneriler"
 
@@ -11868,6 +12018,21 @@ msgstr "Vergi ve Nakliye"
 msgid "Tax Amount"
 msgstr "Vergi Tutarı"
 
+msgid "Tax Authorities"
+msgstr ""
+
+msgid "Tax authority"
+msgstr ""
+
+msgid "Tax Authority"
+msgstr ""
+
+msgid "Tax Code"
+msgstr ""
+
+msgid "Tax Codes"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "Vergi kodları, oranları"
 
@@ -11898,6 +12063,15 @@ msgstr "Vergi Yöntemi (varsayılan)"
 msgid "Tax Percent"
 msgstr "Vergi Yüzdesi"
 
+msgid "Tax Registration"
+msgstr ""
+
+msgid "Tax registration coverage"
+msgstr ""
+
+msgid "Tax Registrations"
+msgstr ""
+
 msgid "Tax Residual Value %"
 msgstr "Vergi Kalıntı Değeri %"
 
@@ -11912,6 +12086,9 @@ msgstr "Vergi Faydalı Ömrü (Aylar)"
 
 msgid "Tax:"
 msgstr "Vergi:"
+
+msgid "Taxable"
+msgstr ""
 
 msgid "Taxes"
 msgstr "Vergiler"
@@ -11983,6 +12160,9 @@ msgstr "Ödeme vadesinin hesaplama yönteminden sonraki gün sayısı"
 msgid "The append-only record of every stock movement; on-hand is the sum of its signed entries and the source of truth."
 msgstr "Her stok hareketinin yalnızca ekleme kaydı; eldeki tutar, imzalı girdilerinin toplamı ve gerçeğin kaynağıdır."
 
+msgid "The body you remit this tax to, e.g. Revenu Québec"
+msgstr ""
+
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "Tüm kaydedilen günlük satırlarının defteri, hesaba göre özetlenmiş — yalnızca şirket muhasebesi etkinleştirildiğinde yazılır."
 
@@ -12051,6 +12231,9 @@ msgstr "Yüklenicinin beklenen haftalık kullanılabilirliği; planlama, bu yük
 
 msgid "The corrected expiration for this lot/serial; existing on-hand stock is re-evaluated against shelf-life policy after the change."
 msgstr "Bu lot/seri numarası için düzeltilmiş son kullanma tarihi; mevcut eldeki stok, değişiklikten sonra raf ömrü politikasına göre yeniden değerlendirilir."
+
+msgid "The country this registration is filed in"
+msgstr ""
 
 msgid "The currencies you trade in and their rates"
 msgstr "Ticaret yaptığınız para birimleri ve bunların oranları"
@@ -12631,6 +12814,17 @@ msgstr "Bu işler bu iş merkezine atanmış işlemlere sahiptir:"
 
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "Bu muhasebe kayıtları hâlâ Taslak durumundadır, bu nedenle borç ve alacakları bu dönem için defteri kebir'de değildir. Her birini deftere geçirin veya daha sonraki bir açık döneme yeniden tarihlendiriniz."
+
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "Bu, Keşif adımını tamamlar."

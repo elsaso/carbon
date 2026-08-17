@@ -620,6 +620,9 @@ msgstr "添加子存储单元"
 msgid "Add Company"
 msgstr "添加公司"
 
+msgid "Add Component"
+msgstr ""
+
 msgid "Add condition"
 msgstr "添加条件"
 
@@ -746,6 +749,12 @@ msgstr "地址第1行"
 
 msgid "Address Line 2"
 msgstr "地址第2行"
+
+msgid "Address Match — Country"
+msgstr ""
+
+msgid "Address Match — State / Province"
+msgstr ""
 
 msgid "Adjustment Type"
 msgstr "调整类型"
@@ -1299,6 +1308,18 @@ msgstr "您确定要删除存储单元：{0}？此操作无法撤销。"
 #. placeholder {0}: supplierType.name
 msgid "Are you sure you want to delete the supplier type: {0}? This cannot be undone."
 msgstr "您确定要删除供应商类型：{0}？此操作无法撤销。"
+
+#. placeholder {0}: taxAuthority.name
+msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
+msgstr ""
+
+#. placeholder {0}: taxCode.name
+msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
+msgstr ""
+
+#. placeholder {0}: taxRegistration.registrationNumber
+msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
+msgstr ""
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -1891,6 +1912,9 @@ msgstr "计算成品过期时间"
 msgid "Calculation Method"
 msgstr "计算方法"
 
+msgid "Calculation Type"
+msgstr ""
+
 msgid "Calibration Attempts"
 msgstr "校准尝试"
 
@@ -2383,6 +2407,18 @@ msgstr "完成条码"
 
 msgid "Completion Time"
 msgstr "完成时间"
+
+msgid "Component Name"
+msgstr ""
+
+msgid "Component name, e.g. GST"
+msgstr ""
+
+msgid "Components"
+msgstr ""
+
+msgid "Compound"
+msgstr ""
 
 msgid "Conditions"
 msgstr "条件"
@@ -3108,6 +3144,15 @@ msgstr "已创建存储类型"
 #. placeholder {0}: created.name
 msgid "Created supplier: {0}"
 msgstr "已创建供应商：{0}"
+
+msgid "Created tax authority"
+msgstr ""
+
+msgid "Created tax code"
+msgstr ""
+
+msgid "Created tax registration"
+msgstr ""
 
 msgid "Created tool"
 msgstr "已创建工具"
@@ -3869,6 +3914,15 @@ msgstr "删除供应商报价"
 msgid "Delete Supplier Type"
 msgstr "删除供应商类型"
 
+msgid "Delete Tax Authority"
+msgstr ""
+
+msgid "Delete Tax Code"
+msgstr ""
+
+msgid "Delete Tax Registration"
+msgstr ""
+
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
 msgstr "删除数量{0}的价格区间？此操作无法撤销。"
@@ -4563,6 +4617,15 @@ msgstr "编辑供应商流程"
 msgid "Edit Supplier Type"
 msgstr "编辑供应商类型"
 
+msgid "Edit Tax Authority"
+msgstr ""
+
+msgid "Edit Tax Code"
+msgstr ""
+
+msgid "Edit Tax Registration"
+msgstr ""
+
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "编辑规则以移除\"应用于全部\"标志"
 
@@ -4595,6 +4658,12 @@ msgstr "编辑 Webhook"
 
 msgid "Edit Work Center"
 msgstr "编辑工作中心"
+
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
 
 msgid "Email"
 msgstr "电子邮件"
@@ -5171,6 +5240,18 @@ msgstr "创建存储类型失败：{0}"
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create supplier: {0}"
 msgstr "创建供应商失败：{0}"
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax authority: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax code: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax registration: {0}"
+msgstr ""
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6045,6 +6126,9 @@ msgstr "此测量仪如何使用——标准（定期检查）、主控（校准
 msgid "How this price was calculated"
 msgstr "此价格是如何计算的"
 
+msgid "How this treatment is grouped on tax returns"
+msgstr ""
+
 msgid "How to reach us"
 msgstr "如何联系我们"
 
@@ -6440,6 +6524,9 @@ msgstr "发票ID"
 
 msgid "Invoice Location"
 msgstr "发票地点"
+
+msgid "Invoice Message"
+msgstr ""
 
 msgid "Invoice Number"
 msgstr "发票号码"
@@ -7869,6 +7956,15 @@ msgstr "新供应商"
 msgid "New Supplier Part"
 msgstr "新供应商零件"
 
+msgid "New Tax Authority"
+msgstr ""
+
+msgid "New Tax Code"
+msgstr ""
+
+msgid "New Tax Registration"
+msgstr ""
+
 msgid "New Timecard"
 msgstr "新时间卡"
 
@@ -8204,6 +8300,9 @@ msgstr "未来48周内未预测到库存短缺"
 
 msgid "No suppliers yet"
 msgstr "还没有供应商"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "本周没有时间条目"
@@ -8550,6 +8649,12 @@ msgstr "根据IAS 21翻译股权余额时使用的可选固定汇率（而不是
 msgid "Optional pages & sections"
 msgstr "可选页面和部分"
 
+msgid "Optional. Leave blank for a country-wide registration."
+msgstr ""
+
+msgid "Optional. The supplier record used to pay this authority."
+msgstr ""
+
 msgid "Options"
 msgstr "选项"
 
@@ -8670,6 +8775,9 @@ msgstr "为所有该类型的客户覆盖价格"
 
 msgid "Override the expiration on {label}."
 msgstr "覆盖 {label} 上的过期日期。"
+
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
 
 msgid "Overtime"
 msgstr "加班"
@@ -9223,6 +9331,12 @@ msgstr "打印标签"
 msgid "Print Output ({0})"
 msgstr "打印输出 ({0})"
 
+msgid "Printed on documents that use this tax code"
+msgstr ""
+
+msgid "Printed on sales documents for this jurisdiction"
+msgstr ""
+
 msgid "Printer Settings"
 msgstr "打印机设置"
 
@@ -9468,6 +9582,9 @@ msgstr "应付采购税"
 msgid "Purchase Qty"
 msgstr "采购数量"
 
+msgid "Purchase tax account"
+msgstr ""
+
 msgid "Purchase Tax Payable"
 msgstr "应付采购税（默认）"
 
@@ -9677,6 +9794,9 @@ msgstr "在每周状态会议上提出"
 msgid "raise it early and raise it plainly. A problem named in week 2 is a small fix; the same problem at go-live is a delay."
 msgstr "尽早提出问题，直言不讳地提出。第2周发现的问题很容易修复；同样的问题在上线时就会导致延期。"
 
+msgid "Rate (%)"
+msgstr ""
+
 msgid "Rate Limit"
 msgstr "速率限制"
 
@@ -9864,6 +9984,9 @@ msgstr "记录在此校准期间调整了测量仪；影响校准间隔如何重
 msgid "Records"
 msgstr "记录"
 
+msgid "Recoverable"
+msgstr ""
+
 msgid "Recovery Period"
 msgstr "注册"
 
@@ -9896,6 +10019,9 @@ msgstr "已注册"
 
 msgid "Registered"
 msgstr "重新订购点"
+
+msgid "Registration Number"
+msgstr ""
 
 msgid "Reject"
 msgstr "拒绝"
@@ -9963,6 +10089,9 @@ msgstr "移除"
 #. placeholder {0}: item.label
 msgid "Remove {0}"
 msgstr "删除 {0}"
+
+msgid "Remove component"
+msgstr ""
 
 msgid "Remove condition"
 msgstr "移除条件"
@@ -10065,6 +10194,9 @@ msgstr "补充系统"
 
 msgid "Report"
 msgstr "报告"
+
+msgid "Reporting Category"
+msgstr ""
 
 msgid "Reports"
 msgstr "报告"
@@ -10214,6 +10346,9 @@ msgstr "反向收费销售税"
 
 msgid "Reverse Charge Sales Tax (default)"
 msgstr "反向收费销售税 (默认)"
+
+msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
+msgstr ""
 
 msgid "Reverse the related journal entries"
 msgstr "反转相关日记账分录"
@@ -10468,6 +10603,9 @@ msgstr "销售人员"
 
 msgid "Sales Revenue"
 msgstr "销售收入"
+
+msgid "Sales tax account"
+msgstr ""
 
 msgid "Sales Tax Payable"
 msgstr "应付销售税"
@@ -10798,6 +10936,9 @@ msgstr "选择供应商类型"
 msgid "Select surfaces"
 msgstr "选择表面"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "选择应该完成此培训的组"
 
@@ -10855,6 +10996,9 @@ msgstr "将有缺陷的单位送回较早的操作进行更正，而不是报废
 
 msgid "Sends this document for approval before it can go active."
 msgstr "在文档激活前将其发送以供批准。"
+
+msgid "Sequence"
+msgstr ""
 
 msgid "Sequences"
 msgstr "序列"
@@ -11600,6 +11744,12 @@ msgstr "建议"
 msgid "Suggestion Notifications"
 msgstr "建议通知"
 
+msgid "Suggestion only. Leave blank to match every state in the country above."
+msgstr ""
+
+msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
+msgstr ""
+
 msgid "Suggestions"
 msgstr "建议"
 
@@ -11868,6 +12018,21 @@ msgstr "税费和运费"
 msgid "Tax Amount"
 msgstr "税额"
 
+msgid "Tax Authorities"
+msgstr ""
+
+msgid "Tax authority"
+msgstr ""
+
+msgid "Tax Authority"
+msgstr ""
+
+msgid "Tax Code"
+msgstr ""
+
+msgid "Tax Codes"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "税码、税率"
 
@@ -11898,6 +12063,15 @@ msgstr "税务方法（默认）"
 msgid "Tax Percent"
 msgstr "税收百分比"
 
+msgid "Tax Registration"
+msgstr ""
+
+msgid "Tax registration coverage"
+msgstr ""
+
+msgid "Tax Registrations"
+msgstr ""
+
 msgid "Tax Residual Value %"
 msgstr "税务残值 %"
 
@@ -11912,6 +12086,9 @@ msgstr "税务使用寿命（月）"
 
 msgid "Tax:"
 msgstr "税:"
+
+msgid "Taxable"
+msgstr ""
 
 msgid "Taxes"
 msgstr "税"
@@ -11983,6 +12160,9 @@ msgstr "计算方法后的天数，在该天数后付款到期"
 msgid "The append-only record of every stock movement; on-hand is the sum of its signed entries and the source of truth."
 msgstr "每个库存变动的追加专用记录；在手数量是其带符号条目的总和，也是单一信息源。"
 
+msgid "The body you remit this tax to, e.g. Revenu Québec"
+msgstr ""
+
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "所有已记账的日记账行书，按账户汇总 - 仅在公司启用会计时编写。"
 
@@ -12051,6 +12231,9 @@ msgstr "承包商的预期周可用性；在将此承包商分配给整周的操
 
 msgid "The corrected expiration for this lot/serial; existing on-hand stock is re-evaluated against shelf-life policy after the change."
 msgstr "此批次/序列号的修正有效期；更改后，现有库存会根据保质期政策重新评估。"
+
+msgid "The country this registration is filed in"
+msgstr ""
 
 msgid "The currencies you trade in and their rates"
 msgstr "您交易的货币及其汇率"
@@ -12631,6 +12814,17 @@ msgstr "这些工作有分配给此工作中心的操作："
 
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "这些日记账条目仍为草稿状态，因此其借贷金额不在本期分类账中。过账每一份，或将其重新标记日期至较晚的开放期间。"
+
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "这完成了发现步骤。"
