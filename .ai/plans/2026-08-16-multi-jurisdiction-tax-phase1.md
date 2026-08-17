@@ -26,7 +26,7 @@ pnpm exec turbo run typecheck --filter=erp            # app typecheck (scoped �
 pnpm exec turbo run typecheck --filter=@carbon/database
 pnpm exec turbo run typecheck --filter=@carbon/documents
 pnpm run lint
-pnpm --filter erp test                                # vitest (accounting.utils tests live here)
+cd apps/erp && pnpm exec vitest run app/modules/accounting/accounting.utils.test.ts   # apps/erp has NO test script — pnpm --filter erp test is a silent no-op
 cd packages/database/supabase/functions && deno test <dir-or-file>   # edge-fn tests (NOT wired into turbo — run manually)
 ```
 
@@ -34,8 +34,8 @@ Edge-function type gate (lessons.md): `deno check` is never clean repo-wide; gat
 
 ## Progress
 
-- [ ] Task 1: Create the Phase-1 tax migration (tables + enums + RLS)
-- [ ] Task 2: Add tax columns to existing tables + view exposure
+- [x] Task 1: Create the Phase-1 tax migration (tables + enums + RLS)
+- [x] Task 2: Add tax columns to existing tables + view exposure
 - [ ] Task 3: Regenerate DB types
 - [ ] Task 4: Tax validators + const enums in accounting.models.ts
 - [ ] Task 5: Tax CRUD service functions in accounting.service.ts
@@ -404,14 +404,14 @@ pnpm exec turbo run typecheck --filter=erp
      effectiveDate: string | null; expirationDate: string | null;
    };
    ```
-2. `export function filterEffectiveComponents(components: EffectiveTaxComponent[], date: string): EffectiveTaxComponent[]` — keeps rows where `(effectiveDate ?? -∞) <= date <= (expirationDate ?? +∞)` — **both bounds inclusive** (spec acceptance criterion: `expirationDate = 2026-06-30` + successor effective `2026-07-01` → June 30 uses the old rate; an exclusive upper bound would leave June 30 uncovered). Normalize both sides to the first 10 chars (ISO day) before lexicographic compare. Sorted by `sequence`. IMPLEMENTED in the Deno twin `functions/shared/resolve-taxes.ts` — the app-side copy must match it line-for-line (inclusive bounds, `toDay` normalization, relative-epsilon half-up rounding, zero-tax components dropped from splits).
+2. `export function filterEffectiveComponents(components: EffectiveTaxComponent[], date: string): EffectiveTaxComponent[]` — keeps rows where `(effectiveDate ?? -∞) <= date <= (expirationDate ?? +∞)` — **both bounds INCLUSIVE**, normalizing each side to its first 10 chars (ISO day) before lexicographic compare; sorted by `sequence`. Rationale: the spec acceptance criterion pairs `expirationDate = 2026-06-30` with a successor effective `2026-07-01` and requires June 30 → old rate, July 1 → new; an exclusive upper bound would leave June 30 with no component at all. IMPLEMENTED and must stay identical to the Deno twin `packages/database/supabase/functions/shared/resolve-taxes.ts`.
 3. `export function computeComponentTaxes(taxableBase: number, components: EffectiveTaxComponent[]): { componentId: string; base: number; tax: number }[]` — non-compound components apply `rate` to `taxableBase`; a component with `isCompound: true` applies its rate to `taxableBase + Σ(tax of all prior-sequence components)`. No rounding here (rounding happens once per journal amount at posting).
 4. `export function computeEffectiveTaxPercent(taxableBase: number, components: EffectiveTaxComponent[]): number` — `Σ tax / taxableBase` guarded for base 0 (then `Σ` of simple rates with compound expansion computed against base 1).
 5. Tests (Canadian fixtures — the driving use case): QC = GST 5% + QST 9.975% non-compound on 100 → 5.00 + 9.975, effective 0.14975; legacy compound-PST example (5% + 7% compound) on 100 → 5.00 + 7.35, effective 0.1235; effective-date boundary: component expiring `2026-06-30` + successor 8.5% effective `2026-07-01` → date `2026-06-30` picks 8.25%, `2026-07-01` picks 8.5% (spec acceptance criterion); empty components → 0.
 
 **Verify:**
 ```bash
-pnpm --filter erp test -- accounting.utils
+cd apps/erp && pnpm exec vitest run app/modules/accounting/accounting.utils.test.ts
 # Expected: all new cases pass
 ```
 
@@ -627,7 +627,7 @@ pnpm exec turbo run typecheck --filter=erp
 
 **Verify:**
 ```bash
-pnpm --filter erp test -- accounting.utils
+cd apps/erp && pnpm exec vitest run app/modules/accounting/accounting.utils.test.ts
 pnpm exec turbo run typecheck --filter=erp
 # Expected: green
 ```
@@ -720,7 +720,7 @@ pnpm exec turbo run typecheck --filter=erp
 
 **Depends on:** Tasks 16–20
 **Steps:**
-1. `pnpm exec turbo run typecheck --filter=erp`, `pnpm run lint`, `pnpm --filter erp test -- accounting` — green.
+1. `pnpm exec turbo run typecheck --filter=erp`, `pnpm run lint`, `cd apps/erp && pnpm exec vitest run app/modules/accounting` — green.
 2. Browser verification (`/auth` + `/test`) of every scenario listed in Tasks 18–20's Verify blocks, plus the zero-config invariant: a company with no tax config behaves identically (line defaults still from `customer.taxPercent`).
 3. Confirm audit rows: override a line's tax code, then open the document's audit drawer — an UPDATE entry with the `taxCodeId` diff exists (trigger pipeline, no app code).
 4. `/check-and-commit`; PR `feat: multi-jurisdiction tax Phase 1b — determination` with spec link + tested notes.
@@ -932,7 +932,7 @@ pnpm exec turbo run typecheck --filter=erp
 
 **Depends on:** Tasks 28–30
 **Steps:**
-1. `pnpm exec turbo run typecheck --filter=erp --filter=@carbon/documents`, `pnpm run lint`, `pnpm --filter erp test`, `pnpm --filter @carbon/documents test` — green; `/translate` for new strings.
+1. `pnpm exec turbo run typecheck --filter=erp --filter=@carbon/documents`, `pnpm run lint`, `cd apps/erp && pnpm exec vitest run app/modules/accounting`, `pnpm --filter @carbon/documents test` — green; `/translate` for new strings.
 2. Walk the spec's Phase-1 acceptance criteria end-to-end in the browser (`/auth` + `/test`) — the TX–Austin two-component scenario, location-override scenario, exemption + certificate snapshot, recoverable VAT purchase, reverse charge, credit memo, shipping taxability both states, effective-date rate change, VOID netting, liability-report GL tie-out, and the zero-config byte-identical invariant. Record results in `.ai/runs/2026-<date>-multi-jurisdiction-tax-phase1.md`.
 3. `/check-and-commit`; PR `feat: multi-jurisdiction tax Phase 1d — PDF tax blocks, liability report, taxPercent sunset` closing the Phase-1 scope, with "Closes #1036" on the upstream PR only when all four slices are merged there.
 4. Move the spec to `.ai/specs/implemented/` only after ALL four PRs merge AND the acceptance criteria pass (ask first per specs AGENTS.md).

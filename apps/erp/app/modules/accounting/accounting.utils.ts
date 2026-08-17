@@ -642,3 +642,155 @@ export function buildDepreciationLines(
 
   return lines;
 }
+
+// ---------------------------------------------------------------------------
+// Multi-jurisdiction tax — determination-time math
+//
+// TWIN: the same math runs at posting time in
+// `packages/database/supabase/functions/shared/resolve-taxes.ts` (Deno). **The
+// two must stay line-for-line parallel** — a change here is a change there.
+// Determination and posting disagreeing is the one failure this design cannot
+// tolerate: the invoice would print one number while the GL carried another.
+// ---------------------------------------------------------------------------
+
+/**
+ * The `taxCodeComponent` columns this math reads. `rate` is a fraction
+ * (0.09975 = 9.975%), matching the 0..1 CHECK on the column. `effectiveDate` /
+ * `expirationDate` are calendar dates (`YYYY-MM-DD`) or null for "always".
+ *
+ * Hand-written structural type rather than the generated `@carbon/database`
+ * Row: it keeps the math dependency-free and unit-testable, documents exactly
+ * which columns it reads, and mirrors the Deno twin's input type.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export type EffectiveTaxComponent = {
+  id: string;
+  name: string;
+  taxAuthorityId: string | null;
+  rate: number;
+  sequence: number;
+  isCompound: boolean;
+  isRecoverable: boolean;
+  salesTaxAccountId: string | null;
+  purchaseTaxAccountId: string | null;
+  effectiveDate: string | null;
+  expirationDate: string | null;
+};
+
+/**
+ * Normalize a date-ish value to its calendar day. Postgres `DATE` columns
+ * arrive as `YYYY-MM-DD`, but a document date may arrive as a full ISO
+ * timestamp; slicing both sides to the day makes the string comparisons below
+ * safe (ISO date strings order lexicographically).
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+const toDay = (value: string): string => value.slice(0, 10);
+
+/**
+ * Components in force on `date`, sorted by `sequence`.
+ *
+ * BOUNDARY: `effectiveDate` and `expirationDate` are both **inclusive** —
+ * a component applies when `effectiveDate <= date <= expirationDate`. That is
+ * the calendar convention the spec's acceptance criterion assumes: a component
+ * with `expirationDate = 2026-06-30` whose successor is `effectiveDate =
+ * 2026-07-01` must still be in force ON June 30 (8.25%) and gone on July 1
+ * (8.5%). An exclusive upper bound would leave June 30 untaxed. A null bound is
+ * open-ended in that direction.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export function filterEffectiveComponents(
+  components: EffectiveTaxComponent[],
+  date: string
+): EffectiveTaxComponent[] {
+  const day = toDay(date);
+  return components
+    .filter((component) => {
+      const from = component.effectiveDate;
+      const to = component.expirationDate;
+      if (from !== null && toDay(from) > day) return false;
+      if (to !== null && day > toDay(to)) return false;
+      return true;
+    })
+    .sort((a, b) => a.sequence - b.sequence);
+}
+
+/**
+ * Round to currency precision, half away from zero (the accounting
+ * convention): 2.345 → 2.35 and -2.345 → -2.35.
+ *
+ * The scaled value is nudged by a *relative* epsilon before rounding so that
+ * decimals which cannot be represented exactly in binary still round the way an
+ * accountant wrote them: `1.005 * 100` is `100.49999999999999` in IEEE-754, and
+ * a bare `Math.round` would take it down to 1.00. An *absolute* `Number.EPSILON`
+ * (2.2e-16) is far too small to close that gap at this magnitude; scaling it
+ * with the value is what makes 1.005 → 1.01 and 2.675 → 2.68.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export function roundCurrency(amount: number, precision = 2): number {
+  const factor = 10 ** precision;
+  const scaled = Math.abs(amount) * factor;
+  const rounded =
+    (Math.sign(amount) * Math.round(scaled * (1 + Number.EPSILON))) / factor;
+  // Avoid handing -0 to callers (and to assertions).
+  return rounded === 0 ? 0 : rounded;
+}
+
+/**
+ * Per-component tax on a taxable base. `components` are assumed already
+ * effective-filtered and sequence-sorted (i.e. straight out of
+ * `filterEffectiveComponents`).
+ *
+ * A normal component applies its rate to `taxableBase`. A compound component
+ * (tax-on-tax, e.g. a historical PST stacked on GST) applies its rate to
+ * `taxableBase` plus the tax of every **prior-sequence** component.
+ *
+ * No rounding happens here — the compound cascade runs at full precision and
+ * rounding is applied exactly once per component, at posting time.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export function computeComponentTaxes(
+  taxableBase: number,
+  components: EffectiveTaxComponent[]
+): { componentId: string; base: number; tax: number }[] {
+  const result: { componentId: string; base: number; tax: number }[] = [];
+  let priorTax = 0;
+
+  for (const component of components) {
+    const base = component.isCompound ? taxableBase + priorTax : taxableBase;
+    const tax = base * component.rate;
+    result.push({ componentId: component.id, base, tax });
+    priorTax += tax;
+  }
+
+  return result;
+}
+
+/**
+ * The blended rate a tax code charges — `Σ tax / taxableBase` — used for the
+ * "effective rate today" preview on the tax code form and for the flat
+ * `taxPercent` written onto a sales line.
+ *
+ * A `taxableBase` of 0 would divide by zero, and a plain `Σ rate` would be
+ * wrong for a compound code (7% compounded on 5% is 7.35%, not 7%). Running the
+ * cascade against a base of **1** instead expands the compounding correctly and
+ * yields the same blended rate the code would charge on any base.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts` (no
+ * posting-time counterpart — posting works in amounts, not rates).
+ */
+export function computeEffectiveTaxPercent(
+  taxableBase: number,
+  components: EffectiveTaxComponent[]
+): number {
+  const base = taxableBase === 0 ? 1 : taxableBase;
+  const totalTax = computeComponentTaxes(base, components).reduce(
+    (total, { tax }) => total + tax,
+    0
+  );
+  return totalTax / base;
+}
