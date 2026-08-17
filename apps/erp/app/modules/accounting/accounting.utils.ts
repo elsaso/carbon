@@ -654,3 +654,255 @@ export function buildDepreciationLines(
 
   return lines;
 }
+
+// ---------------------------------------------------------------------------
+// Multi-jurisdiction tax — determination-time math
+//
+// TWIN: the same math runs at posting time in
+// `packages/database/supabase/functions/shared/resolve-taxes.ts` (Deno). **The
+// two must stay line-for-line parallel** — a change here is a change there.
+// Determination and posting disagreeing is the one failure this design cannot
+// tolerate: the invoice would print one number while the GL carried another.
+// ---------------------------------------------------------------------------
+
+/**
+ * The `taxCodeComponent` columns this math reads. `rate` is a fraction
+ * (0.09975 = 9.975%), matching the 0..1 CHECK on the column. `effectiveDate` /
+ * `expirationDate` are calendar dates (`YYYY-MM-DD`) or null for "always".
+ *
+ * Hand-written structural type rather than the generated `@carbon/database`
+ * Row: it keeps the math dependency-free and unit-testable, documents exactly
+ * which columns it reads, and mirrors the Deno twin's input type.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export type EffectiveTaxComponent = {
+  id: string;
+  name: string;
+  taxAuthorityId: string | null;
+  rate: number;
+  sequence: number;
+  isCompound: boolean;
+  isRecoverable: boolean;
+  salesTaxAccountId: string | null;
+  purchaseTaxAccountId: string | null;
+  effectiveDate: string | null;
+  expirationDate: string | null;
+};
+
+/**
+ * Normalize a date-ish value to its calendar day. Postgres `DATE` columns
+ * arrive as `YYYY-MM-DD`, but a document date may arrive as a full ISO
+ * timestamp; slicing both sides to the day makes the string comparisons below
+ * safe (ISO date strings order lexicographically).
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+const toDay = (value: string): string => value.slice(0, 10);
+
+/**
+ * Components in force on `date`, sorted by `sequence`.
+ *
+ * BOUNDARY: `effectiveDate` and `expirationDate` are both **inclusive** —
+ * a component applies when `effectiveDate <= date <= expirationDate`. That is
+ * the calendar convention the spec's acceptance criterion assumes: a component
+ * with `expirationDate = 2026-06-30` whose successor is `effectiveDate =
+ * 2026-07-01` must still be in force ON June 30 (8.25%) and gone on July 1
+ * (8.5%). An exclusive upper bound would leave June 30 untaxed. A null bound is
+ * open-ended in that direction.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export function filterEffectiveComponents(
+  components: EffectiveTaxComponent[],
+  date: string
+): EffectiveTaxComponent[] {
+  const day = toDay(date);
+  return components
+    .filter((component) => {
+      const from = component.effectiveDate;
+      const to = component.expirationDate;
+      if (from !== null && toDay(from) > day) return false;
+      if (to !== null && day > toDay(to)) return false;
+      return true;
+    })
+    .sort((a, b) => a.sequence - b.sequence);
+}
+
+/**
+ * Round to currency precision, half away from zero (the accounting
+ * convention): 2.345 → 2.35 and -2.345 → -2.35.
+ *
+ * Delegates to the numeric standard's `round` (`@carbon/utils`, re-exporting
+ * `functions/shared/precision.ts`), which is `RoundingMode.HalfUp` — ties away
+ * from zero, matching Postgres `round()`. Its exponent-shift does a decimal
+ * round-trip rather than scaling by a power of ten, so the classic binary
+ * artifacts round the way an accountant wrote them without an epsilon nudge:
+ * `1.005 * 100` is `100.49999999999999` in IEEE-754 and a bare `Math.round`
+ * would take it to 1.00, while the shift gives 1.01 (and 2.675 → 2.68).
+ *
+ * The only thing left here is the sign guard: `round` can hand back -0, which
+ * reads as "-0.00" in an amount column and fails `Object.is` assertions.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export function roundCurrency(amount: number, precision = 2): number {
+  const rounded = round(amount, precision);
+  return rounded === 0 ? 0 : rounded;
+}
+
+/**
+ * Per-component tax on a taxable base. `components` are assumed already
+ * effective-filtered and sequence-sorted (i.e. straight out of
+ * `filterEffectiveComponents`).
+ *
+ * A normal component applies its rate to `taxableBase`. A compound component
+ * (tax-on-tax, e.g. a historical PST stacked on GST) applies its rate to
+ * `taxableBase` plus the tax of every **prior-sequence** component.
+ *
+ * No rounding happens here — the compound cascade runs at full precision and
+ * rounding is applied exactly once per component, at posting time.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
+ */
+export function computeComponentTaxes(
+  taxableBase: number,
+  components: EffectiveTaxComponent[]
+): { componentId: string; base: number; tax: number }[] {
+  const result: { componentId: string; base: number; tax: number }[] = [];
+  let priorTax = 0;
+
+  for (const component of components) {
+    const base = component.isCompound ? taxableBase + priorTax : taxableBase;
+    const tax = base * component.rate;
+    result.push({ componentId: component.id, base, tax });
+    priorTax += tax;
+  }
+
+  return result;
+}
+
+/**
+ * The blended rate a tax code charges — `Σ tax / taxableBase` — used for the
+ * "effective rate today" preview on the tax code form and for the flat
+ * `taxPercent` written onto a sales line.
+ *
+ * A `taxableBase` of 0 would divide by zero, and a plain `Σ rate` would be
+ * wrong for a compound code (7% compounded on 5% is 7.35%, not 7%). Running the
+ * cascade against a base of **1** instead expands the compounding correctly and
+ * yields the same blended rate the code would charge on any base.
+ *
+ * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts` (no
+ * posting-time counterpart — posting works in amounts, not rates).
+ */
+export function computeEffectiveTaxPercent(
+  taxableBase: number,
+  components: EffectiveTaxComponent[]
+): number {
+  const base = taxableBase === 0 ? 1 : taxableBase;
+  const totalTax = computeComponentTaxes(base, components).reduce(
+    (total, { tax }) => total + tax,
+    0
+  );
+  return totalTax / base;
+}
+
+/**
+ * How a line's tax was determined — the reason, not just the answer. Posting
+ * and the subledger both need to distinguish "no tax because the customer holds
+ * an exemption certificate" from "no tax because nobody configured any".
+ */
+export type TaxResolutionKind =
+  /** `customerTax.taxExempt` — the customer holds an exemption. */
+  | "exempt"
+  /** `item.taxable = false` — the goods are not taxable anywhere. */
+  | "nonTaxableItem"
+  /** A tax code applies; the rate comes from its effective components. */
+  | "code"
+  /** No code, but the party carries the legacy flat `taxPercent`. */
+  | "legacy"
+  /** Nothing is configured. The zero-config path — posts exactly as before. */
+  | "none";
+
+export type TaxResolutionInputs = {
+  customerTaxExempt?: boolean;
+  customerExemptionReason?: string | null;
+  customerExemptionCertificateNumber?: string | null;
+  /** `item.taxable`. Defaults to true — the column's own default. */
+  itemTaxable?: boolean;
+  /** Ship-to override; beats the party default when set. */
+  locationTaxCodeId?: string | null;
+  /** `customer.taxCodeId` / `supplier.taxCodeId`. */
+  partyTaxCodeId?: string | null;
+  /** `customer.taxPercent` / `supplier.taxPercent`, the pre-code fallback. */
+  legacyTaxPercent?: number | null;
+};
+
+export type TaxResolution = {
+  kind: TaxResolutionKind;
+  taxCodeId: string | null;
+  /**
+   * Null for `kind: "code"` — the caller computes it from the code's effective
+   * components, because the rate depends on the date and this function is
+   * date-free on purpose.
+   */
+  taxPercent: number | null;
+  exemptionReason?: string | null;
+  exemptionCertificateNumber?: string | null;
+};
+
+/**
+ * Decide which tax applies to a line, from already-fetched inputs.
+ *
+ * Pure and date-free so the precedence is unit-testable on its own. The
+ * precedence is a chain of overrides, most specific first:
+ *
+ *   1. **Customer exemption** — a certificate says this customer owes nothing,
+ *      whatever the goods or the destination. It short-circuits everything,
+ *      including a coded ship-to location, and carries its reason/certificate
+ *      forward so the subledger can report the exempt base.
+ *   2. **Non-taxable item** — the goods themselves are outside the tax base.
+ *   3. **Location code** — a ship-to override. Destination beats the party
+ *      default, because that is what determines the jurisdiction.
+ *   4. **Party code** — the customer's or supplier's assigned code.
+ *   5. **Legacy flat percent** — the pre-code fallback, kept working for
+ *      companies that have not adopted codes.
+ *   6. **Nothing** — the zero-config path.
+ *
+ * Determination is only ever driven by what someone explicitly assigned. An
+ * address is never inferred into a rate here; addresses only ever *suggest* a
+ * code for a human to accept (see `suggestTaxCode`).
+ *
+ * TWIN of the precedence documented in
+ * `.ai/plans/2026-07-03-multi-jurisdiction-tax.md` Task 6.
+ */
+export function resolveTaxFromInputs(
+  inputs: TaxResolutionInputs
+): TaxResolution {
+  if (inputs.customerTaxExempt === true) {
+    return {
+      kind: "exempt",
+      taxCodeId: null,
+      taxPercent: 0,
+      exemptionReason: inputs.customerExemptionReason ?? null,
+      exemptionCertificateNumber:
+        inputs.customerExemptionCertificateNumber ?? null
+    };
+  }
+
+  if (inputs.itemTaxable === false) {
+    return { kind: "nonTaxableItem", taxCodeId: null, taxPercent: 0 };
+  }
+
+  const taxCodeId = inputs.locationTaxCodeId || inputs.partyTaxCodeId || null;
+  if (taxCodeId) {
+    return { kind: "code", taxCodeId, taxPercent: null };
+  }
+
+  const legacyTaxPercent = inputs.legacyTaxPercent ?? 0;
+  if (legacyTaxPercent !== 0) {
+    return { kind: "legacy", taxCodeId: null, taxPercent: legacyTaxPercent };
+  }
+
+  return { kind: "none", taxCodeId: null, taxPercent: 0 };
+}

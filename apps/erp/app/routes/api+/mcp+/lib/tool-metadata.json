@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-16T23:17:39.255Z",
-  "totalTools": 1442,
+  "generated": "2026-08-17T16:48:45.702Z",
+  "totalTools": 1457,
   "modules": 15,
   "tools": [
     {
@@ -4270,6 +4270,480 @@
         },
         "required": [
           "cellId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxAuthority",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax authority",
+      "paramCount": 1,
+      "serviceParams": [
+        "client",
+        "taxAuthorityId",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxAuthorityId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxAuthorityId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxAuthorities",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax authorities",
+      "paramCount": 3,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "default": 100
+              },
+              "offset": {
+                "type": "integer",
+                "default": 0
+              },
+              "search": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "accounting_getTaxAuthoritiesList",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax authorities list",
+      "paramCount": 0,
+      "serviceParams": [
+        "client",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "accounting_upsertTaxAuthority",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "upsert tax authority",
+      "paramCount": 3,
+      "serviceParams": [
+        "client",
+        "taxAuthority"
+      ],
+      "injectAuth": [
+        "companyId",
+        "createdBy",
+        "updatedBy"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "supplierId": {
+            "type": "string"
+          },
+          "_operation": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update"
+            ],
+            "description": "Required. 'create' inserts a new record, 'update' modifies the existing record with this id."
+          }
+        },
+        "required": [
+          "name",
+          "_operation"
+        ]
+      }
+    },
+    {
+      "name": "accounting_deleteTaxAuthority",
+      "module": "accounting",
+      "classification": "DESTRUCTIVE",
+      "description": "delete tax authority",
+      "paramCount": 1,
+      "serviceParams": [
+        "client",
+        "taxAuthorityId",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxAuthorityId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxAuthorityId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxCode",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax code",
+      "paramCount": 1,
+      "serviceParams": [
+        "client",
+        "taxCodeId",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxCodeId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxCodeId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxCodes",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax codes",
+      "paramCount": 3,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "default": 100
+              },
+              "offset": {
+                "type": "integer",
+                "default": 0
+              },
+              "search": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "accounting_getTaxCodesList",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax codes list",
+      "paramCount": 0,
+      "serviceParams": [
+        "client",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    {
+      "name": "accounting_suggestTaxCode",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "suggest tax code",
+      "paramCount": 2,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "address"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "name": "accounting_upsertTaxCode",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "upsert tax code",
+      "paramCount": 2,
+      "serviceParams": [
+        "db",
+        "companyId",
+        "taxCode",
+        "components"
+      ],
+      "injectAuth": [
+        "companyId",
+        "createdBy",
+        "updatedBy"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxCode": {},
+          "components": {
+            "type": "array",
+            "items": {}
+          },
+          "_operation": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update"
+            ],
+            "description": "Required. 'create' inserts a new record, 'update' modifies the existing record with this id."
+          }
+        },
+        "required": [
+          "taxCode",
+          "components",
+          "_operation"
+        ]
+      }
+    },
+    {
+      "name": "accounting_deleteTaxCode",
+      "module": "accounting",
+      "classification": "DESTRUCTIVE",
+      "description": "delete tax code",
+      "paramCount": 1,
+      "serviceParams": [
+        "client",
+        "taxCodeId",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxCodeId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxCodeId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxRegistration",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax registration",
+      "paramCount": 1,
+      "serviceParams": [
+        "client",
+        "taxRegistrationId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxRegistrationId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxRegistrationId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxRegistrations",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax registrations",
+      "paramCount": 3,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "args": {
+            "type": "object",
+            "properties": {
+              "limit": {
+                "type": "integer",
+                "default": 100
+              },
+              "offset": {
+                "type": "integer",
+                "default": 0
+              },
+              "search": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "accounting_upsertTaxRegistration",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "upsert tax registration",
+      "paramCount": 6,
+      "serviceParams": [
+        "client",
+        "taxRegistration"
+      ],
+      "injectAuth": [
+        "companyId",
+        "createdBy",
+        "updatedBy"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "registrationNumber": {
+            "type": "string"
+          },
+          "effectiveDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "_operation": {
+            "type": "string",
+            "enum": [
+              "create",
+              "update"
+            ],
+            "description": "Required. 'create' inserts a new record, 'update' modifies the existing record with this id."
+          }
+        },
+        "required": [
+          "countryCode",
+          "registrationNumber",
+          "_operation"
+        ]
+      }
+    },
+    {
+      "name": "accounting_deleteTaxRegistration",
+      "module": "accounting",
+      "classification": "DESTRUCTIVE",
+      "description": "delete tax registration",
+      "paramCount": 1,
+      "serviceParams": [
+        "client",
+        "taxRegistrationId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxRegistrationId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxRegistrationId"
         ]
       }
     },

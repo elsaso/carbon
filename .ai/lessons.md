@@ -1023,3 +1023,23 @@ canvas hosting Radix popovers/selects.
 **Rule:** Programmatic submits inside a `ValidatedForm` must pass a submitter: `form.requestSubmit(form.querySelector('button[type="submit"]'))`, which means the form needs a real submit button (good for accessibility anyway). Never use `form.submit()` in a React Router app. When a form renders errors from `fetcher.data`, verify the submit path actually reaches the fetcher — an unreachable error branch looks identical to "no errors happen".
 
 **Applies to:** `packages/form/src/components/InputOTP.tsx`, `packages/form/src/ValidatedForm.tsx`, any auto-submitting form field.
+
+## `supabase gen types` stalls partway through a large schema — generate from postgres-meta instead
+
+**Context:** Regenerating `packages/database/src/types.ts` after the multi-jurisdiction-tax migration, using `pnpm run generate:types` (which shells out to the pinned `supabase` CLI, v2.89.0).
+
+**Problem:** The CLI writes ~1.16 MB of output (about 35k of the file's 81k lines), closes its database connection, and then sits in `futex_do_wait` forever with 0% CPU. It never exits and never errors, so `generate:types` looks like it is "still running" — one stale invocation had been hung for 8 hours and was silently interleaving its writes with a new run, producing a truncated, corrupt `types.ts`. The stall is not schema-position-dependent (it stopped at a different table each run) and is not fixed by the script's existing 1 MB workaround (piping the child's stdout straight to the file rather than through `spawnSync`'s buffer).
+
+**Rule:** Before diagnosing a "slow" `generate:types`, check for an orphaned `supabase gen types` process (`ps -eo pid,etime,cmd | grep 'gen types'`) and kill it — two concurrent runs write to the same fd and corrupt the output. To actually generate, run the `supabase/postgres-meta` image (the same generator the CLI embeds) against the target DB and call its HTTP endpoint: `GET /generators/typescript?included_schemas=public,storage,graphql_public&detect_one_to_one_relationships=true`. **`detect_one_to_one_relationships=true` is mandatory** — without it every `isOneToOne` field is omitted (~7.7k lines), which changes the relationship types supabase-js infers for embedded selects. Then apply the per-tenant-table strip from `scripts/generate-db-types.ts` and copy to `supabase/functions/lib/types.ts`. Diff the result against the committed file and confirm the only substantive changes are the ones your migration introduced.
+
+**Applies to:** `scripts/generate-db-types.ts`, `pnpm run generate:types` / `pnpm db:types`, `packages/database/src/types.ts`, `packages/database/supabase/functions/lib/types.ts`.
+
+## Verify a migration on a throwaway container, not the dev DB — and graft in `auth`/`storage` first
+
+**Context:** Proving that the tax migration composes with current `main` after a rebase, when the local dev DB was still at an older `main` and had an earlier version of the same migration already recorded in `supabase_migrations.schema_migrations`.
+
+**Problem:** Re-running `supabase migration up` against that DB applies the *intervening* upstream migrations after the tax one, so the final schema is not the schema a clean deploy produces — exactly the case that matters. Rebuilding the dev DB is not allowed. A fresh `supabase/postgres` container almost works, but Carbon's migrations fail on it twice: `20230123004514_buckets.sql` needs `storage.buckets` and `20260816131807_mfa-status-gated-on-enforcement.sql` needs `auth.mfa_factors`. Neither schema is created by the image or by Carbon — storage-api and gotrue bootstrap them at runtime.
+
+**Rule:** To validate the full migration set, start a throwaway `supabase/postgres` container (same tag as the dev stack), `pg_dump --schema-only --schema=auth --schema=storage` from the running dev DB into it (dropping the image's stub schemas first, and dropping the copied policies, which reference `public` functions that do not exist yet), then apply every migration in filename order with `psql -v ON_ERROR_STOP=1`. Run as `postgres` over the socket; the dumped schemas must be loaded as `supabase_admin` over **TCP** (the socket refuses that role). This also gives a clean, company-free database that is the ideal source for `generate:types` — no per-tenant `searchIndex_*` / `auditLog_*` tables to strip.
+
+**Applies to:** any migration touching shared views/RPCs; `packages/database/supabase/migrations/`; validating a rebase of a long-lived branch.

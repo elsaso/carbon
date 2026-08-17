@@ -1,6 +1,8 @@
 # Multi-Jurisdiction Tax Compliance
 
-> Status: draft (open questions resolved — ready for /plan)
+> Status: approved — Phase 1 in progress. See the Progress section of
+> `.ai/plans/2026-07-03-multi-jurisdiction-tax.md` for what has actually landed;
+> memo tax, the PDF tax block and the liability report are still outstanding.
 > Author: Claude (with Brad Barbin)
 > Date: 2026-07-03
 > Research notes: `.ai/research/multi-jurisdiction-tax.md`
