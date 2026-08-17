@@ -11,9 +11,12 @@ import {
   LuClock,
   LuCoins,
   LuEuro,
+  LuFileBadge,
   LuFileSpreadsheet,
   LuHandCoins,
+  LuLandmark,
   LuLayers,
+  LuPercent,
   LuScale,
   LuSheet
 } from "react-icons/lu";
@@ -86,6 +89,32 @@ export default function useAccountingSubmodules() {
             to: path.to.depreciationRuns,
             role: "employee",
             icon: <LuClock />
+          }
+        ]
+      },
+      {
+        // Deliberately NOT in `accountingOnlyRoutes` — tax codes drive
+        // document-time determination even when GL posting is off, so tax
+        // config must stay reachable before `accountingEnabled` is switched on.
+        name: t`Tax`,
+        routes: [
+          {
+            name: t`Tax Codes`,
+            to: path.to.taxCodes,
+            role: "employee",
+            icon: <LuPercent />
+          },
+          {
+            name: t`Tax Authorities`,
+            to: path.to.taxAuthorities,
+            role: "employee",
+            icon: <LuLandmark />
+          },
+          {
+            name: t`Tax Registrations`,
+            to: path.to.taxRegistrations,
+            role: "employee",
+            icon: <LuFileBadge />
           }
         ]
       },

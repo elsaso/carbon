@@ -1074,6 +1074,9 @@ msgstr "조건 추가"
 msgid "Add Company"
 msgstr "회사 추가"
 
+msgid "Add Component"
+msgstr ""
+
 msgid "Add condition"
 msgstr "조건 추가"
 
@@ -1239,6 +1242,12 @@ msgstr "주소 라인1"
 
 msgid "Address line2"
 msgstr "주소 라인2"
+
+msgid "Address Match — Country"
+msgstr ""
+
+msgid "Address Match — State / Province"
+msgstr ""
 
 msgid "Adjustment Type"
 msgstr "조정 유형"
@@ -1957,6 +1966,18 @@ msgstr "저장 단위 {0}을(를) 삭제하시겠습니까? 이 작업은 되돌
 msgid "Are you sure you want to delete the supplier type: {0}? This cannot be undone."
 msgstr "공급업체 유형 {0}을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
 
+#. placeholder {0}: taxAuthority.name
+msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
+msgstr ""
+
+#. placeholder {0}: taxCode.name
+msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
+msgstr ""
+
+#. placeholder {0}: taxRegistration.registrationNumber
+msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
+msgstr ""
+
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
 msgstr "측정 단위 {0}을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
@@ -2636,6 +2657,9 @@ msgstr "계산된 완제품 유효기한"
 msgid "Calculation Method"
 msgstr "계산 방법"
 
+msgid "Calculation Type"
+msgstr ""
+
 msgid "Calibration"
 msgstr "교정"
 
@@ -3215,6 +3239,18 @@ msgstr "완료 바코드"
 
 msgid "Completion Time"
 msgstr "완료 시간"
+
+msgid "Component Name"
+msgstr ""
+
+msgid "Component name, e.g. GST"
+msgstr ""
+
+msgid "Components"
+msgstr ""
+
+msgid "Compound"
+msgstr ""
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4031,6 +4067,15 @@ msgstr "저장 유형 생성됨"
 #. placeholder {0}: created.name
 msgid "Created supplier: {0}"
 msgstr "공급업체 생성됨: {0}"
+
+msgid "Created tax authority"
+msgstr ""
+
+msgid "Created tax code"
+msgstr ""
+
+msgid "Created tax registration"
+msgstr ""
 
 msgid "Created tool"
 msgstr "공구 생성됨"
@@ -4883,6 +4928,15 @@ msgstr "공급업체 견적 삭제"
 msgid "Delete Supplier Type"
 msgstr "공급업체 유형 삭제"
 
+msgid "Delete Tax Authority"
+msgstr ""
+
+msgid "Delete Tax Code"
+msgstr ""
+
+msgid "Delete Tax Registration"
+msgstr ""
+
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
 msgstr "수량 {0}에 대한 가격 구간을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다."
@@ -5685,6 +5739,15 @@ msgstr "공급업체 공정 수정"
 msgid "Edit Supplier Type"
 msgstr "공급업체 유형 수정"
 
+msgid "Edit Tax Authority"
+msgstr ""
+
+msgid "Edit Tax Code"
+msgstr ""
+
+msgid "Edit Tax Registration"
+msgstr ""
+
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "\"전체에 적용\" 플래그를 제거하려면 규칙을 수정하세요"
 
@@ -5717,6 +5780,15 @@ msgstr "웹훅 수정"
 
 msgid "Edit Work Center"
 msgstr "작업장 수정"
+
+msgid "Effective Date"
+msgstr ""
+
+msgid "Effective Rate"
+msgstr ""
+
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr ""
 
 msgid "Eliminated"
 msgstr "제거됨"
@@ -6411,6 +6483,18 @@ msgid "Failed to create supplier: {0}"
 msgstr "공급업체 생성 실패: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax authority: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax code: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax registration: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
 msgstr "공구 생성 실패: {0}"
 
@@ -6811,6 +6895,12 @@ msgstr "픽스처 ID"
 
 msgid "Flags"
 msgstr "플래그"
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
+msgstr ""
+
+msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
+msgstr ""
 
 msgid "for anything. They'll pull in the right person."
 msgstr "무엇이든지요. 적임자를 연결해 드립니다."
@@ -7374,6 +7464,9 @@ msgstr "이 게이지의 사용 방식으로서, 표준(정기적인 점검) 또
 msgid "How this price was calculated"
 msgstr "이 가격이 계산된 방식"
 
+msgid "How this treatment is grouped on tax returns"
+msgstr ""
+
 msgid "How to reach us"
 msgstr "저희에게 연락하는 방법"
 
@@ -7551,6 +7644,9 @@ msgstr "비활성"
 
 msgid "Inactive actions will not appear in selection lists"
 msgstr "비활성 조치는 선택 목록에 표시되지 않습니다"
+
+msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
+msgstr ""
 
 msgid "Inbound inspection"
 msgstr "입고 검사"
@@ -7854,6 +7950,9 @@ msgstr "인보이스 ID"
 
 msgid "Invoice Location"
 msgstr "인보이스 위치"
+
+msgid "Invoice Message"
+msgstr ""
 
 msgid "Invoice Number"
 msgstr "인보이스 번호"
@@ -9500,6 +9599,15 @@ msgstr "새 공급업체"
 msgid "New Supplier Part"
 msgstr "새 공급업체 부품"
 
+msgid "New Tax Authority"
+msgstr ""
+
+msgid "New Tax Code"
+msgstr ""
+
+msgid "New Tax Registration"
+msgstr ""
+
 msgid "New Timecard"
 msgstr "새 근무기록"
 
@@ -9935,6 +10043,9 @@ msgstr "아직 공급업체가 없습니다"
 
 msgid "No sync operations yet"
 msgstr "아직 동기화 작업 없음"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "이번 주 시간 기록이 없습니다"
@@ -10438,6 +10549,12 @@ msgstr "IAS 21에 따라 자본 잔액을 환산할 때 사용하는 선택적 �
 msgid "Optional pages & sections"
 msgstr "선택적 페이지 및 섹션"
 
+msgid "Optional. Leave blank for a country-wide registration."
+msgstr ""
+
+msgid "Optional. The supplier record used to pay this authority."
+msgstr ""
+
 msgid "Options"
 msgstr "옵션"
 
@@ -10576,6 +10693,9 @@ msgstr "특정 유형의 모든 고객에 대한 가격 재정의"
 
 msgid "Override the expiration on {label}."
 msgstr "{label}의 유효기한을 재정의합니다."
+
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
 
 msgid "Overtime"
 msgstr "초과근무"
@@ -11222,6 +11342,12 @@ msgstr "라벨 인쇄"
 msgid "Print Output ({0})"
 msgstr "인쇄 출력({0})"
 
+msgid "Printed on documents that use this tax code"
+msgstr ""
+
+msgid "Printed on sales documents for this jurisdiction"
+msgstr ""
+
 msgid "Printer Settings"
 msgstr "프린터 설정"
 
@@ -11504,6 +11630,9 @@ msgstr "구매가격차이(기본값)"
 msgid "Purchase Qty"
 msgstr "구매 수량"
 
+msgid "Purchase tax account"
+msgstr ""
+
 msgid "Purchase Tax Payable"
 msgstr "매입세액"
 
@@ -11758,6 +11887,9 @@ msgstr "주간 진행 상황 회의에서 제기하세요"
 msgid "raise it early and raise it plainly. A problem named in week 2 is a small fix; the same problem at go-live is a delay."
 msgstr "문제는 일찍, 명확하게 제기하세요. 2주 차에 언급된 문제는 작은 수정이지만, 오픈 시점에 같은 문제가 나오면 지연으로 이어집니다."
 
+msgid "Rate (%)"
+msgstr ""
+
 msgid "Rate Limit"
 msgstr "요청 제한"
 
@@ -11972,6 +12104,9 @@ msgstr "이 교정 중 측정기가 조정되었음을 기록합니다. 이는 �
 msgid "Records"
 msgstr "레코드"
 
+msgid "Recoverable"
+msgstr ""
+
 msgid "Recovery Period"
 msgstr "회수 기간"
 
@@ -12006,7 +12141,7 @@ msgid "Registered"
 msgstr "등록됨"
 
 msgid "Registration Number"
-msgstr "등록 번호"
+msgstr ""
 
 msgid "Reject"
 msgstr "반려"
@@ -12083,6 +12218,9 @@ msgstr "제거 {label}"
 
 msgid "Remove clause"
 msgstr "절 제거"
+
+msgid "Remove component"
+msgstr ""
 
 msgid "Remove condition"
 msgstr "조건 제거"
@@ -12213,6 +12351,9 @@ msgstr "보고서"
 
 msgid "Reporting"
 msgstr "보고"
+
+msgid "Reporting Category"
+msgstr ""
 
 msgid "Reporting dimension"
 msgstr "보고 차원"
@@ -12406,6 +12547,9 @@ msgstr "매입자 납부 판매세(Reverse Charge)"
 
 msgid "Reverse Charge Sales Tax (default)"
 msgstr "매입자 납부 판매세(기본값)"
+
+msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
+msgstr ""
 
 msgid "Reverse the related journal entries"
 msgstr "관련 분개 취소"
@@ -12721,6 +12865,9 @@ msgstr "영업 담당자"
 
 msgid "Sales Revenue"
 msgstr "매출"
+
+msgid "Sales tax account"
+msgstr ""
 
 msgid "Sales Tax Payable"
 msgstr "미지급 판매세"
@@ -13170,6 +13317,9 @@ msgstr "공급업체 유형 선택"
 msgid "Select surfaces"
 msgstr "표면 선택"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "이 교육을 완료해야 하는 그룹을 선택하세요"
 
@@ -13236,6 +13386,9 @@ msgstr "이 문서를 활성화하기 전에 승인을 위해 전송합니다."
 
 msgid "Sent complete date"
 msgstr "발송 완료 날짜"
+
+msgid "Sequence"
+msgstr ""
 
 msgid "Sequences"
 msgstr "시퀀스"
@@ -14111,6 +14264,12 @@ msgstr "제안"
 msgid "Suggestion Notifications"
 msgstr "제안 알림"
 
+msgid "Suggestion only. Leave blank to match every state in the country above."
+msgstr ""
+
+msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
+msgstr ""
+
 msgid "Suggestions"
 msgstr "제안"
 
@@ -14415,6 +14574,21 @@ msgstr "세금 및 배송비"
 msgid "Tax Amount"
 msgstr "세액"
 
+msgid "Tax Authorities"
+msgstr ""
+
+msgid "Tax authority"
+msgstr ""
+
+msgid "Tax Authority"
+msgstr ""
+
+msgid "Tax Code"
+msgstr ""
+
+msgid "Tax Codes"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "세금 코드, 세율"
 
@@ -14448,6 +14622,15 @@ msgstr "세금 비율"
 msgid "Tax Percent"
 msgstr "세율"
 
+msgid "Tax Registration"
+msgstr ""
+
+msgid "Tax registration coverage"
+msgstr ""
+
+msgid "Tax Registrations"
+msgstr ""
+
 msgid "Tax Residual Value %"
 msgstr "세무 잔존가치 %"
 
@@ -14462,6 +14645,9 @@ msgstr "세무 내용연수(개월)"
 
 msgid "Tax:"
 msgstr "세금:"
+
+msgid "Taxable"
+msgstr ""
 
 msgid "Taxes"
 msgstr "세금"
@@ -14548,6 +14734,9 @@ msgstr "모든 재고 이동을 추가 전용으로 기록한 원장으로, 보�
 msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Onshape에서 인증이 거부되었습니다. 다시 연결해 보세요."
 
+msgid "The body you remit this tax to, e.g. Revenu Québec"
+msgstr ""
+
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "전기된 모든 분개 라인을 계정별로 합산한 장부로, 회사에서 회계 기능이 활성화된 경우에만 기록됩니다."
 
@@ -14622,6 +14811,9 @@ msgstr "계약직의 주간 예상 가용 시간으로, 한 주 동안 이 계�
 
 msgid "The corrected expiration for this lot/serial; existing on-hand stock is re-evaluated against shelf-life policy after the change."
 msgstr "이 로트/일련번호의 수정된 유효기한으로, 변경 후 기존 보유 재고가 유통기한 정책에 따라 재평가됩니다."
+
+msgid "The country this registration is filed in"
+msgstr ""
 
 msgid "The currencies you trade in and their rates"
 msgstr "거래에 사용하는 통화와 환율"
@@ -15259,6 +15451,16 @@ msgstr "다음 작업에 이 작업장이 지정된 공정작업이 있습니다
 
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "이 분개들은 아직 임시이므로 그 차변과 대변이 이 기간의 총계정원장에 없습니다. 각각을 전기하거나 나중의 개방된 기간으로 재날짜하세요."
+
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+msgid "This address is in {place} — apply {0}?"
+msgstr ""
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "이 Carbon 인스턴스에 Onshape OAuth 자격 증명이 없습니다. 관리자에게 설정을 요청하세요."

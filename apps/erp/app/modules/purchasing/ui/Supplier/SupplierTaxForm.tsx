@@ -1,6 +1,8 @@
 import { useCarbon } from "@carbon/auth";
-import { ValidatedForm } from "@carbon/form";
+import { useControlField, ValidatedForm } from "@carbon/form";
 import {
+  Alert,
+  AlertDescription,
   Button,
   Card,
   CardContent,
@@ -13,13 +15,21 @@ import {
 import { isEoriCountry } from "@carbon/utils";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { nanoid } from "nanoid";
-import { useCallback, useState } from "react";
-import { LuPaperclip } from "react-icons/lu";
+import { useCallback, useMemo, useState } from "react";
+import { LuInfo, LuPaperclip } from "react-icons/lu";
 import type { z } from "zod";
 import { FileDropzone } from "~/components";
 import { Enumerable } from "~/components/Enumerable";
-import { Boolean, Hidden, Input, Select, Submit } from "~/components/Form";
+import {
+  Boolean,
+  Combobox,
+  Hidden,
+  Input,
+  Select,
+  Submit
+} from "~/components/Form";
 import { usePermissions, useUser } from "~/hooks";
+import { TaxCodeSuggestion } from "~/modules/accounting/ui/Tax";
 import { taxExemptionReasons } from "~/modules/shared";
 import { supplierTaxValidator } from "../../purchasing.models";
 
@@ -27,9 +37,19 @@ type SupplierTaxFormProps = {
   initialValues: z.infer<typeof supplierTaxValidator> & {
     taxExemptionCertificatePath?: string | null;
   };
+  taxCodes?: { id: string; name: string }[];
+  /** Primary location address, used only to suggest a code. Never auto-applied. */
+  addressHint?: { countryCode: string | null; state: string | null } | null;
+  /** True once any party in the company carries a tax code (sunset banner). */
+  taxCodesInUse?: boolean;
 };
 
-const SupplierTaxForm = ({ initialValues }: SupplierTaxFormProps) => {
+const SupplierTaxForm = ({
+  initialValues,
+  taxCodes = [],
+  addressHint = null,
+  taxCodesInUse = false
+}: SupplierTaxFormProps) => {
   const { t } = useLingui();
   const taxExemptionReasonOptions = taxExemptionReasons.map((reason) => ({
     label: <Enumerable value={reason} />,
@@ -95,7 +115,23 @@ const SupplierTaxForm = ({ initialValues }: SupplierTaxFormProps) => {
             ) : (
               <div />
             )}
-
+            <TaxCodeField taxCodes={taxCodes} addressHint={addressHint} />
+            {taxCodesInUse && (
+              <div className="col-span-3">
+                <Alert variant="warning">
+                  <LuInfo />
+                  <AlertDescription>
+                    <Trans>
+                      Flat tax percent is deprecated — assign tax codes instead.
+                      A code determines the rate, the authorities it splits
+                      across, and the accounts it posts to; the percent on the
+                      supplier record is only a fallback for parties that have
+                      no code yet.
+                    </Trans>
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
             <div className="col-span-3">
               <Boolean
                 name="taxExempt"
@@ -165,5 +201,42 @@ const SupplierTaxForm = ({ initialValues }: SupplierTaxFormProps) => {
     </ValidatedForm>
   );
 };
+
+function TaxCodeField({
+  taxCodes,
+  addressHint
+}: {
+  taxCodes: { id: string; name: string }[];
+  addressHint: { countryCode: string | null; state: string | null } | null;
+}) {
+  const { t } = useLingui();
+  const [taxCodeId, setTaxCodeId] = useControlField<string | undefined>(
+    "taxCodeId"
+  );
+
+  const options = useMemo(
+    () => taxCodes.map(({ id, name }) => ({ value: id, label: name })),
+    [taxCodes]
+  );
+
+  return (
+    <>
+      <Combobox
+        name="taxCodeId"
+        label={t`Tax Code`}
+        options={options}
+        placeholder={t`Select Tax Code`}
+      />
+      <div className="col-span-3">
+        <TaxCodeSuggestion
+          countryCode={addressHint?.countryCode}
+          state={addressHint?.state}
+          taxCodeId={taxCodeId}
+          onApply={setTaxCodeId}
+        />
+      </div>
+    </>
+  );
+}
 
 export default SupplierTaxForm;

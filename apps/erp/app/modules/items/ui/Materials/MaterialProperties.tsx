@@ -180,7 +180,8 @@ const MaterialProperties = ({ data }: MaterialPropertiesProps) => {
         | "finishId"
         | "materialTypeId"
         | "materialId"
-        | "mpn",
+        | "mpn"
+        | "taxable",
       value: string | null
     ) => {
       const formData = new FormData();
@@ -728,6 +729,26 @@ const MaterialProperties = ({ data }: MaterialPropertiesProps) => {
             variant="small"
             onChange={(value) => {
               onUpdate("active", value ? "on" : "off");
+            }}
+          />
+        </ValidatedForm>
+        <ValidatedForm
+          defaultValues={{
+            taxable:
+              (routeData?.materialSummary as { taxable?: boolean } | undefined)
+                ?.taxable ?? true
+          }}
+          validator={z.object({
+            taxable: zfd.checkbox()
+          })}
+          className="w-full"
+        >
+          <Boolean
+            label={t`Taxable`}
+            name="taxable"
+            variant="small"
+            onChange={(value) => {
+              onUpdate("taxable", value ? "on" : "off");
             }}
           />
         </ValidatedForm>

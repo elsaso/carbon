@@ -61,6 +61,7 @@ export const customerContactValidator = z.object({
 export const customerLocationValidator = z.object({
   id: zfd.text(z.string().optional()),
   name: zfd.text(z.string()),
+  taxCodeId: zfd.text(z.string().optional()),
   ...address
 });
 
@@ -83,6 +84,7 @@ export const customerValidator = z.object({
 export const customerTaxValidator = z
   .object({
     customerId: z.string().min(1),
+    taxCodeId: zfd.text(z.string().optional()),
     taxId: zfd.text(z.string().optional()),
     vatNumber: zfd.text(z.string().optional()),
     eori: zfd.text(z.string().optional()),
