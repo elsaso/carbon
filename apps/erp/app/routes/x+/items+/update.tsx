@@ -334,6 +334,17 @@ export async function action({ request }: ActionFunctionArgs) {
         .in("id", items as string[])
         .eq("companyId", companyId);
 
+    case "taxable":
+      return await client
+        .from("item")
+        .update({
+          taxable: value === "on",
+          updatedBy: userId,
+          updatedAt: new Date().toISOString()
+        })
+        .in("id", items as string[])
+        .eq("companyId", companyId);
+
     case "itemPostingGroupId":
       // Update itemCost table for all selected items
       const itemCostUpdates = await Promise.all(
