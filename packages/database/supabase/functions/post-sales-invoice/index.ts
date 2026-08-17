@@ -17,6 +17,11 @@ import {
 } from "../shared/get-posting-group.ts";
 import { round } from "../shared/precision.ts";
 import { calculateCOGS } from "../shared/calculate-cogs.ts";
+import type { EffectiveTaxComponent } from "../shared/resolve-taxes.ts";
+import {
+  resolveSalesLineTax,
+  type SalesLineTax,
+} from "./build-tax-lines.ts";
 
 const pool = getConnectionPool(1);
 const db = getDatabaseClient<DB>(pool);
@@ -57,13 +62,17 @@ serve(async (req: Request) => {
         .single(),
       client
         .from("companySettings")
-        .select("accountingEnabled")
+        .select("accountingEnabled, shippingIsTaxable")
         .eq("id", companyId)
         .single(),
     ]);
     if (companyRecord.error) throw new Error("Failed to fetch company");
     const companyGroupId = companyRecord.data.companyGroupId;
     const accountingEnabled = accountingSettings.data?.accountingEnabled ?? false;
+    // Header shipping is outside the tax basis unless a company opts in. The
+    // column defaults to FALSE, so every existing company keeps today's basis.
+    const shippingIsTaxable =
+      accountingSettings.data?.shippingIsTaxable ?? false;
 
     const [salesInvoice, salesInvoiceLines, salesInvoiceShipment] =
       await Promise.all([
@@ -141,7 +150,7 @@ serve(async (req: Request) => {
         const [items, itemCosts, customer] = await Promise.all([
           client
             .from("item")
-            .select("id, itemTrackingType, replenishmentSystem")
+            .select("id, itemTrackingType, replenishmentSystem, taxable")
             .in("id", itemIds)
             .eq("companyId", companyId),
           client
@@ -193,6 +202,15 @@ serve(async (req: Request) => {
         const shipmentLineInserts: Omit<
           Database["public"]["Tables"]["shipmentLine"]["Insert"],
           "shipmentId"
+        >[] = [];
+
+        // Immutable tax subledger rows. Written inside the same transaction as
+        // the journal (so `journalId` is known); independent of
+        // `accountingEnabled`, because the tax liability report reads these rows
+        // whether or not the company posts to a GL.
+        const taxLedgerInserts: Omit<
+          Database["public"]["Tables"]["taxLedger"]["Insert"],
+          "journalId"
         >[] = [];
 
         const itemLedgerInserts: Database["public"]["Tables"]["itemLedger"]["Insert"][] =
@@ -316,6 +334,231 @@ serve(async (req: Request) => {
         // must be multiplied by this rate before they reach a journal line.
         const invoiceExchangeRate = salesInvoice.data?.exchangeRate ?? 1;
 
+        // Tax point = the DOCUMENT date, not the posting date. The spec's
+        // acceptance criterion is "invoices DATED June 30 vs July 1 compute
+        // 8.25% vs 8.5%", so effective-dated components are selected against
+        // dateIssued; taxLedger.postingDate stays `today`. Must match the tax
+        // point in post-purchase-invoice/index.ts or the two sides disagree at
+        // a rate-change boundary.
+        const taxPointDate = salesInvoice.data?.dateIssued ?? today;
+
+        // ---------------------------------------------------------------
+        // Tax configuration (multi-jurisdiction tax, Phase 1)
+        //
+        // Loaded once, outside the transaction, beside the account defaults.
+        // A company with no tax codes on any line skips both config queries
+        // entirely; the customer's exemption row is a single-row lookup that
+        // only ever produces behavior when `taxExempt` is actually set.
+        // ---------------------------------------------------------------
+        const lineTaxCodeIds = salesInvoiceLines.data.reduce<string[]>(
+          (acc, invoiceLine) => {
+            if (invoiceLine.taxCodeId && !acc.includes(invoiceLine.taxCodeId)) {
+              acc.push(invoiceLine.taxCodeId);
+            }
+            return acc;
+          },
+          []
+        );
+
+        const taxCodes =
+          lineTaxCodeIds.length > 0
+            ? await client
+                .from("taxCode")
+                .select("id, name, active")
+                .eq("companyId", companyId)
+                .in("id", lineTaxCodeIds)
+            : null;
+        if (taxCodes?.error) throw new Error("Failed to fetch tax codes");
+
+        const taxCodeComponents =
+          lineTaxCodeIds.length > 0
+            ? await client
+                .from("taxCodeComponent")
+                .select("*")
+                .eq("companyId", companyId)
+                .in("taxCodeId", lineTaxCodeIds)
+            : null;
+        if (taxCodeComponents?.error)
+          throw new Error("Failed to fetch tax code components");
+
+        const customerTax = await client
+          .from("customerTax")
+          .select("taxExempt, taxExemptionReason, taxExemptionCertificateNumber")
+          .eq("customerId", salesInvoice.data.customerId ?? "")
+          .eq("companyId", companyId)
+          .maybeSingle();
+        // A read failure here must not be swallowed: silently treating an
+        // exempt customer as taxable would post a liability they don't owe.
+        if (customerTax.error)
+          throw new Error("Failed to fetch customer tax settings");
+
+        // Only active codes of THIS company resolve; anything else falls back to
+        // the line's legacy flat `taxPercent`.
+        const activeTaxCodeIds = new Set(
+          (taxCodes?.data ?? [])
+            .filter((taxCode) => taxCode.active)
+            .map((taxCode) => taxCode.id)
+        );
+
+        const taxComponentsByCodeId = new Map<string, EffectiveTaxComponent[]>();
+        for (const component of taxCodeComponents?.data ?? []) {
+          const existing = taxComponentsByCodeId.get(component.taxCodeId) ?? [];
+          existing.push({
+            id: component.id,
+            name: component.name,
+            taxAuthorityId: component.taxAuthorityId,
+            rate: Number(component.rate),
+            sequence: component.sequence,
+            isCompound: component.isCompound,
+            isRecoverable: component.isRecoverable,
+            salesTaxAccountId: component.salesTaxAccountId,
+            purchaseTaxAccountId: component.purchaseTaxAccountId,
+            effectiveDate: component.effectiveDate,
+            expirationDate: component.expirationDate,
+          });
+          taxComponentsByCodeId.set(component.taxCodeId, existing);
+        }
+
+        const customerIsTaxExempt = customerTax.data?.taxExempt === true;
+        // Resolved BY ID from the posting group — never by account number/name,
+        // which users can edit.
+        const salesTaxPayableAccount =
+          accountDefaults?.data?.salesTaxPayableAccount;
+
+        const resolveLineTax = (
+          invoiceLine: Database["public"]["Tables"]["salesInvoiceLine"]["Row"],
+          preTaxLineCost: number,
+          lineWeightedShippingCost: number
+        ): SalesLineTax => {
+          const resolvedTaxCodeId =
+            invoiceLine.taxCodeId &&
+            activeTaxCodeIds.has(invoiceLine.taxCodeId)
+              ? invoiceLine.taxCodeId
+              : null;
+
+          return resolveSalesLineTax({
+            preTaxLineCost,
+            lineWeightedShippingCost,
+            shippingIsTaxable,
+            taxCodeId: resolvedTaxCodeId,
+            components: resolvedTaxCodeId
+              ? taxComponentsByCodeId.get(resolvedTaxCodeId) ?? []
+              : [],
+            legacyTaxPercent: invoiceLine.taxPercent ?? 0,
+            date: taxPointDate,
+            exchangeRate: invoiceExchangeRate,
+            customerIsTaxExempt,
+            itemIsTaxable:
+              items.data.find((item) => item.id === invoiceLine.itemId)
+                ?.taxable ?? true,
+          });
+        };
+
+        // One output-tax credit per component, pushed AFTER the line's
+        // revenue/AR pair (and after their dimension metas) so that the
+        // COGS/inventory pair stays adjacent for the positional back-patch
+        // below, and so `journalLineDimensionsMeta` stays index-aligned 1:1
+        // with `journalLineInserts` — every push here has a matching meta push.
+        const pushTaxJournalLines = (
+          lineTax: SalesLineTax,
+          context: {
+            journalLineReference: string;
+            quantity: number;
+            documentLineReference: string | null;
+            itemPostingGroupId: string | null;
+            itemId: string | null;
+            locationId: string | null;
+          }
+        ) => {
+          for (const posting of lineTax.postings) {
+            const accountId =
+              posting.salesTaxAccountId ?? salesTaxPayableAccount;
+            if (!accountId) {
+              throw new Error(
+                "Missing sales tax payable account default; cannot post sales tax"
+              );
+            }
+
+            journalLineInserts.push({
+              accountId,
+              description: `Sales Tax — ${posting.componentName}`,
+              amount: credit("liability", posting.taxAmountBase),
+              quantity: context.quantity,
+              documentType: "Invoice",
+              documentId: salesInvoice.data?.id,
+              externalDocumentId: salesInvoice.data?.customerReference,
+              documentLineReference: context.documentLineReference,
+              journalLineReference: context.journalLineReference,
+              companyId,
+            });
+
+            journalLineDimensionsMeta.push({
+              customerTypeId: customer.data.customerTypeId ?? null,
+              itemPostingGroupId: context.itemPostingGroupId,
+              itemId: context.itemId,
+              locationId: context.locationId,
+              costCenterId: null,
+              fixedAssetClassId: null,
+            });
+          }
+        };
+
+        const pushTaxLedgerRows = (
+          lineTax: SalesLineTax,
+          documentLineId: string
+        ) => {
+          const shared = {
+            companyId,
+            source: "Sales" as const,
+            documentType: "Sales Invoice",
+            documentId: invoiceId,
+            documentLineId,
+            postingDate: today,
+            customerId: salesInvoice.data.customerId,
+            currencyCode: salesInvoice.data.currencyCode,
+            exchangeRate: invoiceExchangeRate,
+            createdBy: userId,
+          };
+
+          for (const posting of lineTax.postings) {
+            taxLedgerInserts.push({
+              ...shared,
+              taxCodeId: posting.taxCodeId,
+              taxCodeComponentId: posting.componentId,
+              componentName: posting.componentName,
+              taxAuthorityId: posting.taxAuthorityId,
+              rate: posting.rate,
+              taxableAmount: posting.taxableAmountBase,
+              taxAmount: posting.taxAmountBase,
+              exemptAmount: 0,
+            });
+          }
+
+          // Exempt / zero-rated bases are reported on tax returns, so they get a
+          // row of their own — but only when a configured condition fired (see
+          // build-tax-lines.ts).
+          if (lineTax.exempt) {
+            const isCustomerExemption = lineTax.exempt.reason === "customer";
+            taxLedgerInserts.push({
+              ...shared,
+              taxCodeId: lineTax.resolvedTaxCodeId,
+              taxCodeComponentId: null,
+              componentName: null,
+              taxAuthorityId: null,
+              rate: 0,
+              taxableAmount: 0,
+              taxAmount: 0,
+              exemptAmount: lineTax.exempt.exemptAmountBase,
+              taxExemptionReason: isCustomerExemption
+                ? customerTax.data?.taxExemptionReason ?? null
+                : null,
+              exemptionCertificateNumber: isCustomerExemption
+                ? customerTax.data?.taxExemptionCertificateNumber ?? null
+                : null,
+            });
+          }
+        };
+
         for await (const invoiceLine of salesInvoiceLines.data) {
           const invoiceLineQuantityInInventoryUnit = invoiceLine.quantity;
 
@@ -367,6 +610,26 @@ serve(async (req: Request) => {
                 );
                 const itemTrackingType =
                   invoiceLineItem?.itemTrackingType ?? "Inventory";
+
+                // Output tax for this line. With no tax code, no tax percent, a
+                // taxable item and a non-exempt customer this is empty and
+                // `totalTaxBase` is 0 — nothing below changes.
+                const lineTax = resolveLineTax(
+                  invoiceLine,
+                  preTaxLineCost,
+                  lineWeightedShippingCost
+                );
+
+                // AR stays GROSS; the revenue credit is reduced by exactly the
+                // amount credited to the tax liability accounts, so the entry
+                // balances to the bit. The explicit zero branch guarantees the
+                // untaxed case emits the identical float it did before.
+                const revenueAmountBase =
+                  lineTax.totalTaxBase === 0
+                    ? totalLineCostWithWeightedShipping
+                    : totalLineCostWithWeightedShipping - lineTax.totalTaxBase;
+
+                pushTaxLedgerRows(lineTax, invoiceLine.id);
 
                 // if the sales order line is null, we ship the part, do the normal entries and do not use accrual/reversing
                 if (
@@ -420,13 +683,11 @@ serve(async (req: Request) => {
 
                     journalLineReference = nanoid();
 
-                    // credit the sales account
+                    // credit the sales account (net of output tax)
                     journalLineInserts.push({
                       accountId: accountDefaults.data.salesAccount,
                       description: "Sales Account",
-                      amount: round(
-                        credit("revenue", totalLineCostWithWeightedShipping)
-                      ),
+                      amount: round(credit("revenue", revenueAmountBase)),
                       quantity: round(invoiceLineQuantityInInventoryUnit),
                       documentType: "Invoice",
                       documentId: salesInvoice.data?.id,
@@ -467,6 +728,19 @@ serve(async (req: Request) => {
                         fixedAssetClassId: null,
                       });
                     }
+
+                    // Output tax — after the revenue/AR pair and their metas,
+                    // before the COGS/inventory pair (which must stay adjacent).
+                    pushTaxJournalLines(lineTax, {
+                      journalLineReference,
+                      quantity: invoiceLineQuantityInInventoryUnit,
+                      documentLineReference: journalReference.to.salesInvoice(
+                        invoiceLine.salesOrderLineId!
+                      ),
+                      itemPostingGroupId: lineItemPostingGroupId,
+                      itemId: invoiceLine.itemId ?? null,
+                      locationId: invoiceLine.locationId ?? null,
+                    });
 
                     if (itemTrackingType === "Inventory") {
                       const cogsJournalLineReference = nanoid();
@@ -517,13 +791,11 @@ serve(async (req: Request) => {
                     // Create the normal GL entries for the invoice
                     journalLineReference = nanoid();
 
-                    // Credit the sales account
+                    // Credit the sales account (net of output tax)
                     journalLineInserts.push({
                       accountId: accountDefaults.data.salesAccount,
                       description: "Sales Account",
-                      amount: round(
-                        credit("revenue", totalLineCostWithWeightedShipping)
-                      ),
+                      amount: round(credit("revenue", revenueAmountBase)),
                       quantity: round(invoiceLineQuantityInInventoryUnit),
                       documentType: "Invoice",
                       documentId: salesInvoice.data?.id,
@@ -573,6 +845,20 @@ serve(async (req: Request) => {
                         fixedAssetClassId: null,
                       });
                     }
+
+                    // Output tax — after the revenue/AR pair and their metas.
+                    pushTaxJournalLines(lineTax, {
+                      journalLineReference,
+                      quantity: invoiceLineQuantityInInventoryUnit,
+                      documentLineReference: invoiceLine.salesOrderLineId
+                        ? journalReference.to.salesInvoice(
+                            invoiceLine.salesOrderLineId
+                          )
+                        : null,
+                      itemPostingGroupId,
+                      itemId: invoiceLine.itemId ?? null,
+                      locationId: invoiceLine.locationId ?? null,
+                    });
                   }
                 }
               }
@@ -1089,6 +1375,7 @@ serve(async (req: Request) => {
           }
 
           let journalLineResults: { id: string }[] = [];
+          let postedJournalId: string | null = null;
           if (accountingEnabled) {
             const journalEntryId = await getNextSequence(
               trx,
@@ -1112,6 +1399,8 @@ serve(async (req: Request) => {
               })
               .returning(["id"])
               .executeTakeFirstOrThrow();
+
+            postedJournalId = journalResult.id;
 
             if (journalLineInserts.length > 0) {
               journalLineResults = await trx
@@ -1203,6 +1492,21 @@ serve(async (req: Request) => {
                   .execute();
               }
             }
+          }
+
+          // Tax subledger. Written after the journal so the rows can point at
+          // it; `postedJournalId` stays null when accounting is disabled, which
+          // the column allows. Empty for a company with no tax configuration.
+          if (taxLedgerInserts.length > 0) {
+            await trx
+              .insertInto("taxLedger")
+              .values(
+                taxLedgerInserts.map((row) => ({
+                  ...row,
+                  journalId: postedJournalId,
+                }))
+              )
+              .execute();
           }
 
           if (itemLedgerInserts.length > 0) {
@@ -1412,6 +1716,48 @@ serve(async (req: Request) => {
             }))
           : [];
 
+        // Reverse the tax subledger. The journal reversal above already sweeps
+        // up the output-tax journal lines (it mirrors every `journalLine` with
+        // this invoice's `documentId`/`documentType`, and the tax lines carry
+        // the same pair), but `taxLedger` is a separate ledger and has to be
+        // unwound explicitly or the liability report keeps counting a voided
+        // invoice. Snapshots are copied verbatim; only the three amounts flip
+        // sign, so the reversal reports against the same authority/component.
+        const { data: originalTaxLedgerEntries } = await client
+          .from("taxLedger")
+          .select("*")
+          .eq("companyId", companyId)
+          .eq("documentId", invoiceId)
+          .eq("documentType", "Sales Invoice");
+
+        const reversingTaxLedgerEntries: Omit<
+          Database["public"]["Tables"]["taxLedger"]["Insert"],
+          "journalId"
+        >[] = (originalTaxLedgerEntries ?? []).map((entry) => ({
+          companyId,
+          source: entry.source,
+          documentType: entry.documentType,
+          documentId: entry.documentId,
+          documentLineId: entry.documentLineId,
+          postingDate: today,
+          taxCodeId: entry.taxCodeId,
+          taxCodeComponentId: entry.taxCodeComponentId,
+          componentName: entry.componentName,
+          taxAuthorityId: entry.taxAuthorityId,
+          customerId: entry.customerId,
+          supplierId: entry.supplierId,
+          rate: entry.rate,
+          taxableAmount: -entry.taxableAmount,
+          taxAmount: -entry.taxAmount,
+          exemptAmount: -entry.exemptAmount,
+          taxExemptionReason: entry.taxExemptionReason,
+          exemptionCertificateNumber: entry.exemptionCertificateNumber,
+          currencyCode: entry.currencyCode,
+          exchangeRate: entry.exchangeRate,
+          postedToInputAccount: entry.postedToInputAccount,
+          createdBy: userId,
+        }));
+
         // Create reversing item ledger entries
         const reversingItemLedgerEntries: Database["public"]["Tables"]["itemLedger"]["Insert"][] =
           [];
@@ -1520,6 +1866,7 @@ serve(async (req: Request) => {
               .execute();
           }
 
+          let voidJournalId: string | null = null;
           if (accountingEnabled) {
             const voidJournalEntryId = await getNextSequence(
               trx,
@@ -1544,6 +1891,8 @@ serve(async (req: Request) => {
               .returning(["id"])
               .executeTakeFirstOrThrow();
 
+            voidJournalId = voidJournalResult.id;
+
             if (reversingJournalEntries.length > 0) {
               await trx
                 .insertInto("journalLine")
@@ -1556,6 +1905,19 @@ serve(async (req: Request) => {
                 .returning(["id"])
                 .execute();
             }
+          }
+
+          // Insert reversing tax ledger entries
+          if (reversingTaxLedgerEntries.length > 0) {
+            await trx
+              .insertInto("taxLedger")
+              .values(
+                reversingTaxLedgerEntries.map((row) => ({
+                  ...row,
+                  journalId: voidJournalId,
+                }))
+              )
+              .execute();
           }
 
           // Insert reversing item ledger entries
