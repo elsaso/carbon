@@ -733,21 +733,21 @@ export function filterEffectiveComponents(
  * Round to currency precision, half away from zero (the accounting
  * convention): 2.345 → 2.35 and -2.345 → -2.35.
  *
- * The scaled value is nudged by a *relative* epsilon before rounding so that
- * decimals which cannot be represented exactly in binary still round the way an
- * accountant wrote them: `1.005 * 100` is `100.49999999999999` in IEEE-754, and
- * a bare `Math.round` would take it down to 1.00. An *absolute* `Number.EPSILON`
- * (2.2e-16) is far too small to close that gap at this magnitude; scaling it
- * with the value is what makes 1.005 → 1.01 and 2.675 → 2.68.
+ * Delegates to the numeric standard's `round` (`@carbon/utils`, re-exporting
+ * `functions/shared/precision.ts`), which is `RoundingMode.HalfUp` — ties away
+ * from zero, matching Postgres `round()`. Its exponent-shift does a decimal
+ * round-trip rather than scaling by a power of ten, so the classic binary
+ * artifacts round the way an accountant wrote them without an epsilon nudge:
+ * `1.005 * 100` is `100.49999999999999` in IEEE-754 and a bare `Math.round`
+ * would take it to 1.00, while the shift gives 1.01 (and 2.675 → 2.68).
+ *
+ * The only thing left here is the sign guard: `round` can hand back -0, which
+ * reads as "-0.00" in an amount column and fails `Object.is` assertions.
  *
  * TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts`
  */
 export function roundCurrency(amount: number, precision = 2): number {
-  const factor = 10 ** precision;
-  const scaled = Math.abs(amount) * factor;
-  const rounded =
-    (Math.sign(amount) * Math.round(scaled * (1 + Number.EPSILON))) / factor;
-  // Avoid handing -0 to callers (and to assertions).
+  const rounded = round(amount, precision);
   return rounded === 0 ? 0 : rounded;
 }
 

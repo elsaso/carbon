@@ -1054,6 +1054,14 @@ describe("roundCurrency", () => {
     expect(roundCurrency(100)).toBe(100);
   });
 
+  it("does not round UP a value that only looks like a tie", () => {
+    // 520.4999999999998 * 0.13 is 67.66499999999997783107 — genuinely BELOW
+    // the half cent, so half-up rounds it DOWN. The decimal round-trip in
+    // `round` sees that; the relative-epsilon nudge this used to apply did
+    // not, and pushed it over the tie to 67.67. Postgres agrees with 67.66.
+    expect(roundCurrency(520.4999999999998 * 0.13)).toBe(67.66);
+  });
+
   it("honors a custom precision", () => {
     expect(roundCurrency(9.97512, 3)).toBe(9.975);
     expect(roundCurrency(9.975, 0)).toBe(10);
