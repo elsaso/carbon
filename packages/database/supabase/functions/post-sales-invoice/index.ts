@@ -333,6 +333,14 @@ serve(async (req: Request) => {
         // must be multiplied by this rate before they reach a journal line.
         const invoiceExchangeRate = salesInvoice.data?.exchangeRate ?? 1;
 
+        // Tax point = the DOCUMENT date, not the posting date. The spec's
+        // acceptance criterion is "invoices DATED June 30 vs July 1 compute
+        // 8.25% vs 8.5%", so effective-dated components are selected against
+        // dateIssued; taxLedger.postingDate stays `today`. Must match the tax
+        // point in post-purchase-invoice/index.ts or the two sides disagree at
+        // a rate-change boundary.
+        const taxPointDate = salesInvoice.data?.dateIssued ?? today;
+
         // ---------------------------------------------------------------
         // Tax configuration (multi-jurisdiction tax, Phase 1)
         //
@@ -436,7 +444,7 @@ serve(async (req: Request) => {
               ? taxComponentsByCodeId.get(resolvedTaxCodeId) ?? []
               : [],
             legacyTaxPercent: invoiceLine.taxPercent ?? 0,
-            date: today,
+            date: taxPointDate,
             exchangeRate: invoiceExchangeRate,
             customerIsTaxExempt,
             itemIsTaxable:
