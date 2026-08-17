@@ -13,7 +13,10 @@ import {
 import type { GenericQueryFilters } from "~/utils/query";
 import { LIST_COUNT, setGenericQueryFilters } from "~/utils/query";
 import { sanitize } from "~/utils/supabase";
-import { getCurrencyByCode } from "../accounting/accounting.ee.service";
+import {
+  getCurrencyByCode,
+  getLineTaxDefaults
+} from "../accounting/accounting.ee.service";
 import { getEmployeeJob } from "../people/people.service";
 import {
   getCustomerPayment,
@@ -816,19 +819,44 @@ export async function upsertPurchaseInvoiceLine(
       .single();
   }
 
-  const existing = await client
-    .from("purchaseInvoiceLine")
-    .select("sortOrder")
-    .eq("invoiceId", purchaseInvoiceLine.invoiceId);
+  const [existing, invoice] = await Promise.all([
+    client
+      .from("purchaseInvoiceLine")
+      .select("sortOrder")
+      .eq("invoiceId", purchaseInvoiceLine.invoiceId),
+    client
+      .from("purchaseInvoice")
+      .select("supplierId, dateIssued")
+      .eq("id", purchaseInvoiceLine.invoiceId)
+      .eq("companyId", purchaseInvoiceLine.companyId)
+      .maybeSingle()
+  ]);
 
   const maxSortOrder = (existing.data ?? []).reduce(
     (max, row) => Math.max(max, row.sortOrder ?? 0),
     0
   );
 
+  // Determination on the buy side sets `taxCodeId` only — identity and
+  // recoverability. `supplierTaxAmount` stays the supplier's to state, and the
+  // generated `taxPercent`/`taxAmount` columns derive from it.
+  const taxDefaults = await getLineTaxDefaults(
+    client,
+    purchaseInvoiceLine.companyId,
+    {
+      source: "purchase",
+      supplierId: invoice.data?.supplierId,
+      itemId: purchaseInvoiceLine.itemId,
+      date: invoice.data?.dateIssued ?? datetime.timestamp().slice(0, 10),
+      existing: purchaseInvoiceLine
+    }
+  );
+
   return client
     .from("purchaseInvoiceLine")
-    .insert([{ ...purchaseInvoiceLine, sortOrder: maxSortOrder + 1 }])
+    .insert([
+      { ...purchaseInvoiceLine, ...taxDefaults, sortOrder: maxSortOrder + 1 }
+    ])
     .select("id")
     .single();
 }
@@ -1194,19 +1222,48 @@ export async function upsertSalesInvoiceLine(
       .single();
   }
 
-  const existing = await client
-    .from("salesInvoiceLine")
-    .select("sortOrder")
-    .eq("invoiceId", salesInvoiceLine.invoiceId);
+  const [existing, invoice] = await Promise.all([
+    client
+      .from("salesInvoiceLine")
+      .select("sortOrder")
+      .eq("invoiceId", salesInvoiceLine.invoiceId),
+    client
+      .from("salesInvoice")
+      .select("customerId, dateIssued")
+      .eq("id", salesInvoiceLine.invoiceId)
+      .eq("companyId", salesInvoiceLine.companyId)
+      .maybeSingle()
+  ]);
 
   const maxSortOrder = (existing.data ?? []).reduce(
     (max, row) => Math.max(max, row.sortOrder ?? 0),
     0
   );
 
+  // Determination: fill the line's tax code / percent from the customer, the
+  // ship-to location and the item. Only ever fills blanks, so an invoice
+  // created from an order keeps the line values the order already carried.
+  const taxDefaults = await getLineTaxDefaults(
+    client,
+    salesInvoiceLine.companyId,
+    {
+      source: "sales",
+      customerId: invoice.data?.customerId,
+      // salesInvoiceShipment carries a location, not a customerLocation, so an
+      // invoice has no ship-to override to resolve against — the customer
+      // default applies. Invoices created from an order already carry the
+      // order's resolved values forward anyway.
+      itemId: salesInvoiceLine.itemId,
+      date: invoice.data?.dateIssued ?? datetime.timestamp().slice(0, 10),
+      existing: salesInvoiceLine
+    }
+  );
+
   return client
     .from("salesInvoiceLine")
-    .insert([{ ...salesInvoiceLine, sortOrder: maxSortOrder + 1 }])
+    .insert([
+      { ...salesInvoiceLine, ...taxDefaults, sortOrder: maxSortOrder + 1 }
+    ])
     .select("id")
     .single();
 }

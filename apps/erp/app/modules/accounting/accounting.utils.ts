@@ -806,3 +806,103 @@ export function computeEffectiveTaxPercent(
   );
   return totalTax / base;
 }
+
+/**
+ * How a line's tax was determined — the reason, not just the answer. Posting
+ * and the subledger both need to distinguish "no tax because the customer holds
+ * an exemption certificate" from "no tax because nobody configured any".
+ */
+export type TaxResolutionKind =
+  /** `customerTax.taxExempt` — the customer holds an exemption. */
+  | "exempt"
+  /** `item.taxable = false` — the goods are not taxable anywhere. */
+  | "nonTaxableItem"
+  /** A tax code applies; the rate comes from its effective components. */
+  | "code"
+  /** No code, but the party carries the legacy flat `taxPercent`. */
+  | "legacy"
+  /** Nothing is configured. The zero-config path — posts exactly as before. */
+  | "none";
+
+export type TaxResolutionInputs = {
+  customerTaxExempt?: boolean;
+  customerExemptionReason?: string | null;
+  customerExemptionCertificateNumber?: string | null;
+  /** `item.taxable`. Defaults to true — the column's own default. */
+  itemTaxable?: boolean;
+  /** Ship-to override; beats the party default when set. */
+  locationTaxCodeId?: string | null;
+  /** `customer.taxCodeId` / `supplier.taxCodeId`. */
+  partyTaxCodeId?: string | null;
+  /** `customer.taxPercent` / `supplier.taxPercent`, the pre-code fallback. */
+  legacyTaxPercent?: number | null;
+};
+
+export type TaxResolution = {
+  kind: TaxResolutionKind;
+  taxCodeId: string | null;
+  /**
+   * Null for `kind: "code"` — the caller computes it from the code's effective
+   * components, because the rate depends on the date and this function is
+   * date-free on purpose.
+   */
+  taxPercent: number | null;
+  exemptionReason?: string | null;
+  exemptionCertificateNumber?: string | null;
+};
+
+/**
+ * Decide which tax applies to a line, from already-fetched inputs.
+ *
+ * Pure and date-free so the precedence is unit-testable on its own. The
+ * precedence is a chain of overrides, most specific first:
+ *
+ *   1. **Customer exemption** — a certificate says this customer owes nothing,
+ *      whatever the goods or the destination. It short-circuits everything,
+ *      including a coded ship-to location, and carries its reason/certificate
+ *      forward so the subledger can report the exempt base.
+ *   2. **Non-taxable item** — the goods themselves are outside the tax base.
+ *   3. **Location code** — a ship-to override. Destination beats the party
+ *      default, because that is what determines the jurisdiction.
+ *   4. **Party code** — the customer's or supplier's assigned code.
+ *   5. **Legacy flat percent** — the pre-code fallback, kept working for
+ *      companies that have not adopted codes.
+ *   6. **Nothing** — the zero-config path.
+ *
+ * Determination is only ever driven by what someone explicitly assigned. An
+ * address is never inferred into a rate here; addresses only ever *suggest* a
+ * code for a human to accept (see `suggestTaxCode`).
+ *
+ * TWIN of the precedence documented in
+ * `.ai/plans/2026-07-03-multi-jurisdiction-tax.md` Task 6.
+ */
+export function resolveTaxFromInputs(
+  inputs: TaxResolutionInputs
+): TaxResolution {
+  if (inputs.customerTaxExempt === true) {
+    return {
+      kind: "exempt",
+      taxCodeId: null,
+      taxPercent: 0,
+      exemptionReason: inputs.customerExemptionReason ?? null,
+      exemptionCertificateNumber:
+        inputs.customerExemptionCertificateNumber ?? null
+    };
+  }
+
+  if (inputs.itemTaxable === false) {
+    return { kind: "nonTaxableItem", taxCodeId: null, taxPercent: 0 };
+  }
+
+  const taxCodeId = inputs.locationTaxCodeId || inputs.partyTaxCodeId || null;
+  if (taxCodeId) {
+    return { kind: "code", taxCodeId, taxPercent: null };
+  }
+
+  const legacyTaxPercent = inputs.legacyTaxPercent ?? 0;
+  if (legacyTaxPercent !== 0) {
+    return { kind: "legacy", taxCodeId: null, taxPercent: legacyTaxPercent };
+  }
+
+  return { kind: "none", taxCodeId: null, taxPercent: 0 };
+}

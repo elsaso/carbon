@@ -17,7 +17,7 @@ import { getEmployeeJob } from "~/modules/people";
 import type { GenericQueryFilters } from "~/utils/query";
 import { LIST_COUNT, setGenericQueryFilters } from "~/utils/query";
 import { sanitize } from "~/utils/supabase";
-import { getCurrencyByCode } from "../accounting";
+import { getCurrencyByCode, getLineTaxDefaults } from "../accounting";
 import type {
   operationParameterValidator,
   operationStepValidator,
@@ -3868,19 +3868,44 @@ export async function upsertQuoteLine(
       .single();
   }
 
-  const existing = await client
-    .from("quoteLine")
-    .select("sortOrder")
-    .eq("quoteId", quotationLine.quoteId);
+  const [existing, quote] = await Promise.all([
+    client
+      .from("quoteLine")
+      .select("sortOrder")
+      .eq("quoteId", quotationLine.quoteId),
+    client
+      .from("quote")
+      .select("customerId, customerLocationId")
+      .eq("id", quotationLine.quoteId)
+      .eq("companyId", quotationLine.companyId)
+      .maybeSingle()
+  ]);
 
   const maxSortOrder = (existing.data ?? []).reduce(
     (max, row) => Math.max(max, row.sortOrder ?? 0),
     0
   );
 
+  // Determination: fill the line's tax code / percent from the customer, the
+  // ship-to location and the item. Only ever fills blanks — see
+  // getLineTaxDefaults.
+  const taxDefaults = await getLineTaxDefaults(
+    client,
+    quotationLine.companyId,
+    {
+      source: "sales",
+      customerId: quote.data?.customerId,
+      customerLocationId: quote.data?.customerLocationId,
+      itemId: quotationLine.itemId,
+      // A quote has no order date; today is the tax point until it converts.
+      date: datetime.timestamp().slice(0, 10),
+      existing: quotationLine
+    }
+  );
+
   return client
     .from("quoteLine")
-    .insert([{ ...quotationLine, sortOrder: maxSortOrder + 1 }])
+    .insert([{ ...quotationLine, ...taxDefaults, sortOrder: maxSortOrder + 1 }])
     .select("*")
     .single();
 }
@@ -5756,11 +5781,27 @@ export async function upsertSalesOrderLine(
     0
   );
 
+  // Determination: fill the line's tax code / percent from the customer, the
+  // ship-to location and the item. Only ever fills blanks.
+  const taxDefaults = await getLineTaxDefaults(
+    client,
+    salesOrderLine.companyId,
+    {
+      source: "sales",
+      customerId: salesOrder.data?.customerId,
+      customerLocationId: salesOrder.data?.customerLocationId,
+      itemId: salesOrderLine.itemId,
+      date: salesOrder.data?.orderDate ?? datetime.timestamp().slice(0, 10),
+      existing: salesOrderLine
+    }
+  );
+
   return client
     .from("salesOrderLine")
     .insert([
       {
         ...salesOrderLine,
+        ...taxDefaults,
         // methodType is NOT NULL DEFAULT 'Pull from Inventory', but the validator
         // legitimately omits it for Fixed Asset / Comment lines. Because the key is
         // still present (as undefined) in the spread, PostgREST lists the column and

@@ -50,9 +50,14 @@ import type {
   taxDepreciationMethods,
   taxRegistrationValidator
 } from "./accounting.models";
+import type {
+  EffectiveTaxComponent,
+  TaxResolutionKind
+} from "./accounting.utils";
 import {
   computeEffectiveTaxPercent,
-  filterEffectiveComponents
+  filterEffectiveComponents,
+  resolveTaxFromInputs
 } from "./accounting.utils";
 import type {
   AccountLedgerLine,
@@ -6411,6 +6416,221 @@ export async function deleteTaxCode(
     .update({ active: false })
     .eq("id", taxCodeId)
     .eq("companyId", companyId);
+}
+
+/**
+ * Determination: which tax applies to a NEW document line, and at what rate.
+ *
+ * The seam every line-creation path calls. It fetches the inputs the pure
+ * `resolveTaxFromInputs` needs, runs the precedence, and — for a resolved code
+ * — expands that code's components effective on `date` into a blended
+ * `taxPercent` plus the component list.
+ *
+ * Determination is assignment-driven only: a customer, a ship-to location, an
+ * item or a supplier carries a code because someone put it there. Addresses are
+ * never inferred into a rate (that is `suggestTaxCode`, which only proposes).
+ *
+ * Keep this signature stable — Phase 3 dispatches to an external engine here.
+ */
+export async function resolveLineTaxes(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: {
+    source: "sales" | "purchase";
+    customerId?: string | null;
+    supplierId?: string | null;
+    /** Ship-to location, when the document has one. Overrides the party code. */
+    customerLocationId?: string | null;
+    itemId?: string | null;
+    /** Tax point. Drives which components are in force. */
+    date: string;
+  }
+): Promise<{
+  data: {
+    kind: TaxResolutionKind;
+    taxCodeId: string | null;
+    taxPercent: number;
+    components: EffectiveTaxComponent[];
+    exemptionReason: string | null;
+    exemptionCertificateNumber: string | null;
+  } | null;
+  error: PostgrestError | null;
+}> {
+  const isSales = args.source === "sales";
+
+  const [party, partyTax, location, item] = await Promise.all([
+    isSales && args.customerId
+      ? client
+          .from("customer")
+          .select("taxCodeId, taxPercent")
+          .eq("id", args.customerId)
+          .eq("companyId", companyId)
+          .maybeSingle()
+      : !isSales && args.supplierId
+        ? client
+            .from("supplier")
+            .select("taxCodeId, taxPercent")
+            .eq("id", args.supplierId)
+            .eq("companyId", companyId)
+            .maybeSingle()
+        : null,
+    // Only customers can be exempt; a supplier exemption is not a thing on the
+    // buy side (what the supplier charges is on their invoice).
+    isSales && args.customerId
+      ? client
+          .from("customerTax")
+          .select(
+            "taxExempt, taxExemptionReason, taxExemptionCertificateNumber"
+          )
+          .eq("customerId", args.customerId)
+          .eq("companyId", companyId)
+          .maybeSingle()
+      : null,
+    isSales && args.customerLocationId
+      ? client
+          .from("customerLocation")
+          .select("taxCodeId")
+          .eq("id", args.customerLocationId)
+          .maybeSingle()
+      : null,
+    args.itemId
+      ? client
+          .from("item")
+          .select("taxable")
+          .eq("id", args.itemId)
+          .eq("companyId", companyId)
+          .maybeSingle()
+      : null
+  ]);
+
+  // A failed read must not silently become "not exempt" or "taxable" — that
+  // posts a liability the customer does not owe, or drops one they do.
+  const readError =
+    party?.error ?? partyTax?.error ?? location?.error ?? item?.error ?? null;
+  if (readError) return { data: null, error: readError };
+
+  const resolution = resolveTaxFromInputs({
+    customerTaxExempt: partyTax?.data?.taxExempt ?? false,
+    customerExemptionReason: partyTax?.data?.taxExemptionReason ?? null,
+    customerExemptionCertificateNumber:
+      partyTax?.data?.taxExemptionCertificateNumber ?? null,
+    itemTaxable: item?.data?.taxable ?? true,
+    locationTaxCodeId: location?.data?.taxCodeId ?? null,
+    partyTaxCodeId: party?.data?.taxCodeId ?? null,
+    legacyTaxPercent: party?.data?.taxPercent ?? null
+  });
+
+  if (resolution.kind !== "code" || !resolution.taxCodeId) {
+    return {
+      data: {
+        kind: resolution.kind,
+        taxCodeId: resolution.taxCodeId,
+        taxPercent: resolution.taxPercent ?? 0,
+        components: [],
+        exemptionReason: resolution.exemptionReason ?? null,
+        exemptionCertificateNumber:
+          resolution.exemptionCertificateNumber ?? null
+      },
+      error: null
+    };
+  }
+
+  const components = await client
+    .from("taxCodeComponent")
+    .select("*")
+    .eq("taxCodeId", resolution.taxCodeId)
+    .eq("companyId", companyId)
+    .order("sequence", { ascending: true });
+
+  if (components.error) return { data: null, error: components.error };
+
+  const effective = filterEffectiveComponents(
+    (components.data ?? []).map((component) => ({
+      id: component.id,
+      name: component.name,
+      taxAuthorityId: component.taxAuthorityId,
+      rate: Number(component.rate),
+      sequence: component.sequence,
+      isCompound: component.isCompound,
+      isRecoverable: component.isRecoverable,
+      salesTaxAccountId: component.salesTaxAccountId,
+      purchaseTaxAccountId: component.purchaseTaxAccountId,
+      effectiveDate: component.effectiveDate,
+      expirationDate: component.expirationDate
+    })),
+    args.date
+  );
+
+  return {
+    data: {
+      kind: "code",
+      taxCodeId: resolution.taxCodeId,
+      taxPercent: computeEffectiveTaxPercent(1, effective),
+      components: effective,
+      exemptionReason: null,
+      exemptionCertificateNumber: null
+    },
+    error: null
+  };
+}
+
+/**
+ * The default `taxCodeId` / `taxPercent` for a NEW document line.
+ *
+ * Thin wrapper over {@link resolveLineTaxes} shaped for the line-insert call
+ * sites, which all share the same two rules:
+ *
+ *  - **Never overwrite what the caller supplied.** A form that posted an
+ *    explicit code or percent is a human decision; determination only fills a
+ *    blank. This is also what keeps document conversions (quote → order →
+ *    invoice) copying the stored values forward rather than silently
+ *    re-resolving them against today's configuration.
+ *  - **Never fail the insert.** A determination that errors returns no defaults
+ *    rather than blocking the line; an untaxed line is recoverable (recalculate
+ *    or set the code by hand), a line that could not be created is not.
+ *
+ * On the purchase side `taxPercent` is deliberately NOT defaulted: the
+ * supplier's `supplierTaxAmount` stays authoritative and the code only carries
+ * identity and recoverability.
+ */
+export async function getLineTaxDefaults(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: {
+    source: "sales" | "purchase";
+    customerId?: string | null;
+    supplierId?: string | null;
+    customerLocationId?: string | null;
+    itemId?: string | null;
+    date: string;
+    /** Already on the line — determination leaves these alone. */
+    existing: { taxCodeId?: string | null; taxPercent?: number | null };
+  }
+): Promise<{ taxCodeId?: string; taxPercent?: number }> {
+  if (args.existing.taxCodeId) return {};
+
+  const resolved = await resolveLineTaxes(client, companyId, args);
+  if (resolved.error || !resolved.data) return {};
+
+  const defaults: { taxCodeId?: string; taxPercent?: number } = {};
+
+  if (resolved.data.taxCodeId) {
+    defaults.taxCodeId = resolved.data.taxCodeId;
+  }
+
+  // The buy side keeps the supplier's amount as the source of truth.
+  if (
+    args.source === "sales" &&
+    (args.existing.taxPercent === null ||
+      args.existing.taxPercent === undefined ||
+      args.existing.taxPercent === 0)
+  ) {
+    if (resolved.data.taxPercent !== 0) {
+      defaults.taxPercent = resolved.data.taxPercent;
+    }
+  }
+
+  return defaults;
 }
 
 // -- Tax Registrations --

@@ -9,6 +9,7 @@ import type {
   SupabaseClient
 } from "@supabase/supabase-js";
 import type { z } from "zod";
+import { getLineTaxDefaults } from "~/modules/accounting";
 import { getEmployeeJob } from "~/modules/people";
 import type { GenericQueryFilters } from "~/utils/query";
 import { LIST_COUNT, setGenericQueryFilters } from "~/utils/query";
@@ -1783,19 +1784,43 @@ export async function upsertPurchaseOrderLine(
       .single();
   }
 
-  const existing = await client
-    .from("purchaseOrderLine")
-    .select("sortOrder")
-    .eq("purchaseOrderId", purchaseOrderLine.purchaseOrderId);
+  const [existing, purchaseOrder] = await Promise.all([
+    client
+      .from("purchaseOrderLine")
+      .select("sortOrder")
+      .eq("purchaseOrderId", purchaseOrderLine.purchaseOrderId),
+    client
+      .from("purchaseOrder")
+      .select("supplierId, orderDate")
+      .eq("id", purchaseOrderLine.purchaseOrderId)
+      .eq("companyId", purchaseOrderLine.companyId)
+      .maybeSingle()
+  ]);
 
   const maxSortOrder = (existing.data ?? []).reduce(
     (max, row) => Math.max(max, row.sortOrder ?? 0),
     0
   );
 
+  // Determination on the buy side sets `taxCodeId` only — identity and
+  // recoverability. What the supplier charges stays theirs to state.
+  const taxDefaults = await getLineTaxDefaults(
+    client,
+    purchaseOrderLine.companyId,
+    {
+      source: "purchase",
+      supplierId: purchaseOrder.data?.supplierId,
+      itemId: purchaseOrderLine.itemId,
+      date: purchaseOrder.data?.orderDate ?? datetime.timestamp().slice(0, 10),
+      existing: purchaseOrderLine
+    }
+  );
+
   return client
     .from("purchaseOrderLine")
-    .insert([{ ...purchaseOrderLine, sortOrder: maxSortOrder + 1 }])
+    .insert([
+      { ...purchaseOrderLine, ...taxDefaults, sortOrder: maxSortOrder + 1 }
+    ])
     .select("id")
     .single();
 }

@@ -18,6 +18,7 @@ import {
   getMonthsBetween,
   getMonthsElapsed,
   getNextPeriodEnd,
+  resolveTaxFromInputs,
   roundCurrency
 } from "./accounting.utils";
 
@@ -1092,5 +1093,103 @@ describe("parity with the posting-time Deno twin", () => {
       .map(({ componentId, tax }) => ({ componentId, tax: roundCurrency(tax) }))
       .filter(({ tax }) => tax !== 0);
     expect(kept).toEqual([{ componentId: "gst", tax: 5 }]);
+  });
+});
+
+describe("resolveTaxFromInputs", () => {
+  it("a customer exemption short-circuits everything below it", () => {
+    // Even with a coded ship-to location and a taxable item: the certificate
+    // wins, and its reason/number travel with the resolution so the subledger
+    // can report the exempt base.
+    const result = resolveTaxFromInputs({
+      customerTaxExempt: true,
+      customerExemptionReason: "Resale",
+      customerExemptionCertificateNumber: "TX-12345",
+      itemTaxable: true,
+      locationTaxCodeId: "tc_austin",
+      partyTaxCodeId: "tc_texas",
+      legacyTaxPercent: 0.05
+    });
+
+    expect(result.kind).toBe("exempt");
+    expect(result.taxCodeId).toBeNull();
+    expect(result.taxPercent).toBe(0);
+    expect(result.exemptionReason).toBe("Resale");
+    expect(result.exemptionCertificateNumber).toBe("TX-12345");
+  });
+
+  it("a non-taxable item beats every code", () => {
+    const result = resolveTaxFromInputs({
+      itemTaxable: false,
+      locationTaxCodeId: "tc_austin",
+      partyTaxCodeId: "tc_texas",
+      legacyTaxPercent: 0.05
+    });
+
+    expect(result.kind).toBe("nonTaxableItem");
+    expect(result.taxCodeId).toBeNull();
+    expect(result.taxPercent).toBe(0);
+  });
+
+  it("the ship-to location code beats the party default", () => {
+    const result = resolveTaxFromInputs({
+      locationTaxCodeId: "tc_austin",
+      partyTaxCodeId: "tc_texas"
+    });
+
+    expect(result.kind).toBe("code");
+    expect(result.taxCodeId).toBe("tc_austin");
+    // Null on purpose: the rate depends on the date, so the caller derives it
+    // from the code's effective components.
+    expect(result.taxPercent).toBeNull();
+  });
+
+  it("falls back to the party code when the location has no override", () => {
+    const result = resolveTaxFromInputs({
+      locationTaxCodeId: null,
+      partyTaxCodeId: "tc_texas"
+    });
+
+    expect(result.kind).toBe("code");
+    expect(result.taxCodeId).toBe("tc_texas");
+  });
+
+  it("a taxable item with no codes falls back to the legacy percent", () => {
+    const result = resolveTaxFromInputs({
+      itemTaxable: true,
+      legacyTaxPercent: 0.05
+    });
+
+    expect(result.kind).toBe("legacy");
+    expect(result.taxCodeId).toBeNull();
+    expect(result.taxPercent).toBe(0.05);
+  });
+
+  it("a zero legacy percent is not a resolution — nothing is configured", () => {
+    const result = resolveTaxFromInputs({ legacyTaxPercent: 0 });
+
+    expect(result.kind).toBe("none");
+    expect(result.taxCodeId).toBeNull();
+    expect(result.taxPercent).toBe(0);
+  });
+
+  it("an empty input set resolves to none", () => {
+    expect(resolveTaxFromInputs({}).kind).toBe("none");
+  });
+
+  it("itemTaxable defaults to taxable when the item was not loaded", () => {
+    // Undefined must not be read as "not taxable" — that would silently stop
+    // taxing every line whose item lookup failed.
+    const result = resolveTaxFromInputs({ partyTaxCodeId: "tc_texas" });
+    expect(result.kind).toBe("code");
+  });
+
+  it("an empty-string code is treated as absent, not as a code", () => {
+    const result = resolveTaxFromInputs({
+      locationTaxCodeId: "",
+      partyTaxCodeId: "",
+      legacyTaxPercent: 0.08
+    });
+    expect(result.kind).toBe("legacy");
   });
 });
