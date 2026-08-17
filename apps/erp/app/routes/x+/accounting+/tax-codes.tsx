@@ -1,5 +1,7 @@
 import { requirePermissions } from "@carbon/auth/auth.server";
+import { getCompanyTimeZone } from "@carbon/database";
 import { VStack } from "@carbon/react";
+import { datetime } from "@carbon/utils";
 import { msg } from "@lingui/core/macro";
 import type { LoaderFunctionArgs } from "react-router";
 import { Outlet, useLoaderData } from "react-router";
@@ -26,13 +28,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { limit, offset, sorts, filters } =
     getGenericQueryFilters(searchParams);
 
-  return await getTaxCodes(client, companyId, {
-    search,
-    limit,
-    offset,
-    sorts,
-    filters
-  });
+  // Effective rates are "as of today" on the company's calendar, not the
+  // server's — a code whose component expires tonight must not already read as
+  // expired for a company several hours behind.
+  const timezone = await getCompanyTimeZone(client, companyId);
+
+  return await getTaxCodes(
+    client,
+    companyId,
+    { search, limit, offset, sorts, filters },
+    datetime.today(timezone).toString()
+  );
 }
 
 export default function TaxCodesRoute() {

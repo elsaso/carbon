@@ -13,6 +13,7 @@ import {
   upsertTaxCode
 } from "~/modules/accounting";
 import { TaxCodeForm } from "~/modules/accounting/ui/Tax";
+import { getDatabaseClient } from "~/services/database.server";
 import { getCustomFields, setCustomFields } from "~/utils/form";
 import { getParams, path } from "~/utils/path";
 
@@ -33,7 +34,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!taxCodeId) throw notFound("taxCodeId not found");
 
   const [taxCode, taxAuthorities] = await Promise.all([
-    getTaxCode(client, taxCodeId),
+    getTaxCode(client, taxCodeId, companyId),
     // Feeds the per-component authority select in the components editor.
     getTaxAuthoritiesList(client, companyId)
   ]);
@@ -46,7 +47,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   assertIsPost(request);
-  const { client, userId } = await requirePermissions(request, {
+  const { companyId, userId } = await requirePermissions(request, {
     update: "accounting"
   });
 
@@ -85,24 +86,23 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 
-  const updateTaxCode = await upsertTaxCode(
-    client,
-    {
-      id,
-      ...d,
-      updatedBy: userId,
-      customFields: setCustomFields(formData)
-    },
-    componentsResult.data
-  );
-
-  if (updateTaxCode.error) {
+  // Kysely transaction: throws on rollback rather than returning { error }.
+  try {
+    await upsertTaxCode(
+      getDatabaseClient(),
+      companyId,
+      {
+        id,
+        ...d,
+        updatedBy: userId,
+        customFields: setCustomFields(formData)
+      },
+      componentsResult.data
+    );
+  } catch (err) {
     return data(
       {},
-      await flash(
-        request,
-        error(updateTaxCode.error, "Failed to update tax code")
-      )
+      await flash(request, error(err, "Failed to update tax code"))
     );
   }
 
@@ -125,6 +125,7 @@ export default function EditTaxCodeRoute() {
     invoiceMessage: taxCode?.invoiceMessage ?? "",
     countryCode: taxCode?.countryCode ?? "",
     state: taxCode?.state ?? "",
+    active: taxCode?.active ?? true,
     // The form re-serializes its rows into the hidden `components` field
     components: JSON.stringify(taxCode?.components ?? []),
     ...getCustomFields(taxCode?.customFields)

@@ -1,5 +1,7 @@
 import { requirePermissions } from "@carbon/auth/auth.server";
+import { getCompanyTimeZone } from "@carbon/database";
 import { VStack } from "@carbon/react";
+import { datetime } from "@carbon/utils";
 import { msg } from "@lingui/core/macro";
 import type { LoaderFunctionArgs } from "react-router";
 import { Outlet, useLoaderData } from "react-router";
@@ -40,6 +42,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const { limit, offset, sorts, filters } =
     getGenericQueryFilters(searchParams);
 
+  // The company's calendar day, not the server's — a registration that ends
+  // tonight must not read as expired for a company several hours behind.
+  const timezone = await getCompanyTimeZone(client, companyId);
+  const today = datetime.today(timezone).toString();
+
   const [taxRegistrations, allTaxRegistrations, allTaxCodes] =
     await Promise.all([
       getTaxRegistrations(client, companyId, {
@@ -50,14 +57,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
         filters
       }),
       getTaxRegistrations(client, companyId, UNPAGINATED),
-      // getTaxCodes only returns active codes
-      getTaxCodes(client, companyId, UNPAGINATED)
+      getTaxCodes(client, companyId, UNPAGINATED, today)
     ]);
 
   const registrations = allTaxRegistrations.data ?? [];
-  const codes = allTaxCodes.data ?? [];
-
-  const today = new Date().toISOString().slice(0, 10);
+  // getTaxCodes now returns inactive codes too (they stay listed so they can be
+  // reactivated); a deactivated code needs no registration, so drop them here.
+  const codes = (allTaxCodes.data ?? []).filter((code) => code.active);
   const activeRegistrations = registrations.filter(
     (registration) =>
       (!registration.effectiveDate || registration.effectiveDate <= today) &&

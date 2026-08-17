@@ -28,7 +28,7 @@ import {
 } from "~/components/Form";
 import { useCountries } from "~/components/Form/Country";
 import { usePermissions } from "~/hooks";
-import type { suggestTaxCode } from "~/modules/accounting";
+import { TaxCodeSuggestion } from "~/modules/accounting/ui/Tax";
 import { path } from "~/utils/path";
 import { customerLocationValidator } from "../../sales.models";
 
@@ -129,17 +129,12 @@ function LocationTaxCodeField({
   taxCodes: { id: string; name: string }[];
 }) {
   const { t } = useLingui();
-  const countries = useCountries();
-  const suggestionFetcher =
-    useFetcher<Awaited<ReturnType<typeof suggestTaxCode>>>();
-
   const containerRef = useRef<HTMLDivElement>(null);
   const [taxCodeId, setTaxCodeId] = useControlField<string | undefined>(
     "taxCodeId"
   );
   const [countryCode] = useControlField<string | undefined>("countryCode");
   const [stateProvince, setStateProvince] = useState<string | null>(null);
-  const [dismissedId, setDismissedId] = useState<string | null>(null);
 
   // stateProvince is an uncontrolled input owned by AddressAutocomplete
   const readStateProvince = useCallback(() => {
@@ -164,27 +159,10 @@ function LocationTaxCodeField({
     setStateProvince(readStateProvince());
   }, [countryCode, readStateProvince]);
 
-  const { load } = suggestionFetcher;
-  useEffect(() => {
-    if (!countryCode) return;
-    load(path.to.api.suggestTaxCode(countryCode, stateProvince));
-  }, [countryCode, stateProvince, load]);
-
   const options = useMemo(
     () => taxCodes.map(({ id, name }) => ({ value: id, label: name })),
     [taxCodes]
   );
-
-  const suggestion = suggestionFetcher.data?.data?.[0] ?? null;
-  const countryName =
-    countries.find((c) => c.value === countryCode)?.label ?? countryCode;
-  const showSuggestion =
-    !!suggestion &&
-    suggestion.id !== dismissedId &&
-    suggestion.id !== (taxCodeId || undefined);
-  const place = [stateProvince, countryName]
-    .filter((part) => !!part)
-    .join(", ");
 
   return (
     <div className="flex flex-col gap-4 w-full" ref={containerRef}>
@@ -195,34 +173,12 @@ function LocationTaxCodeField({
         placeholder={t`Select Tax Code`}
         helperText={t`Overrides the customer's tax code for this location`}
       />
-      {showSuggestion && (
-        <Alert variant="info">
-          <LuInfo />
-          <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-            <span>
-              <Trans>
-                This address is in {place} — apply {suggestion.name}?
-              </Trans>
-            </span>
-            <HStack spacing={2}>
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => setTaxCodeId(suggestion.id)}
-              >
-                <Trans>Apply</Trans>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setDismissedId(suggestion.id)}
-              >
-                <Trans>Dismiss</Trans>
-              </Button>
-            </HStack>
-          </AlertDescription>
-        </Alert>
-      )}
+      <TaxCodeSuggestion
+        countryCode={countryCode}
+        state={stateProvince}
+        taxCodeId={taxCodeId}
+        onApply={setTaxCodeId}
+      />
     </div>
   );
 }

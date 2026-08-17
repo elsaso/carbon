@@ -9,13 +9,13 @@ import { deleteTaxAuthority, getTaxAuthority } from "~/modules/accounting";
 import { getParams, path } from "~/utils/path";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "accounting"
   });
   const { taxAuthorityId } = params;
   if (!taxAuthorityId) throw notFound("taxAuthorityId not found");
 
-  const taxAuthority = await getTaxAuthority(client, taxAuthorityId);
+  const taxAuthority = await getTaxAuthority(client, taxAuthorityId, companyId);
   if (taxAuthority.error) {
     throw redirect(
       `${path.to.taxAuthorities}?${getParams(request)}`,
@@ -30,7 +30,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     delete: "accounting"
   });
 
@@ -44,7 +44,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { error: deleteTaxAuthorityError } = await deleteTaxAuthority(
     client,
-    taxAuthorityId
+    taxAuthorityId,
+    companyId
   );
   if (deleteTaxAuthorityError) {
     throw redirect(

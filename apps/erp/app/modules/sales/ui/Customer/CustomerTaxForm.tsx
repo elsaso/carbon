@@ -29,28 +29,26 @@ import {
   Submit
 } from "~/components/Form";
 import { usePermissions, useUser } from "~/hooks";
+import { TaxCodeSuggestion } from "~/modules/accounting/ui/Tax";
 import { taxExemptionReasons } from "~/modules/shared";
 import { customerTaxValidator } from "../../sales.models";
-
-export type TaxCodeSuggestion = {
-  id: string;
-  name: string;
-  country: string;
-  state: string | null;
-};
 
 type CustomerTaxFormProps = {
   initialValues: z.infer<typeof customerTaxValidator> & {
     taxExemptionCertificatePath?: string | null;
   };
   taxCodes?: { id: string; name: string }[];
-  taxCodeSuggestion?: TaxCodeSuggestion | null;
+  /** Primary location address, used only to suggest a code. Never auto-applied. */
+  addressHint?: { countryCode: string | null; state: string | null } | null;
+  /** True once any party in the company carries a tax code (sunset banner). */
+  taxCodesInUse?: boolean;
 };
 
 const CustomerTaxForm = ({
   initialValues,
   taxCodes = [],
-  taxCodeSuggestion = null
+  addressHint = null,
+  taxCodesInUse = false
 }: CustomerTaxFormProps) => {
   const { t } = useLingui();
   const taxExemptionReasonOptions = taxExemptionReasons.map((reason) => ({
@@ -117,10 +115,23 @@ const CustomerTaxForm = ({
             ) : (
               <div />
             )}
-            <TaxCodeField
-              taxCodes={taxCodes}
-              taxCodeSuggestion={taxCodeSuggestion}
-            />
+            <TaxCodeField taxCodes={taxCodes} addressHint={addressHint} />
+            {taxCodesInUse && (
+              <div className="col-span-3">
+                <Alert variant="warning">
+                  <LuInfo />
+                  <AlertDescription>
+                    <Trans>
+                      Flat tax percent is deprecated — assign tax codes instead.
+                      A code determines the rate, the authorities it splits
+                      across, and the accounts it posts to; the percent on the
+                      customer record is only a fallback for parties that have
+                      no code yet.
+                    </Trans>
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
             <div className="col-span-3">
               <Boolean
                 name="taxExempt"
@@ -194,33 +205,20 @@ const CustomerTaxForm = ({
 
 function TaxCodeField({
   taxCodes,
-  taxCodeSuggestion
+  addressHint
 }: {
   taxCodes: { id: string; name: string }[];
-  taxCodeSuggestion: TaxCodeSuggestion | null;
+  addressHint: { countryCode: string | null; state: string | null } | null;
 }) {
   const { t } = useLingui();
   const [taxCodeId, setTaxCodeId] = useControlField<string | undefined>(
     "taxCodeId"
   );
-  const [isDismissed, setIsDismissed] = useState(false);
 
   const options = useMemo(
     () => taxCodes.map(({ id, name }) => ({ value: id, label: name })),
     [taxCodes]
   );
-
-  // Never auto-applied: taxes always resolve from what was explicitly assigned
-  const showSuggestion =
-    !!taxCodeSuggestion &&
-    !isDismissed &&
-    taxCodeSuggestion.id !== (taxCodeId || undefined);
-
-  const place = taxCodeSuggestion
-    ? [taxCodeSuggestion.state, taxCodeSuggestion.country]
-        .filter((part) => !!part)
-        .join(", ")
-    : "";
 
   return (
     <>
@@ -230,36 +228,14 @@ function TaxCodeField({
         options={options}
         placeholder={t`Select Tax Code`}
       />
-      {showSuggestion && (
-        <div className="col-span-3">
-          <Alert variant="info">
-            <LuInfo />
-            <AlertDescription className="flex flex-wrap items-center justify-between gap-2">
-              <span>
-                <Trans>
-                  This address is in {place} — apply {taxCodeSuggestion.name}?
-                </Trans>
-              </span>
-              <HStack spacing={2}>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setTaxCodeId(taxCodeSuggestion.id)}
-                >
-                  <Trans>Apply</Trans>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setIsDismissed(true)}
-                >
-                  <Trans>Dismiss</Trans>
-                </Button>
-              </HStack>
-            </AlertDescription>
-          </Alert>
-        </div>
-      )}
+      <div className="col-span-3">
+        <TaxCodeSuggestion
+          countryCode={addressHint?.countryCode}
+          state={addressHint?.state}
+          taxCodeId={taxCodeId}
+          onApply={setTaxCodeId}
+        />
+      </div>
     </>
   );
 }

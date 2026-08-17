@@ -131,7 +131,7 @@ const ToolProperties = ({ data }: ToolPropertiesProps) => {
         | "toolId"
         | "active"
         | "mpn"
-              | "taxable",
+        | "taxable",
       value: string | null
     ) => {
       const formData = new FormData();

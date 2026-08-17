@@ -12,13 +12,17 @@ import {
 import { getParams, path } from "~/utils/path";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "accounting"
   });
   const { taxRegistrationId } = params;
   if (!taxRegistrationId) throw notFound("taxRegistrationId not found");
 
-  const taxRegistration = await getTaxRegistration(client, taxRegistrationId);
+  const taxRegistration = await getTaxRegistration(
+    client,
+    taxRegistrationId,
+    companyId
+  );
   if (taxRegistration.error) {
     throw redirect(
       `${path.to.taxRegistrations}?${getParams(request)}`,
@@ -33,7 +37,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     delete: "accounting"
   });
 
@@ -47,7 +51,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   const { error: deleteTaxRegistrationError } = await deleteTaxRegistration(
     client,
-    taxRegistrationId
+    taxRegistrationId,
+    companyId
   );
   if (deleteTaxRegistrationError) {
     throw redirect(

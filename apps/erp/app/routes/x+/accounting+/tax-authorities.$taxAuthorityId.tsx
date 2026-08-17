@@ -14,7 +14,7 @@ import { getCustomFields, setCustomFields } from "~/utils/form";
 import { getParams, path } from "~/utils/path";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "accounting",
     role: "employee"
   });
@@ -22,7 +22,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { taxAuthorityId } = params;
   if (!taxAuthorityId) throw notFound("taxAuthorityId not found");
 
-  const taxAuthority = await getTaxAuthority(client, taxAuthorityId);
+  const taxAuthority = await getTaxAuthority(client, taxAuthorityId, companyId);
 
   return {
     taxAuthority: taxAuthority?.data ?? null
@@ -31,7 +31,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   assertIsPost(request);
-  const { client, userId } = await requirePermissions(request, {
+  const { client, companyId, userId } = await requirePermissions(request, {
     update: "accounting"
   });
 
@@ -46,6 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!id) throw new Error("id not found");
 
   const updateTaxAuthority = await upsertTaxAuthority(client, {
+    companyId,
     id,
     ...d,
     updatedBy: userId,

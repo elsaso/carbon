@@ -9,13 +9,13 @@ import { deleteTaxCode, getTaxCode } from "~/modules/accounting";
 import { getParams, path } from "~/utils/path";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "accounting"
   });
   const { taxCodeId } = params;
   if (!taxCodeId) throw notFound("taxCodeId not found");
 
-  const taxCode = await getTaxCode(client, taxCodeId);
+  const taxCode = await getTaxCode(client, taxCodeId, companyId);
   if (taxCode.error) {
     throw redirect(
       `${path.to.taxCodes}?${getParams(request)}`,
@@ -27,7 +27,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     delete: "accounting"
   });
 
@@ -39,7 +39,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     );
   }
 
-  const { error: deleteTaxCodeError } = await deleteTaxCode(client, taxCodeId);
+  const { error: deleteTaxCodeError } = await deleteTaxCode(
+    client,
+    taxCodeId,
+    companyId
+  );
   if (deleteTaxCodeError) {
     throw redirect(
       `${path.to.taxCodes}?${getParams(request)}`,

@@ -12,6 +12,7 @@ import {
   upsertTaxCode
 } from "~/modules/accounting";
 import { TaxCodeForm } from "~/modules/accounting/ui/Tax";
+import { getDatabaseClient } from "~/services/database.server";
 import { setCustomFields } from "~/utils/form";
 import { getParams, path } from "~/utils/path";
 
@@ -76,29 +77,28 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 
-  const insertTaxCode = await upsertTaxCode(
-    client,
-    {
-      ...rest,
+  // Kysely transaction: throws on rollback rather than returning { error }.
+  let insertTaxCode: { id: string };
+  try {
+    insertTaxCode = await upsertTaxCode(
+      getDatabaseClient(),
       companyId,
-      createdBy: userId,
-      customFields: setCustomFields(formData)
-    },
-    componentsResult.data
-  );
-
-  if (insertTaxCode.error) {
+      {
+        ...rest,
+        createdBy: userId,
+        customFields: setCustomFields(formData)
+      },
+      componentsResult.data
+    );
+  } catch (err) {
     return data(
       {},
-      await flash(
-        request,
-        error(insertTaxCode.error, "Failed to insert tax code")
-      )
+      await flash(request, error(err, "Failed to insert tax code"))
     );
   }
 
   return modal
-    ? data(insertTaxCode, { status: 201 })
+    ? data({ data: insertTaxCode }, { status: 201 })
     : redirect(
         `${path.to.taxCodes}?${getParams(request)}`,
         await flash(request, success("Tax code created"))
@@ -116,6 +116,7 @@ export default function NewTaxCodeRoute() {
     invoiceMessage: "",
     countryCode: "",
     state: "",
+    active: true,
     components: "[]"
   };
 

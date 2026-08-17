@@ -27,6 +27,7 @@ import { useFetcher } from "react-router";
 import type { z } from "zod";
 import {
   AccountControlled,
+  Boolean,
   CustomFormFields,
   Hidden,
   Input,
@@ -441,6 +442,11 @@ const TaxCodeForm = ({
                   name="state"
                   label={t`Address Match — State / Province`}
                   helperText={t`Suggestion only. Leave blank to match every state in the country above.`}
+                />
+                <Boolean
+                  name="active"
+                  label={t`Active`}
+                  description={t`Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete.`}
                 />
 
                 <VStack spacing={2}>

@@ -1,4 +1,4 @@
-import { MenuIcon, MenuItem } from "@carbon/react";
+import { Checkbox, MenuIcon, MenuItem } from "@carbon/react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import type { ColumnDef } from "@tanstack/react-table";
 import { memo, useCallback, useMemo } from "react";
@@ -10,6 +10,7 @@ import {
   LuPencil,
   LuPercent,
   LuTags,
+  LuToggleLeft,
   LuTrash
 } from "react-icons/lu";
 import { useNavigate } from "react-router";
@@ -23,6 +24,14 @@ import {
   taxReportingCategories
 } from "../../accounting.models";
 import type { TaxCode } from "../../types";
+
+// 4 fraction digits so a compound rate like 0.1547375 reads as 15.4738%
+// instead of collapsing to 15.47% and hiding the difference between two codes.
+const percentFormatter = new Intl.NumberFormat(undefined, {
+  style: "percent",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 4
+});
 
 type TaxCodesTableProps = {
   data: TaxCode[];
@@ -102,6 +111,32 @@ const TaxCodesTable = memo(({ data, count }: TaxCodesTableProps) => {
         cell: (item) => item.getValue<string | null>(),
         meta: {
           icon: <LuMapPin />
+        }
+      },
+      {
+        accessorKey: "effectiveRate",
+        header: t`Effective Rate`,
+        // Blended across the code's components in force today, so a compound
+        // code reads as what it actually charges (5% + compound 9.975% is
+        // 15.47%, not 14.975%).
+        cell: (item) => percentFormatter.format(item.getValue<number>() ?? 0),
+        meta: {
+          icon: <LuPercent />
+        }
+      },
+      {
+        accessorKey: "active",
+        header: t`Active`,
+        cell: (item) => <Checkbox isChecked={item.getValue<boolean>()} />,
+        meta: {
+          filter: {
+            type: "static",
+            options: [
+              { label: t`Active`, value: "true" },
+              { label: t`Inactive`, value: "false" }
+            ]
+          },
+          icon: <LuToggleLeft />
         }
       }
     ];

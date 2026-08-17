@@ -181,7 +181,7 @@ const MaterialProperties = ({ data }: MaterialPropertiesProps) => {
         | "materialTypeId"
         | "materialId"
         | "mpn"
-              | "taxable",
+        | "taxable",
       value: string | null
     ) => {
       const formData = new FormData();

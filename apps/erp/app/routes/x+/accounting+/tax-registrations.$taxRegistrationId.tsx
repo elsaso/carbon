@@ -14,7 +14,7 @@ import { getCustomFields, setCustomFields } from "~/utils/form";
 import { getParams, path } from "~/utils/path";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "accounting",
     role: "employee"
   });
@@ -22,7 +22,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { taxRegistrationId } = params;
   if (!taxRegistrationId) throw notFound("taxRegistrationId not found");
 
-  const taxRegistration = await getTaxRegistration(client, taxRegistrationId);
+  const taxRegistration = await getTaxRegistration(
+    client,
+    taxRegistrationId,
+    companyId
+  );
 
   return {
     taxRegistration: taxRegistration?.data ?? null
@@ -31,7 +35,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   assertIsPost(request);
-  const { client, userId } = await requirePermissions(request, {
+  const { client, companyId, userId } = await requirePermissions(request, {
     update: "accounting"
   });
 
@@ -48,6 +52,7 @@ export async function action({ request }: ActionFunctionArgs) {
   if (!id) throw new Error("id not found");
 
   const updateTaxRegistration = await upsertTaxRegistration(client, {
+    companyId,
     id,
     ...d,
     updatedBy: userId,
