@@ -259,6 +259,10 @@ export const path = {
             itemId ? `&itemId=${itemId}` : ""
           }`
         ),
+      suggestTaxCode: (countryCode: string, state?: string | null) =>
+        `${api}/accounting/suggest-tax-code?countryCode=${encodeURIComponent(
+          countryCode
+        )}${state ? `&state=${encodeURIComponent(state)}` : ""}`,
       supplierContacts: (id: string) =>
         generatePath(`${api}/purchasing/supplier-contacts/${id}`),
       supplierLocations: (id: string) =>
@@ -828,6 +832,12 @@ export const path = {
       generatePath(`${x}/supplier-quote/${id}/${lineId}/delete`),
     deleteSupplierType: (id: string) =>
       generatePath(`${x}/purchasing/supplier-types/delete/${id}`),
+    deleteTaxAuthority: (id: string) =>
+      generatePath(`${x}/accounting/tax-authorities/delete/${id}`),
+    deleteTaxCode: (id: string) =>
+      generatePath(`${x}/accounting/tax-codes/delete/${id}`),
+    deleteTaxRegistration: (id: string) =>
+      generatePath(`${x}/accounting/tax-registrations/delete/${id}`),
     deleteTimecard: (id: string) =>
       generatePath(`${x}/people/timecard/delete/${id}`),
     deleteToolSupplier: (itemId: string, id: string) =>
@@ -1594,6 +1604,9 @@ export const path = {
       generatePath(`${x}/supplier-quote/${id}/new`),
     newSupplierType: `${x}/purchasing/supplier-types/new`,
     newTag: `${x}/settings/tags/new`,
+    newTaxAuthority: `${x}/accounting/tax-authorities/new`,
+    newTaxCode: `${x}/accounting/tax-codes/new`,
+    newTaxRegistration: `${x}/accounting/tax-registrations/new`,
     newTimecard: `${x}/people/timecard/new`,
     newTool: `${x}/tool/new`,
     newToolSupplier: (id: string) =>
@@ -2095,6 +2108,15 @@ export const path = {
     tableSequence: (id: string) =>
       generatePath(`${x}/settings/sequences/${id}`),
     tags: `${x}/settings/tags`,
+    taxAuthorities: `${x}/accounting/tax-authorities`,
+    taxAuthority: (id: string) =>
+      generatePath(`${x}/accounting/tax-authorities/${id}`),
+    taxCode: (id: string) => generatePath(`${x}/accounting/tax-codes/${id}`),
+    taxCodes: `${x}/accounting/tax-codes`,
+    taxLiability: `${x}/accounting/tax-liability`,
+    taxRegistration: (id: string) =>
+      generatePath(`${x}/accounting/tax-registrations/${id}`),
+    taxRegistrations: `${x}/accounting/tax-registrations`,
     theme: `${x}/account/theme`,
     timecard: (id: string) => generatePath(`${x}/people/timecard/${id}`),
     timecards: `${x}/timecards`,
