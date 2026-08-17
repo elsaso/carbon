@@ -10,29 +10,42 @@
 
 ## Progress
 
-- [ ] Task 1: Create the Phase 1 migration
-- [ ] Task 2: Regenerate database types
-- [ ] Task 3: Add tax validators and enum arrays to accounting.models.ts (+ memo validator)
-- [ ] Task 4: Add effective-component rate math to accounting.utils.ts with unit tests
-- [ ] Task 5: Add tax CRUD service functions to accounting.service.ts
-- [ ] Task 6: Add resolveLineTaxes + suggestTaxCode with unit-tested core
-- [ ] Task 7: Wire determination into sales-side line creation
-- [ ] Task 8: Wire determination into purchase-side line creation
-- [ ] Task 9: Tax codes routes + table + form (components editor)
-- [ ] Task 10: Tax authorities + tax registrations routes
-- [ ] Task 11: Accounting nav + path.to entries for the Tax group
-- [ ] Task 12: Customer/supplier tax-code assignment UI + taxPercent sunset banner
-- [ ] Task 13: Customer location override select
-- [ ] Task 14: Item "Taxable" switch
-- [ ] Task 15: Line form tax display + override select + audit coverage
-- [ ] Task 16: Shared edge-function tax resolver helper
-- [ ] Task 17: post-sales-invoice — tax split, ledger writes, VOID reversals, shipping taxability
-- [ ] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes
-- [ ] Task 19: post-memo — net/tax split + signed ledger rows
-- [ ] Task 20: Sales invoice PDF tax summary, clauses, registration numbers
-- [ ] Task 21: Tax liability report (service + route)
-- [ ] Task 22: Lingui extract + full scoped validation
-- [ ] Task 23: Browser verification via /test
+Split across three stacked branches: `feat/tax-phase1-a1-backend` (foundation),
+`feat/tax-phase1-a2-ui` (configuration + assignment UI), and
+`feat/tax-phase1-c-posting` (posting). Note the module rename upstream —
+tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
+
+- [x] Task 1: Create the Phase 1 migration
+- [x] Task 2: Regenerate database types
+- [x] Task 3: Add tax validators and enum arrays to accounting.models.ts — **memo validator NOT done** (see Task 19)
+- [x] Task 4: Add effective-component rate math to accounting.utils.ts with unit tests
+- [x] Task 5: Add tax CRUD service functions
+- [x] Task 6: Add resolveLineTaxes + suggestTaxCode with unit-tested core
+- [x] Task 7: Wire determination into sales-side line creation — quote / sales order / sales invoice lines. The `recalculateLineTaxes` action route (step 3) is NOT done.
+- [x] Task 8: Wire determination into purchase-side line creation
+- [x] Task 9: Tax codes routes + table + form (components editor)
+- [x] Task 10: Tax authorities + tax registrations routes
+- [x] Task 11: Accounting nav + path.to entries for the Tax group
+- [x] Task 12: Customer/supplier tax-code assignment UI + taxPercent sunset banner
+- [x] Task 13: Customer location override select
+- [x] Task 14: Item "Taxable" switch
+- [ ] Task 15: Line form tax display + override select + audit coverage — **not started**
+- [x] Task 16: Shared edge-function tax resolver helper
+- [x] Task 17: post-sales-invoice — tax split, ledger writes, VOID reversals, shipping taxability
+- [x] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes
+- [ ] Task 19: post-memo — net/tax split + signed ledger rows — **not started**
+- [ ] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — **not started**
+- [ ] Task 21: Tax liability report (service + route) — **not started**
+- [ ] Task 22: Lingui extract + full scoped validation — extract done; full gate re-run pending the remaining tasks
+- [ ] Task 23: Browser verification via /test — **not started** (no runtime verification of posting yet)
+
+Phase 1 is therefore **not complete**, and none of these branches should close
+upstream #1036. What is missing is memo tax, the invoice PDF tax block, the tax
+liability report, the line-level override UI, and the recalculate action.
+
+**External blocker:** #1036 depends on #1030 (FX normalization, PR #1298). The
+posting branch still multiplies by `exchangeRate`, which is the convention #1298
+removes — posting must not merge before that lands.
 
 ## Dependencies
 
