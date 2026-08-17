@@ -4,10 +4,18 @@ import { flash } from "@carbon/auth/session.server";
 import { validationError, validator } from "@carbon/form";
 import type {
   ActionFunctionArgs,
-  ClientActionFunctionArgs
+  ClientActionFunctionArgs,
+  LoaderFunctionArgs
 } from "react-router";
-import { data, redirect, useNavigate, useParams } from "react-router";
+import {
+  data,
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useParams
+} from "react-router";
 import { useUser } from "~/hooks";
+import { getTaxCodesList } from "~/modules/accounting";
 import {
   customerLocationValidator,
   insertCustomerLocation
@@ -16,6 +24,18 @@ import { CustomerLocationForm } from "~/modules/sales/ui/Customer";
 import { setCustomFields } from "~/utils/form";
 import { path } from "~/utils/path";
 import { customerLocationsQuery } from "~/utils/react-query";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const { client, companyId } = await requirePermissions(request, {
+    view: "sales"
+  });
+
+  const taxCodes = await getTaxCodesList(client, companyId);
+
+  return {
+    taxCodes: taxCodes.data ?? []
+  };
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
   assertIsPost(request);
@@ -37,13 +57,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return validationError(validation.error);
   }
 
+  // taxCodeId belongs to `customerLocation`, so it must not fall into `...address`
   // biome-ignore lint/correctness/noUnusedVariables: suppressed due to migration
-  const { id, addressId, name, ...address } = validation.data;
+  const { id, addressId, name, taxCodeId, ...address } = validation.data;
 
   const createCustomerLocation = await insertCustomerLocation(client, {
     customerId,
     companyId,
     name,
+    taxCodeId,
     address,
     customFields: setCustomFields(formData)
   });
@@ -87,11 +109,13 @@ export async function clientAction({
 export default function CustomerLocationsNewRoute() {
   const navigate = useNavigate();
   const { company } = useUser();
+  const { taxCodes } = useLoaderData<typeof loader>();
   const { customerId } = useParams();
   if (!customerId) throw new Error("customerId not found");
 
   const initialValues = {
     name: "",
+    taxCodeId: "",
     countryCode: company?.countryCode ?? ""
   };
 
@@ -99,6 +123,7 @@ export default function CustomerLocationsNewRoute() {
     <CustomerLocationForm
       initialValues={initialValues}
       customerId={customerId}
+      taxCodes={taxCodes}
       onClose={() => navigate(path.to.customerLocations(customerId))}
     />
   );

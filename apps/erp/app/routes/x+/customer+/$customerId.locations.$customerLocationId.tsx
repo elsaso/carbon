@@ -14,6 +14,7 @@ import type {
   LoaderFunctionArgs
 } from "react-router";
 import { redirect, useLoaderData, useNavigate, useParams } from "react-router";
+import { getTaxCodesList } from "~/modules/accounting";
 import {
   customerLocationValidator,
   getCustomerLocation,
@@ -25,7 +26,7 @@ import { path } from "~/utils/path";
 import { customerLocationsQuery } from "~/utils/react-query";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "sales"
   });
 
@@ -33,7 +34,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!customerId) throw notFound("customerId not found");
   if (!customerLocationId) throw notFound("customerLocationId not found");
 
-  const location = await getCustomerLocation(client, customerLocationId);
+  const [location, taxCodes] = await Promise.all([
+    getCustomerLocation(client, customerLocationId),
+    getTaxCodesList(client, companyId)
+  ]);
   if (location.error) {
     throw redirect(
       path.to.customerLocations(customerId),
@@ -45,7 +49,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   return {
-    location: location.data
+    location: location.data,
+    taxCodes: taxCodes.data ?? []
   };
 }
 
@@ -68,8 +73,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return validationError(validation.error);
   }
 
+  // taxCodeId belongs to `customerLocation`, so it must not fall into `...address`
   // biome-ignore lint/correctness/noUnusedVariables: suppressed due to migration
-  const { id, addressId, name, ...address } = validation.data;
+  const { id, addressId, name, taxCodeId, ...address } = validation.data;
 
   if (addressId === undefined)
     throw badRequest("addressId is undefined in form data");
@@ -77,6 +83,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const update = await updateCustomerLocation(client, {
     addressId,
     name,
+    taxCodeId,
     address,
     customFields: setCustomFields(formData)
   });
@@ -111,7 +118,7 @@ export async function clientAction({
 }
 
 export default function EditCustomerLocationRoute() {
-  const { location } = useLoaderData<typeof loader>();
+  const { location, taxCodes } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
 
   const { customerId } = useParams();
@@ -121,6 +128,7 @@ export default function EditCustomerLocationRoute() {
     id: location?.id ?? undefined,
     addressId: location?.address?.id ?? undefined,
     name: location?.name ?? undefined,
+    taxCodeId: location?.taxCodeId ?? "",
 
     addressLine1: location?.address?.addressLine1 ?? "",
     addressLine2: location?.address?.addressLine2 ?? "",
@@ -136,6 +144,7 @@ export default function EditCustomerLocationRoute() {
       key={initialValues.id}
       customerId={customerId}
       initialValues={initialValues}
+      taxCodes={taxCodes}
       onClose={() => navigate(path.to.customerLocations(customerId))}
     />
   );
