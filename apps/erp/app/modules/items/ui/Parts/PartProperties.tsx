@@ -173,7 +173,8 @@ const PartProperties = ({
         | "mpn"
         | "replenishmentSystem"
         | "unitOfMeasureCode"
-        | "requiresInspection",
+        | "requiresInspection"
+        | "taxable",
       value: string | null
     ) => {
       const formData = new FormData();
@@ -743,6 +744,29 @@ const PartProperties = ({
             variant="small"
             onChange={(value) => {
               onUpdate("active", value ? "on" : "off");
+            }}
+          />
+        </ValidatedForm>
+      )}
+      {!embedded && (
+        <ValidatedForm
+          defaultValues={{
+            taxable:
+              (routeData?.partSummary as { taxable?: boolean } | undefined)
+                ?.taxable ?? true
+          }}
+          validator={z.object({
+            taxable: zfd.checkbox()
+          })}
+          className="w-full"
+          isReadOnly={isReadOnly}
+        >
+          <Boolean
+            label={t`Taxable`}
+            name="taxable"
+            variant="small"
+            onChange={(value) => {
+              onUpdate("taxable", value ? "on" : "off");
             }}
           />
         </ValidatedForm>

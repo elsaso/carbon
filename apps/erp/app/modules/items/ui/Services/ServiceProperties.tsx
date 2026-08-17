@@ -95,7 +95,8 @@ const ServiceProperties = ({ data }: ServicePropertiesProps) => {
         | "defaultMethodType"
         | "itemPostingGroupId"
         | "serviceId"
-        | "active",
+        | "active"
+        | "taxable",
       value: string | null
     ) => {
       const formData = new FormData();
@@ -459,6 +460,26 @@ const ServiceProperties = ({ data }: ServicePropertiesProps) => {
           variant="small"
           onChange={(value) => {
             onUpdate("active", value ? "on" : "off");
+          }}
+        />
+      </ValidatedForm>
+      <ValidatedForm
+        defaultValues={{
+          taxable:
+            (routeData?.serviceSummary as { taxable?: boolean } | undefined)
+              ?.taxable ?? true
+        }}
+        validator={z.object({
+          taxable: zfd.checkbox()
+        })}
+        className="w-full"
+      >
+        <Boolean
+          label={t`Taxable`}
+          name="taxable"
+          variant="small"
+          onChange={(value) => {
+            onUpdate("taxable", value ? "on" : "off");
           }}
         />
       </ValidatedForm>
