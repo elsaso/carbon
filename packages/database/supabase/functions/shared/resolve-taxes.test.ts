@@ -70,6 +70,14 @@ Deno.test("roundCurrency survives the classic float traps", () => {
   assertEquals(roundCurrency(2.674), 2.67);
 });
 
+Deno.test("roundCurrency does not round UP a value that only looks like a tie", () => {
+  // 520.4999999999998 * 0.13 is 67.66499999999997783107 — genuinely BELOW the
+  // half cent, so half-up rounds it DOWN. The decimal round-trip in `round`
+  // sees that; the relative-epsilon nudge this used to apply did not, and
+  // pushed it over the tie to 67.67. Postgres agrees with 67.66.
+  assertEquals(roundCurrency(520.4999999999998 * 0.13), 67.66);
+});
+
 Deno.test("roundCurrency honors a non-default precision and never returns -0", () => {
   assertEquals(roundCurrency(0.0997512, 4), 0.0998);
   assertEquals(roundCurrency(2.5, 0), 3);
