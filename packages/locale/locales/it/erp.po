@@ -620,6 +620,9 @@ msgstr "Aggiungi Unità di Archiviazione Secondaria"
 msgid "Add Company"
 msgstr "Aggiungi Azienda"
 
+msgid "Add Component"
+msgstr ""
+
 msgid "Add condition"
 msgstr "Aggiungi condizione"
 
@@ -746,6 +749,12 @@ msgstr "Indirizzo Riga 1"
 
 msgid "Address Line 2"
 msgstr "Indirizzo Linea 2"
+
+msgid "Address Match — Country"
+msgstr ""
+
+msgid "Address Match — State / Province"
+msgstr ""
 
 msgid "Adjustment Type"
 msgstr "Tipo di Rettifica"
@@ -1299,6 +1308,18 @@ msgstr "Sei sicuro di voler eliminare l'unità di archiviazione: {0}? Questa azi
 #. placeholder {0}: supplierType.name
 msgid "Are you sure you want to delete the supplier type: {0}? This cannot be undone."
 msgstr "Sei sicuro di voler eliminare il tipo di fornitore: {0}? Questa azione non può essere annullata."
+
+#. placeholder {0}: taxAuthority.name
+msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
+msgstr ""
+
+#. placeholder {0}: taxCode.name
+msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
+msgstr ""
+
+#. placeholder {0}: taxRegistration.registrationNumber
+msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
+msgstr ""
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -1891,6 +1912,9 @@ msgstr "Scadenza del prodotto finito calcolata"
 msgid "Calculation Method"
 msgstr "Metodo di Calcolo"
 
+msgid "Calculation Type"
+msgstr ""
+
 msgid "Calibration Attempts"
 msgstr "Tentativi di calibrazione"
 
@@ -2383,6 +2407,18 @@ msgstr "Codice a barre di completamento"
 
 msgid "Completion Time"
 msgstr "Tempo di completamento"
+
+msgid "Component Name"
+msgstr ""
+
+msgid "Component name, e.g. GST"
+msgstr ""
+
+msgid "Components"
+msgstr ""
+
+msgid "Compound"
+msgstr ""
 
 msgid "Conditions"
 msgstr "Condizioni"
@@ -3108,6 +3144,15 @@ msgstr "Tipo di archiviazione creato"
 #. placeholder {0}: created.name
 msgid "Created supplier: {0}"
 msgstr "Fornitore creato: {0}"
+
+msgid "Created tax authority"
+msgstr ""
+
+msgid "Created tax code"
+msgstr ""
+
+msgid "Created tax registration"
+msgstr ""
 
 msgid "Created tool"
 msgstr "Strumento creato"
@@ -3869,6 +3914,15 @@ msgstr "Elimina Offerta Fornitore"
 msgid "Delete Supplier Type"
 msgstr "Elimina Tipo Fornitore"
 
+msgid "Delete Tax Authority"
+msgstr ""
+
+msgid "Delete Tax Code"
+msgstr ""
+
+msgid "Delete Tax Registration"
+msgstr ""
+
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
 msgstr "Eliminare il break di prezzo per la quantità {0}? Questa azione non può essere annullata."
@@ -4563,6 +4617,15 @@ msgstr "Modifica processo fornitore"
 msgid "Edit Supplier Type"
 msgstr "Modifica Tipo Fornitore"
 
+msgid "Edit Tax Authority"
+msgstr ""
+
+msgid "Edit Tax Code"
+msgstr ""
+
+msgid "Edit Tax Registration"
+msgstr ""
+
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "Modifica la regola per rimuovere il flag \"Applies to all\""
 
@@ -4595,6 +4658,13 @@ msgstr "Modifica Webhook"
 
 msgid "Edit Work Center"
 msgstr "Modifica Centro di Lavoro"
+
+msgid "Effective Date"
+msgstr ""
+
+#. placeholder {0}: formatPercent(effectiveRate)
+msgid "Effective rate today: {0}"
+msgstr ""
 
 msgid "Email"
 msgstr "Email"
@@ -5171,6 +5241,18 @@ msgstr "Impossibile creare il tipo di archiviazione: {0}"
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create supplier: {0}"
 msgstr "Impossibile creare il fornitore: {0}"
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax authority: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax code: {0}"
+msgstr ""
+
+#. placeholder {0}: fetcher.data.error.message
+msgid "Failed to create tax registration: {0}"
+msgstr ""
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6045,6 +6127,9 @@ msgstr "Come viene utilizzato questo calibro — Standard (controlli regolari), 
 msgid "How this price was calculated"
 msgstr "Come è stato calcolato questo prezzo"
 
+msgid "How this treatment is grouped on tax returns"
+msgstr ""
+
 msgid "How to reach us"
 msgstr "Come raggiungerci"
 
@@ -6440,6 +6525,9 @@ msgstr "ID Fattura"
 
 msgid "Invoice Location"
 msgstr "Ubicazione Fattura"
+
+msgid "Invoice Message"
+msgstr ""
 
 msgid "Invoice Number"
 msgstr "Numero Fattura"
@@ -7869,6 +7957,15 @@ msgstr "Nuovo Fornitore"
 msgid "New Supplier Part"
 msgstr "Nuovo Fornitore Parte"
 
+msgid "New Tax Authority"
+msgstr ""
+
+msgid "New Tax Code"
+msgstr ""
+
+msgid "New Tax Registration"
+msgstr ""
+
 msgid "New Timecard"
 msgstr "Nuovo Foglio Presenze"
 
@@ -8550,6 +8647,12 @@ msgstr "Tasso fisso opzionale utilizzato quando si traducono i saldi del patrimo
 msgid "Optional pages & sections"
 msgstr "Pagine e sezioni opzionali"
 
+msgid "Optional. Leave blank for a country-wide registration."
+msgstr ""
+
+msgid "Optional. The supplier record used to pay this authority."
+msgstr ""
+
 msgid "Options"
 msgstr "Opzioni"
 
@@ -9223,6 +9326,12 @@ msgstr "Stampa Etichetta"
 msgid "Print Output ({0})"
 msgstr "Output di stampa ({0})"
 
+msgid "Printed on documents that use this tax code"
+msgstr ""
+
+msgid "Printed on sales documents for this jurisdiction"
+msgstr ""
+
 msgid "Printer Settings"
 msgstr "Impostazioni Stampante"
 
@@ -9468,6 +9577,9 @@ msgstr "Imposta di Acquisto Pagabile"
 msgid "Purchase Qty"
 msgstr "Quantità Acquisto"
 
+msgid "Purchase tax account"
+msgstr ""
+
 msgid "Purchase Tax Payable"
 msgstr "Imposta di Acquisto Pagabile (predefinita)"
 
@@ -9677,6 +9789,9 @@ msgstr "Segnalalo nella riunione di stato settimanale"
 msgid "raise it early and raise it plainly. A problem named in week 2 is a small fix; the same problem at go-live is a delay."
 msgstr "segnalalo presto e segnalalo chiaramente. Un problema identificato nella settimana 2 è una piccola correzione; lo stesso problema al lancio è un ritardo."
 
+msgid "Rate (%)"
+msgstr ""
+
 msgid "Rate Limit"
 msgstr "Limite di Velocità"
 
@@ -9864,6 +9979,9 @@ msgstr "Registrato che l'indicatore è stato regolato durante questa calibrazion
 msgid "Records"
 msgstr "Registri"
 
+msgid "Recoverable"
+msgstr ""
+
 msgid "Recovery Period"
 msgstr "Registrare"
 
@@ -9896,6 +10014,9 @@ msgstr "Registrato"
 
 msgid "Registered"
 msgstr "Punto di Riordino"
+
+msgid "Registration Number"
+msgstr ""
 
 msgid "Reject"
 msgstr "Rifiuta"
@@ -9963,6 +10084,9 @@ msgstr "Rimuovi"
 #. placeholder {0}: item.label
 msgid "Remove {0}"
 msgstr "Rimuovi {0}"
+
+msgid "Remove component"
+msgstr ""
 
 msgid "Remove condition"
 msgstr "Rimuovi condizione"
@@ -10065,6 +10189,9 @@ msgstr "Sistema di Rifornimento"
 
 msgid "Report"
 msgstr "Rapporto"
+
+msgid "Reporting Category"
+msgstr ""
 
 msgid "Reports"
 msgstr "Rapporti"
@@ -10214,6 +10341,9 @@ msgstr "Imposta di vendita con inversione contabile"
 
 msgid "Reverse Charge Sales Tax (default)"
 msgstr "Imposta di vendita con inversione contabile (predefinito)"
+
+msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
+msgstr ""
 
 msgid "Reverse the related journal entries"
 msgstr "Storna le relative registrazioni contabili"
@@ -10468,6 +10598,9 @@ msgstr "Addetto alle vendite"
 
 msgid "Sales Revenue"
 msgstr "Ricavi di vendita"
+
+msgid "Sales tax account"
+msgstr ""
 
 msgid "Sales Tax Payable"
 msgstr "Imposta di vendita dovuta"
@@ -10855,6 +10988,9 @@ msgstr "Invio di unità difettose a un'operazione precedente per la correzione a
 
 msgid "Sends this document for approval before it can go active."
 msgstr "Invia questo documento per l'approvazione prima che possa diventare attivo."
+
+msgid "Sequence"
+msgstr ""
 
 msgid "Sequences"
 msgstr "Sequenze"
@@ -11600,6 +11736,12 @@ msgstr "Suggerimento"
 msgid "Suggestion Notifications"
 msgstr "Notifiche di suggerimento"
 
+msgid "Suggestion only. Leave blank to match every state in the country above."
+msgstr ""
+
+msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
+msgstr ""
+
 msgid "Suggestions"
 msgstr "Suggerimenti"
 
@@ -11868,6 +12010,21 @@ msgstr "Tasse e spedizione"
 msgid "Tax Amount"
 msgstr "Importo Imposta"
 
+msgid "Tax Authorities"
+msgstr ""
+
+msgid "Tax authority"
+msgstr ""
+
+msgid "Tax Authority"
+msgstr ""
+
+msgid "Tax Code"
+msgstr ""
+
+msgid "Tax Codes"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "Codici fiscali, aliquote"
 
@@ -11897,6 +12054,15 @@ msgstr "Metodo Fiscale (predefinito)"
 
 msgid "Tax Percent"
 msgstr "Percentuale Imposta"
+
+msgid "Tax Registration"
+msgstr ""
+
+msgid "Tax registration coverage"
+msgstr ""
+
+msgid "Tax Registrations"
+msgstr ""
 
 msgid "Tax Residual Value %"
 msgstr "Valore Residuo Fiscale %"
@@ -11986,6 +12152,9 @@ msgstr "L'importo dei giorni dopo il metodo di calcolo in cui il pagamento è do
 msgid "The append-only record of every stock movement; on-hand is the sum of its signed entries and the source of truth."
 msgstr "Il record di sola aggiunta di ogni movimento di inventario; la giacenza è la somma delle sue voci firmate ed è la fonte di verità."
 
+msgid "The body you remit this tax to, e.g. Revenu Québec"
+msgstr ""
+
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "Il libro di tutte le righe di giornale registrate, sommate per conto – scritto solo quando la contabilità è abilitata per l'azienda."
 
@@ -12054,6 +12223,9 @@ msgstr "La disponibilità settimanale prevista dell'appaltatore; la pianificazio
 
 msgid "The corrected expiration for this lot/serial; existing on-hand stock is re-evaluated against shelf-life policy after the change."
 msgstr "La data di scadenza corretta per questo lotto/numero di serie; l'inventario in mano esistente viene rivalutato rispetto alla politica di shelf-life dopo la modifica."
+
+msgid "The country this registration is filed in"
+msgstr ""
 
 msgid "The currencies you trade in and their rates"
 msgstr "Le valute in cui fai trading e i loro tassi"
@@ -12634,6 +12806,12 @@ msgstr "Questi lavori hanno operazioni assegnate a questo centro di lavoro:"
 
 msgid "These journal entries are still Draft, so their debits and credits aren't in the ledger for this period. Post each one, or re-date it into a later open period."
 msgstr "Queste registrazioni contabili sono ancora in Bozza, quindi i loro debiti e crediti non sono nella contabilità generale per questo periodo. Registra ciascuna o rivalutala in un periodo aperto successivo."
+
+msgid "These registrations have no matching active tax code:"
+msgstr ""
+
+msgid "These tax codes have no matching registration:"
+msgstr ""
 
 msgid "This completes the Discovery step."
 msgstr "Questo completa il passaggio Discovery."
