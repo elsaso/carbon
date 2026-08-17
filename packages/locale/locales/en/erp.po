@@ -4662,9 +4662,8 @@ msgstr "Edit Work Center"
 msgid "Effective Date"
 msgstr "Effective Date"
 
-#. placeholder {0}: formatPercent(effectiveRate)
-msgid "Effective rate today: {0}"
-msgstr "Effective rate today: {0}"
+msgid "Effective rate today: {effectiveRateLabel}"
+msgstr "Effective rate today: {effectiveRateLabel}"
 
 msgid "Email"
 msgstr "Email"
@@ -8301,6 +8300,9 @@ msgstr "No stockout projected in the next 48 weeks"
 
 msgid "No suppliers yet"
 msgstr "No suppliers yet"
+
+msgid "No tax authorities"
+msgstr "No tax authorities"
 
 msgid "No time entries for this week"
 msgstr "No time entries for this week"

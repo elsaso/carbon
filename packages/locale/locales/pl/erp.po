@@ -4662,8 +4662,7 @@ msgstr "Edytuj Centrum Pracy"
 msgid "Effective Date"
 msgstr ""
 
-#. placeholder {0}: formatPercent(effectiveRate)
-msgid "Effective rate today: {0}"
+msgid "Effective rate today: {effectiveRateLabel}"
 msgstr ""
 
 msgid "Email"
@@ -8301,6 +8300,9 @@ msgstr "Brak prognozowanego braku zapasów w ciągu następnych 48 tygodni"
 
 msgid "No suppliers yet"
 msgstr "Brak dostawców"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "Brak wpisów czasu pracy w tym tygodniu"

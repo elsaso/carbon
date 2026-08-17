@@ -4662,8 +4662,7 @@ msgstr "कार्य केंद्र संपादित करें"
 msgid "Effective Date"
 msgstr ""
 
-#. placeholder {0}: formatPercent(effectiveRate)
-msgid "Effective rate today: {0}"
+msgid "Effective rate today: {effectiveRateLabel}"
 msgstr ""
 
 msgid "Email"
@@ -8301,6 +8300,9 @@ msgstr "अगले 48 सप्ताह में कोई स्टॉक�
 
 msgid "No suppliers yet"
 msgstr "अभी तक कोई आपूर्तिकर्ता नहीं"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "इस सप्ताह के लिए कोई समय प्रविष्टि नहीं"

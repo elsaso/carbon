@@ -3,9 +3,10 @@ import { requirePermissions } from "@carbon/auth/auth.server";
 import { flash } from "@carbon/auth/session.server";
 import { validationError, validator } from "@carbon/form";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
-import { data, redirect, useNavigate } from "react-router";
+import { data, redirect, useLoaderData, useNavigate } from "react-router";
 import { z } from "zod";
 import {
+  getTaxAuthoritiesList,
   taxCodeComponentValidator,
   taxCodeValidator,
   upsertTaxCode
@@ -22,11 +23,14 @@ const taxCodeComponentsValidator = z
   .min(1, { message: "At least one tax component is required" });
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     create: "accounting"
   });
 
-  return null;
+  // Feeds the per-component authority select in the components editor.
+  const taxAuthorities = await getTaxAuthoritiesList(client, companyId);
+
+  return { taxAuthorities: taxAuthorities.data ?? [] };
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -103,6 +107,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function NewTaxCodeRoute() {
   const navigate = useNavigate();
+  const { taxAuthorities } = useLoaderData<typeof loader>();
   const initialValues = {
     name: "",
     description: "",
@@ -115,6 +120,10 @@ export default function NewTaxCodeRoute() {
   };
 
   return (
-    <TaxCodeForm initialValues={initialValues} onClose={() => navigate(-1)} />
+    <TaxCodeForm
+      initialValues={initialValues}
+      taxAuthorities={taxAuthorities}
+      onClose={() => navigate(-1)}
+    />
   );
 }

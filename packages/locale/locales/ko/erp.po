@@ -4662,8 +4662,7 @@ msgstr "작업장 수정"
 msgid "Effective Date"
 msgstr ""
 
-#. placeholder {0}: formatPercent(effectiveRate)
-msgid "Effective rate today: {0}"
+msgid "Effective rate today: {effectiveRateLabel}"
 msgstr ""
 
 msgid "Email"
@@ -8301,6 +8300,9 @@ msgstr "향후 48주간 재고 소진이 예상되지 않습니다"
 
 msgid "No suppliers yet"
 msgstr "아직 공급업체가 없습니다"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "이번 주 시간 기록이 없습니다"

@@ -6,6 +6,7 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { data, redirect, useLoaderData, useNavigate } from "react-router";
 import { z } from "zod";
 import {
+  getTaxAuthoritiesList,
   getTaxCode,
   taxCodeComponentValidator,
   taxCodeValidator,
@@ -23,7 +24,7 @@ const taxCodeComponentsValidator = z
   .min(1, { message: "At least one tax component is required" });
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { client } = await requirePermissions(request, {
+  const { client, companyId } = await requirePermissions(request, {
     view: "accounting",
     role: "employee"
   });
@@ -31,10 +32,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { taxCodeId } = params;
   if (!taxCodeId) throw notFound("taxCodeId not found");
 
-  const taxCode = await getTaxCode(client, taxCodeId);
+  const [taxCode, taxAuthorities] = await Promise.all([
+    getTaxCode(client, taxCodeId),
+    // Feeds the per-component authority select in the components editor.
+    getTaxAuthoritiesList(client, companyId)
+  ]);
 
   return {
-    taxCode: taxCode?.data ?? null
+    taxCode: taxCode?.data ?? null,
+    taxAuthorities: taxAuthorities.data ?? []
   };
 }
 
@@ -107,7 +113,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function EditTaxCodeRoute() {
-  const { taxCode } = useLoaderData<typeof loader>();
+  const { taxCode, taxAuthorities } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
 
   const initialValues = {
@@ -128,6 +134,7 @@ export default function EditTaxCodeRoute() {
     <TaxCodeForm
       key={initialValues.id}
       initialValues={initialValues}
+      taxAuthorities={taxAuthorities}
       onClose={() => navigate(-1)}
     />
   );

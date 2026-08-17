@@ -4662,8 +4662,7 @@ msgstr "ワークセンターを編集"
 msgid "Effective Date"
 msgstr ""
 
-#. placeholder {0}: formatPercent(effectiveRate)
-msgid "Effective rate today: {0}"
+msgid "Effective rate today: {effectiveRateLabel}"
 msgstr ""
 
 msgid "Email"
@@ -8301,6 +8300,9 @@ msgstr "今後48週間の在庫切れは予測されていません"
 
 msgid "No suppliers yet"
 msgstr "まだサプライヤーがありません"
+
+msgid "No tax authorities"
+msgstr ""
 
 msgid "No time entries for this week"
 msgstr "今週のタイムエントリがありません"
