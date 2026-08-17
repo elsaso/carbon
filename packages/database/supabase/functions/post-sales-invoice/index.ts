@@ -19,6 +19,8 @@ import { round } from "../shared/precision.ts";
 import { calculateCOGS } from "../shared/calculate-cogs.ts";
 import type { EffectiveTaxComponent } from "../shared/resolve-taxes.ts";
 import {
+  emptySalesLineTax,
+  resolveDocumentShippingTax,
   resolveSalesLineTax,
   type SalesLineTax,
 } from "./build-tax-lines.ts";
@@ -392,12 +394,16 @@ serve(async (req: Request) => {
         if (customerTax.error)
           throw new Error("Failed to fetch customer tax settings");
 
-        // Only active codes of THIS company resolve; anything else falls back to
-        // the line's legacy flat `taxPercent`.
-        const activeTaxCodeIds = new Set(
-          (taxCodes?.data ?? [])
-            .filter((taxCode) => taxCode.active)
-            .map((taxCode) => taxCode.id)
+        // Codes of THIS company resolve, ACTIVE OR NOT. Deactivating a code is
+        // a soft delete whose entire purpose is that documents already carrying
+        // it keep resolving it; dropping an inactive code to the line's legacy
+        // flat `taxPercent` would silently discard the component split, the
+        // per-component accounts and the authority identity that the tax
+        // subledger and the liability report are built on — and it would do so
+        // at posting time, long after anyone could notice. Only a code that
+        // belongs to another company (or no longer exists) falls back.
+        const resolvableTaxCodeIds = new Set(
+          (taxCodes?.data ?? []).map((taxCode) => taxCode.id)
         );
 
         const taxComponentsByCodeId = new Map<string, EffectiveTaxComponent[]>();
@@ -425,21 +431,51 @@ serve(async (req: Request) => {
         const salesTaxPayableAccount =
           accountDefaults?.data?.salesTaxPayableAccount;
 
+        // The first line that resolves a real code lends its context to the
+        // document-level shipping charge (plan Task 17 step 5). Computed here in
+        // document line order rather than as a side effect of the posting loop,
+        // so "first" means first on the invoice and not first to be processed.
+        type ShippingTaxContext = {
+          taxCodeId: string | null;
+          legacyTaxPercent: number;
+        };
+
+        const documentShippingContext =
+          salesInvoiceLines.data.reduce<ShippingTaxContext | null>(
+            (
+              found: ShippingTaxContext | null,
+              invoiceLine: Database["public"]["Tables"]["salesInvoiceLine"]["Row"]
+            ) => {
+              if (found !== null) return found;
+              if (invoiceLine.invoiceLineType === "Comment") return null;
+
+              const resolvedTaxCodeId =
+                invoiceLine.taxCodeId &&
+                  resolvableTaxCodeIds.has(invoiceLine.taxCodeId)
+                  ? invoiceLine.taxCodeId
+                  : null;
+              const legacyTaxPercent = invoiceLine.taxPercent ?? 0;
+
+              if (resolvedTaxCodeId === null && legacyTaxPercent === 0) {
+                return null;
+              }
+              return { taxCodeId: resolvedTaxCodeId, legacyTaxPercent };
+            },
+            null
+          );
+
         const resolveLineTax = (
           invoiceLine: Database["public"]["Tables"]["salesInvoiceLine"]["Row"],
-          preTaxLineCost: number,
-          lineWeightedShippingCost: number
+          preTaxLineCost: number
         ): SalesLineTax => {
           const resolvedTaxCodeId =
             invoiceLine.taxCodeId &&
-            activeTaxCodeIds.has(invoiceLine.taxCodeId)
+            resolvableTaxCodeIds.has(invoiceLine.taxCodeId)
               ? invoiceLine.taxCodeId
               : null;
 
           return resolveSalesLineTax({
             preTaxLineCost,
-            lineWeightedShippingCost,
-            shippingIsTaxable,
             taxCodeId: resolvedTaxCodeId,
             components: resolvedTaxCodeId
               ? taxComponentsByCodeId.get(resolvedTaxCodeId) ?? []
@@ -482,7 +518,7 @@ serve(async (req: Request) => {
             journalLineInserts.push({
               accountId,
               description: `Sales Tax — ${posting.componentName}`,
-              amount: credit("liability", posting.taxAmountBase),
+              amount: round(credit("liability", posting.taxAmountBase)),
               quantity: context.quantity,
               documentType: "Invoice",
               documentId: salesInvoice.data?.id,
@@ -503,9 +539,11 @@ serve(async (req: Request) => {
           }
         };
 
+        // `documentLineId` is null for the document-level shipping charge,
+        // which belongs to the invoice rather than to any one line.
         const pushTaxLedgerRows = (
           lineTax: SalesLineTax,
-          documentLineId: string
+          documentLineId: string | null
         ) => {
           const shared = {
             companyId,
@@ -595,6 +633,43 @@ serve(async (req: Request) => {
           const invoiceLineUnitCostInInventoryUnit =
             totalLineCostWithWeightedShipping / invoiceLine.quantity;
 
+          // ── The revenue / AR split ────────────────────────────────────────
+          //
+          // `totalLineCostWithWeightedShipping` is the line inflated by the raw
+          // `taxPercent`. It is NOT a safe starting point for either leg:
+          // deriving revenue as (that gross − the rounded component tax) leaks
+          // the difference between the stored percent and what the components
+          // actually charge into revenue. A $100 net line whose percent is
+          // 0.08245 while its components round to 8.25 posts revenue of 99.995
+          // — net sales silently wrong by half a cent per line, in a direction
+          // that depends on rounding.
+          //
+          // So each leg is built from its own basis instead. Revenue is the
+          // line NET (nothing tax-derived ever enters it) and AR is that net
+          // plus exactly the tax that gets credited to the liability accounts,
+          // which is what makes the entry balance to the bit.
+          const netLineAmountBase =
+            (preTaxLineCost +
+              (invoiceLine.nonTaxableAddOnCost ?? 0) +
+              lineWeightedShippingCost) *
+            invoiceExchangeRate;
+
+          // Output tax for this line. With no tax code, no tax percent, a
+          // taxable item and a non-exempt customer this is empty and
+          // `totalTaxBase` is 0 — every amount below is then the same float the
+          // pre-tax code produced.
+          const lineTax: SalesLineTax =
+            invoiceLine.invoiceLineType === "Comment"
+              ? emptySalesLineTax()
+              : resolveLineTax(invoiceLine, preTaxLineCost);
+
+          const lineTaxTotalBase = lineTax.totalTaxBase;
+          const revenueAmountBase = netLineAmountBase;
+          const arAmountBase =
+            lineTaxTotalBase === 0
+              ? netLineAmountBase
+              : netLineAmountBase + lineTaxTotalBase;
+
           let journalLineReference: string;
 
           switch (invoiceLine.invoiceLineType) {
@@ -610,24 +685,6 @@ serve(async (req: Request) => {
                 );
                 const itemTrackingType =
                   invoiceLineItem?.itemTrackingType ?? "Inventory";
-
-                // Output tax for this line. With no tax code, no tax percent, a
-                // taxable item and a non-exempt customer this is empty and
-                // `totalTaxBase` is 0 — nothing below changes.
-                const lineTax = resolveLineTax(
-                  invoiceLine,
-                  preTaxLineCost,
-                  lineWeightedShippingCost
-                );
-
-                // AR stays GROSS; the revenue credit is reduced by exactly the
-                // amount credited to the tax liability accounts, so the entry
-                // balances to the bit. The explicit zero branch guarantees the
-                // untaxed case emits the identical float it did before.
-                const revenueAmountBase =
-                  lineTax.totalTaxBase === 0
-                    ? totalLineCostWithWeightedShipping
-                    : totalLineCostWithWeightedShipping - lineTax.totalTaxBase;
 
                 pushTaxLedgerRows(lineTax, invoiceLine.id);
 
@@ -705,7 +762,7 @@ serve(async (req: Request) => {
                       description: isIntercompany
                         ? "IC Receivables"
                         : "Accounts Receivable",
-                      amount: round(debit("asset", totalLineCostWithWeightedShipping)),
+                      amount: round(debit("asset", arAmountBase)),
                       quantity: round(invoiceLineQuantityInInventoryUnit),
                       documentType: "Invoice",
                       documentId: salesInvoice.data?.id,
@@ -815,7 +872,7 @@ serve(async (req: Request) => {
                       description: isIntercompany
                         ? "IC Receivables"
                         : "Accounts Receivable",
-                      amount: round(debit("asset", totalLineCostWithWeightedShipping)),
+                      amount: round(debit("asset", arAmountBase)),
                       quantity: round(invoiceLineQuantityInInventoryUnit),
                       documentType: "Invoice",
                       documentId: salesInvoice.data?.id,
@@ -877,7 +934,16 @@ serve(async (req: Request) => {
                   (sol) => sol.id === invoiceLine.salesOrderLineId
                 );
                 const wasShipped = salesOrderLine?.sentComplete === true;
-                const saleProceeds = totalLineCostWithWeightedShipping;
+
+                // Proceeds are NET of output tax. Sales tax collected on an
+                // asset sale is the authority's money passing through, never
+                // consideration for the asset — folding it in would inflate
+                // every gain (or shrink every loss) by the tax, and it would do
+                // so on the `fixedAssetDisposal` record too. AR is billed the
+                // gross, exactly as on a product line.
+                const saleProceeds = netLineAmountBase;
+
+                pushTaxLedgerRows(lineTax, invoiceLine.id);
 
                 if (wasShipped && invoiceLine.salesOrderLineId) {
                   // Shipment already removed the asset and parked its NBV in the
@@ -929,7 +995,7 @@ serve(async (req: Request) => {
                   journalLineInserts.push({
                     accountId: receivablesAccountId,
                     description: "Accounts Receivable",
-                    amount: round(debit("asset", saleProceeds)),
+                    amount: round(debit("asset", arAmountBase)),
                     quantity: round(invoiceLineQuantityInInventoryUnit),
                     documentType: "Invoice",
                     documentId: salesInvoice.data?.id ?? undefined,
@@ -1008,6 +1074,20 @@ serve(async (req: Request) => {
                       fixedAssetClassId: assetClass?.id ?? null,
                     });
                   }
+
+                  // Output tax on the asset sale — same treatment as any other
+                  // line: credited to the component's liability account, never
+                  // left inside proceeds.
+                  pushTaxJournalLines(lineTax, {
+                    journalLineReference: arJournalLineReference,
+                    quantity: invoiceLineQuantityInInventoryUnit,
+                    documentLineReference: journalReference.to.salesInvoice(
+                      invoiceLine.salesOrderLineId
+                    ),
+                    itemPostingGroupId: null,
+                    itemId: invoiceLine.itemId ?? null,
+                    locationId: invoiceLine.locationId ?? null,
+                  });
 
                   // Defer the fixedAssetDisposal + fixedAsset writes so they run
                   // inside the same transaction as the journal posting (below).
@@ -1106,7 +1186,7 @@ serve(async (req: Request) => {
                   journalLineInserts.push({
                     accountId: receivablesAccountId,
                     description: "Accounts Receivable",
-                    amount: round(debit("asset", saleProceeds)),
+                    amount: round(debit("asset", arAmountBase)),
                     quantity: round(invoiceLineQuantityInInventoryUnit),
                     documentType: "Invoice",
                     documentId: salesInvoice.data?.id ?? undefined,
@@ -1148,6 +1228,16 @@ serve(async (req: Request) => {
                     journalLineDimensionsMeta.push(disposalDimensionMeta());
                   }
 
+                  // Output tax on the asset sale — see the shipped path above.
+                  pushTaxJournalLines(lineTax, {
+                    journalLineReference: arJournalLineReference,
+                    quantity: invoiceLineQuantityInInventoryUnit,
+                    documentLineReference: disposalDocumentLineReference,
+                    itemPostingGroupId: null,
+                    itemId: invoiceLine.itemId ?? null,
+                    locationId: invoiceLine.locationId ?? null,
+                  });
+
                   await client
                     .from("fixedAsset")
                     .update({
@@ -1180,6 +1270,72 @@ serve(async (req: Request) => {
             default:
               throw new Error("Unsupported invoice line type");
           }
+        }
+
+        // ── Document-level shipping tax ───────────────────────────────────
+        //
+        // Header shipping is one charge to one destination, so it is taxed
+        // ONCE, at the first resolved line's context, and booked as its own
+        // AR/tax pair with no `documentLineReference` — and, in the subledger,
+        // its own row with `documentLineId = null`. When `shippingIsTaxable` is
+        // false (the default, and what every existing company has) this whole
+        // block is skipped and nothing changes.
+        const shippingTax =
+          accountingEnabled && accountDefaults?.data && documentShippingContext
+            ? resolveDocumentShippingTax({
+              shippingCost,
+              shippingIsTaxable,
+              taxCodeId: documentShippingContext.taxCodeId,
+              components: documentShippingContext.taxCodeId
+                ? taxComponentsByCodeId.get(documentShippingContext.taxCodeId) ?? []
+                : [],
+              legacyTaxPercent: documentShippingContext.legacyTaxPercent,
+              date: taxPointDate,
+              exchangeRate: invoiceExchangeRate,
+              customerIsTaxExempt,
+            })
+            : null;
+
+        if (shippingTax) {
+          const shippingTaxJournalLineReference = nanoid();
+
+          // The customer is billed the shipping tax, so it needs its own AR
+          // debit — the line AR debits were built from line bases only.
+          journalLineInserts.push({
+            accountId: receivablesAccountId,
+            description: isIntercompany
+              ? "IC Receivables"
+              : "Accounts Receivable",
+            amount: round(debit("asset", shippingTax.totalTaxBase)),
+            quantity: 1,
+            documentType: "Invoice",
+            documentId: salesInvoice.data?.id,
+            externalDocumentId: salesInvoice.data?.customerReference,
+            documentLineReference: null,
+            journalLineReference: shippingTaxJournalLineReference,
+            intercompanyPartnerId,
+            companyId,
+          });
+
+          journalLineDimensionsMeta.push({
+            customerTypeId: customer.data.customerTypeId ?? null,
+            itemPostingGroupId: null,
+            itemId: null,
+            locationId: null,
+            costCenterId: null,
+            fixedAssetClassId: null,
+          });
+
+          pushTaxJournalLines(shippingTax, {
+            journalLineReference: shippingTaxJournalLineReference,
+            quantity: 1,
+            documentLineReference: null,
+            itemPostingGroupId: null,
+            itemId: null,
+            locationId: null,
+          });
+
+          pushTaxLedgerRows(shippingTax, null);
         }
 
         const accountingPeriodId = accountingEnabled
@@ -1723,12 +1879,27 @@ serve(async (req: Request) => {
         // unwound explicitly or the liability report keeps counting a voided
         // invoice. Snapshots are copied verbatim; only the three amounts flip
         // sign, so the reversal reports against the same authority/component.
-        const { data: originalTaxLedgerEntries } = await client
+        const originalTaxLedger = await client
           .from("taxLedger")
           .select("*")
           .eq("companyId", companyId)
           .eq("documentId", invoiceId)
           .eq("documentType", "Sales Invoice");
+
+        // A read failure here CANNOT be swallowed. Discarding the error would
+        // void the invoice with an empty reversal set, leaving the original
+        // rows in the subledger with nothing offsetting them — the document is
+        // gone but the company still owes the authority for it on every future
+        // liability report, and nothing in the UI would ever show why. Failing
+        // the whole VOID is the safe outcome: it is retryable, an unreversed
+        // liability is not.
+        if (originalTaxLedger.error) {
+          throw new Error(
+            "Failed to read the tax subledger for this invoice; refusing to void without reversing it"
+          );
+        }
+
+        const originalTaxLedgerEntries = originalTaxLedger.data;
 
         const reversingTaxLedgerEntries: Omit<
           Database["public"]["Tables"]["taxLedger"]["Insert"],

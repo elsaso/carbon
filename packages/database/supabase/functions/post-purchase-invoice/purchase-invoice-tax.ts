@@ -34,10 +34,16 @@
  * A `Reverse Charge` line is NOT reconciled: the supplier billed no tax at all
  * (`supplierTaxAmount = 0`), so the notional self-assessed tax is computed from
  * the components on the ex-tax base and there is nothing to reconcile against.
- * If a `Reverse Charge` line DOES carry a supplier tax amount the document is
- * mis-coded — the stored tax still capitalizes into the line cost (as it always
- * has) and the notional is self-assessed on top of it. Determination (PR-B)
- * should never produce that combination.
+ *
+ * That "billed no tax" precondition is CHECKED, not assumed. Reverse charge is
+ * selected from `calculationType === "Reverse Charge"` AND
+ * `storedTaxAmount === 0`. A line whose code says reverse charge but which
+ * carries supplier tax is mis-coded, and self-assessing on top of tax the
+ * supplier already billed would double it: the buyer would owe the authority a
+ * notional amount while the same tax sat capitalized in the line cost. Such a
+ * line is treated as `Normal` — the supplier's amount is authoritative, it
+ * reconciles like any other line — and `warnings` explains why so the caller
+ * can log it.
  */
 
 import {
@@ -82,6 +88,12 @@ export type PurchaseComponentTax = {
 export type PurchaseLineTaxPlan = {
   components: PurchaseComponentTax[];
   /**
+   * Non-fatal coding problems found while planning. The driver logs these; they
+   * never abort a posting, because refusing to post a mis-coded line would be a
+   * worse outcome than posting it the conservative way.
+   */
+  warnings: string[];
+  /**
    * Signed, base currency. ADD to the line's gross cost to get the cost that
    * should reach the debit legs, `costLedger.cost` and the inventory unit cost.
    *
@@ -93,30 +105,29 @@ export type PurchaseLineTaxPlan = {
   isReverseCharge: boolean;
 };
 
-/**
- * Drift (base currency) we tolerate between the recomputed component sum and
- * the tax the supplier billed before rescaling. Two cents absorbs per-component
- * half-up rounding on a handful of components; anything larger means the
- * supplier used different rates than the configured code and their total wins.
- */
-export const TAX_RECONCILIATION_TOLERANCE = 0.02;
-
 /** A fresh no-tax plan. Fresh (not a shared constant) so callers can't alias it. */
-export function emptyPurchaseLineTaxPlan(): PurchaseLineTaxPlan {
-  return { components: [], costAdjustment: 0, isReverseCharge: false };
+export function emptyPurchaseLineTaxPlan(
+  warnings: string[] = []
+): PurchaseLineTaxPlan {
+  return { components: [], costAdjustment: 0, isReverseCharge: false, warnings };
 }
 
 /**
  * Scale component amounts so they sum EXACTLY to the tax the supplier billed.
  *
- * Only invoked when the recomputed sum drifts by at least
- * `TAX_RECONCILIATION_TOLERANCE`. Each component is scaled by
- * `storedTaxAmount / computedSum` and re-rounded; the residual left by rounding
- * is dropped on the largest component so the split adds up to the cent.
+ * Applied to EVERY `Normal` line, with no drift tolerance. A tolerance is
+ * tempting — sub-cent rounding noise looks like something to ignore — but it
+ * inverts the rule the components are supposed to obey. The supplier's total is
+ * authoritative and the components only say how it splits, so any band in which
+ * the recomputed sum is kept is a band in which the postings do NOT sum to what
+ * the supplier billed. The failure is not theoretical: a $1.00 line under a 1%
+ * recoverable code with `supplierTaxAmount = 0` recomputes $0.01, which the old
+ * two-cent tolerance waved through as an input-tax asset for tax nobody charged.
  *
- * `storedTaxAmount = 0` (supplier billed no tax under a `Normal` code) scales
- * everything to zero — the posting must never invent tax the supplier did not
- * charge.
+ * Each component is scaled by `storedTaxAmount / computedSum` and re-rounded;
+ * the residual left by rounding lands on the largest component so the split adds
+ * up to the cent. `storedTaxAmount = 0` scales everything to zero — the posting
+ * must never invent tax the supplier did not charge.
  */
 export function reconcileToStoredTaxAmount(
   amounts: number[],
@@ -171,7 +182,21 @@ export function resolvePurchaseLineTax(args: {
   // and posting it again would double-count. Legacy lines keep capitalizing.
   if (!taxCodeId) return emptyPurchaseLineTaxPlan();
 
-  const isReverseCharge = calculationType === "Reverse Charge";
+  const warnings: string[] = [];
+
+  // Reverse charge requires BOTH the code and a zero supplier amount — see the
+  // file header. A mis-coded line degrades to Normal rather than self-assessing
+  // tax on top of tax the supplier already charged.
+  const isReverseCharge =
+    calculationType === "Reverse Charge" && storedTaxAmount === 0;
+
+  if (calculationType === "Reverse Charge" && storedTaxAmount !== 0) {
+    warnings.push(
+      `Tax code ${taxCodeId} is Reverse Charge but the supplier billed ` +
+        `${storedTaxAmount} in tax. Treating the line as Normal: the supplier's ` +
+        `amount is authoritative and no notional tax is self-assessed.`
+    );
+  }
 
   const { componentTaxes } = splitLineTax({
     taxableBase,
@@ -181,20 +206,19 @@ export function resolvePurchaseLineTax(args: {
     date,
   });
 
-  if (componentTaxes.length === 0) return emptyPurchaseLineTaxPlan();
+  if (componentTaxes.length === 0) return emptyPurchaseLineTaxPlan(warnings);
 
   // RECONCILIATION: the supplier's invoice is authoritative for the total on a
   // `Normal` line; the components only split it. Within tolerance we keep the
   // recomputed amounts (they carry the per-authority precision); beyond it we
   // scale them to the supplier's total. Reverse charge is self-assessed, so
   // there is no supplier total to reconcile against.
-  let amounts = componentTaxes.map((componentTax) => componentTax.tax);
-  if (!isReverseCharge) {
-    const computedSum = amounts.reduce((total, amount) => total + amount, 0);
-    if (Math.abs(computedSum - storedTaxAmount) >= TAX_RECONCILIATION_TOLERANCE) {
-      amounts = reconcileToStoredTaxAmount(amounts, storedTaxAmount);
-    }
-  }
+  const amounts = isReverseCharge
+    ? componentTaxes.map((componentTax) => roundCurrency(componentTax.tax))
+    : reconcileToStoredTaxAmount(
+      componentTaxes.map((componentTax) => componentTax.tax),
+      storedTaxAmount
+    );
 
   const planComponents: PurchaseComponentTax[] = [];
   let costAdjustment = 0;
@@ -245,7 +269,7 @@ export function resolvePurchaseLineTax(args: {
     });
   });
 
-  if (planComponents.length === 0) return emptyPurchaseLineTaxPlan();
+  if (planComponents.length === 0) return emptyPurchaseLineTaxPlan(warnings);
 
   return {
     components: planComponents,
@@ -253,5 +277,6 @@ export function resolvePurchaseLineTax(args: {
     // that would make the cost side disagree with the sum of the legs.
     costAdjustment: costAdjustment === 0 ? 0 : roundCurrency(costAdjustment),
     isReverseCharge,
+    warnings,
   };
 }

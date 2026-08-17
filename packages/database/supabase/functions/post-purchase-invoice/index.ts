@@ -1018,6 +1018,13 @@ serve(async (req: Request) => {
             date: taxPointDate,
           });
 
+      // Mis-coded lines still post — conservatively — but must be visible.
+      for (const warning of lineTaxPlan.warnings) {
+        console.warn(
+          `post-purchase-invoice: line ${invoiceLine.id} — ${warning}`
+        );
+      }
+
       const totalLineCost =
         invoiceLine.quantity * (invoiceLine.unitPrice ?? 0) +
         (invoiceLine.shippingCost ?? 0) +

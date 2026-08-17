@@ -3,7 +3,10 @@ import {
   assertStrictEquals,
 } from "https://deno.land/std@0.175.0/testing/asserts.ts";
 import type { EffectiveTaxComponent } from "../shared/resolve-taxes.ts";
-import { resolveSalesLineTax } from "./build-tax-lines.ts";
+import {
+  resolveDocumentShippingTax,
+  resolveSalesLineTax,
+} from "./build-tax-lines.ts";
 
 // Fixtures mirror the spec's driving case: Quebec (GST 5% + QST 9.975%, both
 // applied to the sale price since 2013).
@@ -46,8 +49,6 @@ const line = (
 ) =>
   resolveSalesLineTax({
     preTaxLineCost: 100,
-    lineWeightedShippingCost: 0,
-    shippingIsTaxable: false,
     taxCodeId: null,
     components: [],
     legacyTaxPercent: 0,
@@ -205,28 +206,68 @@ Deno.test("amounts are converted to base currency after per-line rounding", () =
 });
 
 // ---------------------------------------------------------------------------
-// Shipping taxability (gated strictly; false is the shipped default)
+// Shipping taxability
+//
+// Header shipping is NOT part of any line's basis — it is one charge to one
+// destination, taxed once by resolveDocumentShippingTax. Allocating it across
+// lines and taxing each slice at that line's own code produced a rate that
+// depended on how the freight happened to be split for AR.
 // ---------------------------------------------------------------------------
 
-Deno.test("weighted shipping is outside the taxable base by default", () => {
-  const result = line({
-    lineWeightedShippingCost: 50,
-    taxCodeId: "qc",
-    components: [gst],
-  });
+Deno.test("a line's basis never includes header shipping", () => {
+  const result = line({ taxCodeId: "qc", components: [gst] });
   assertEquals(result.taxableBaseAmount, 100);
   assertEquals(result.postings[0].taxAmountBase, 5);
 });
 
-Deno.test("weighted shipping joins the taxable base when the setting is on", () => {
-  const result = line({
-    lineWeightedShippingCost: 50,
+const shipping = (
+  overrides: Partial<Parameters<typeof resolveDocumentShippingTax>[0]> = {}
+) =>
+  resolveDocumentShippingTax({
+    shippingCost: 50,
     shippingIsTaxable: true,
     taxCodeId: "qc",
     components: [gst],
+    legacyTaxPercent: 0,
+    date: "2026-08-17",
+    exchangeRate: 1,
+    customerIsTaxExempt: false,
+    ...overrides,
   });
-  assertEquals(result.taxableBaseAmount, 150);
-  assertEquals(result.postings[0].taxAmountBase, 7.5);
+
+Deno.test("shipping is untaxed when the company setting is off", () => {
+  assertEquals(shipping({ shippingIsTaxable: false }), null);
+});
+
+Deno.test("shipping is untaxed when there is no shipping", () => {
+  assertEquals(shipping({ shippingCost: 0 }), null);
+});
+
+Deno.test("an exempt customer is not charged tax on shipping", () => {
+  assertEquals(shipping({ customerIsTaxExempt: true }), null);
+});
+
+Deno.test("shipping is untaxed when no line resolved a context", () => {
+  assertEquals(shipping({ taxCodeId: null, components: [] }), null);
+});
+
+Deno.test("shipping is taxed ONCE at the borrowed context, not per line", () => {
+  const result = shipping({ components: [gst, qst] });
+  assertEquals(result?.taxableBaseAmount, 50);
+  // Both components see the one shipping charge: 5% and 9.975% of 50.
+  assertEquals(result?.postings[0].taxAmountBase, 2.5);
+  assertEquals(result?.postings[1].taxAmountBase, 4.99);
+  assertEquals(result?.resolvedTaxCodeId, "qc");
+});
+
+Deno.test("shipping falls back to the borrowed legacy percent with no code", () => {
+  const result = shipping({
+    taxCodeId: null,
+    components: [],
+    legacyTaxPercent: 0.0825,
+  });
+  assertEquals(result?.totalTaxBase, 4.13);
+  assertEquals(result?.postings[0].componentId, null);
 });
 
 // ---------------------------------------------------------------------------

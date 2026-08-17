@@ -181,8 +181,10 @@ Deno.test("mixed code: recoverable + non-recoverable split the stored total", ()
   assertEquals(plan.components[1].treatment, "Capitalized");
 });
 
-Deno.test("reconciliation: within tolerance keeps the recomputed components", () => {
-  // Components sum to 20.00; the supplier billed 20.01 (1c apart < 2c).
+Deno.test("reconciliation: a one-cent discrepancy still scales to the supplier's total", () => {
+  // Components recompute 20.00; the supplier billed 20.01. There is no drift
+  // band: the components describe how the supplier's total splits, so they must
+  // sum to it exactly no matter how small the difference.
   const plan = resolvePurchaseLineTax({
     taxCodeId: "tc_1",
     calculationType: "Normal",
@@ -192,8 +194,93 @@ Deno.test("reconciliation: within tolerance keeps the recomputed components", ()
     date: DATE,
   });
 
+  assertEquals(plan.components[0].taxAmount, 20.01);
+  assertEquals(plan.costAdjustment, -20.01);
+});
+
+Deno.test("reconciliation: a sub-cent recompute against zero supplier tax posts nothing", () => {
+  // The regression the two-cent tolerance allowed: $1.00 base, a 1% recoverable
+  // code, and a supplier who charged no tax at all. The old band waved the
+  // recomputed $0.01 through and booked an input-tax asset for tax nobody
+  // charged.
+  const plan = resolvePurchaseLineTax({
+    taxCodeId: "tc_1",
+    calculationType: "Normal",
+    components: [component({ rate: 0.01, isRecoverable: true })],
+    taxableBase: 1,
+    storedTaxAmount: 0,
+    date: DATE,
+  });
+
+  assertEquals(plan.components.length, 0);
+  assertEquals(plan.costAdjustment, 0);
+});
+
+Deno.test("reconciliation: components always sum exactly to the supplier's tax", () => {
+  // Property-ish sweep across bases and stored totals that do not divide evenly
+  // into the configured rates.
+  for (const taxableBase of [1, 33.33, 100, 1234.56]) {
+    for (const storedTaxAmount of [0, 0.01, 8.25, 10.07, 99.99]) {
+      const plan = resolvePurchaseLineTax({
+        taxCodeId: "tc_1",
+        calculationType: "Normal",
+        components: [
+          component({ id: "a", name: "A", rate: 0.05, isRecoverable: true }),
+          component({ id: "b", name: "B", rate: 0.09975, sequence: 2 }),
+          component({ id: "c", name: "C", rate: 0.01, sequence: 3 }),
+        ],
+        taxableBase,
+        storedTaxAmount,
+        date: DATE,
+      });
+
+      const sum = plan.components.reduce(
+        (total, componentTax) => total + componentTax.taxAmount,
+        0,
+      );
+      assertEquals(
+        Math.round(sum * 100) / 100,
+        storedTaxAmount,
+        `base ${taxableBase}, supplier tax ${storedTaxAmount}`,
+      );
+    }
+  }
+});
+
+Deno.test("reverse charge: a nonzero supplier tax degrades the line to Normal", () => {
+  // The code says reverse charge but the supplier billed tax. Self-assessing on
+  // top would make the buyer owe the authority a notional amount while the same
+  // tax sat capitalized in the line cost — the tax would be counted twice.
+  const plan = resolvePurchaseLineTax({
+    taxCodeId: "tc_1",
+    calculationType: "Reverse Charge",
+    components: [component({ isRecoverable: true })],
+    taxableBase: 100,
+    storedTaxAmount: 15,
+    date: DATE,
+  });
+
+  assertEquals(plan.isReverseCharge, false);
+  assertEquals(plan.components[0].treatment, "Recoverable");
+  // The supplier's amount is authoritative, not the configured 20%.
+  assertEquals(plan.components[0].taxAmount, 15);
+  assertEquals(plan.warnings.length, 1);
+});
+
+Deno.test("reverse charge: a zero supplier tax self-assesses from the components", () => {
+  const plan = resolvePurchaseLineTax({
+    taxCodeId: "tc_1",
+    calculationType: "Reverse Charge",
+    components: [component({ isRecoverable: true })],
+    taxableBase: 100,
+    storedTaxAmount: 0,
+    date: DATE,
+  });
+
+  assertEquals(plan.isReverseCharge, true);
+  assertEquals(plan.components[0].treatment, "Reverse Charge Recoverable");
   assertEquals(plan.components[0].taxAmount, 20);
-  assertEquals(plan.costAdjustment, -20);
+  assertEquals(plan.warnings.length, 0);
 });
 
 Deno.test("reconciliation: beyond tolerance scales to the supplier's total", () => {

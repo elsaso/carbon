@@ -74,13 +74,24 @@ export type SalesLineTax = {
   exempt: { exemptAmountBase: number; reason: SalesLineTaxExemptReason } | null;
 };
 
+/**
+ * A line that is not taxed at all — a Comment line, which posts nothing and so
+ * has no basis to tax. A real value (rather than `null`) keeps every downstream
+ * consumer working on one non-optional shape.
+ */
+export function emptySalesLineTax(): SalesLineTax {
+  return {
+    postings: [],
+    totalTaxBase: 0,
+    taxableBaseAmount: 0,
+    resolvedTaxCodeId: null,
+    exempt: null,
+  };
+}
+
 export function resolveSalesLineTax(args: {
   /** Line quantity × unit price + line shipping + add-on, document currency. */
   preTaxLineCost: number;
-  /** This line's share of the header shipping cost, document currency. */
-  lineWeightedShippingCost: number;
-  /** `companySettings.shippingIsTaxable` — default false preserves today. */
-  shippingIsTaxable: boolean;
   /** `salesInvoiceLine.taxCodeId`, already validated against the company. */
   taxCodeId: string | null;
   /** Components of that code (unfiltered — `splitLineTax` filters by date). */
@@ -98,8 +109,6 @@ export function resolveSalesLineTax(args: {
 }): SalesLineTax {
   const {
     preTaxLineCost,
-    lineWeightedShippingCost,
-    shippingIsTaxable,
     taxCodeId,
     components,
     legacyTaxPercent,
@@ -109,11 +118,13 @@ export function resolveSalesLineTax(args: {
     itemIsTaxable,
   } = args;
 
-  // Header shipping is untaxed today (it is excluded from the invoice view's
-  // tax basis as well). The setting is gated strictly: false — the default, and
-  // the value every existing company has — reproduces today's basis exactly.
-  const taxableBase =
-    preTaxLineCost + (shippingIsTaxable ? lineWeightedShippingCost : 0);
+  // Document-level (header) shipping is NOT part of a line's basis. It has one
+  // destination and therefore one tax treatment, so smearing it across every
+  // line taxed each slice at that line's own code — a two-line invoice with a
+  // TX code and an exempt-state code would tax half the freight at 8.25% and
+  // half at nothing, purely as an artifact of how the freight was allocated for
+  // AR. `resolveDocumentShippingTax` below taxes it once instead.
+  const taxableBase = preTaxLineCost;
   const taxableBaseAmount = taxableBase * exchangeRate;
 
   // Exemption short-circuits determination entirely (spec: "customerTax.taxExempt
@@ -178,6 +189,79 @@ export function resolveSalesLineTax(args: {
       0
     ),
     taxableBaseAmount,
+    resolvedTaxCodeId: taxCodeId,
+    exempt: null,
+  };
+}
+
+/**
+ * Output tax on document-level (header) shipping.
+ *
+ * Header shipping is one charge to one destination, so the plan taxes it once,
+ * at the FIRST resolved line's code context, and records it as its own ledger
+ * row with `documentLineId = null` rather than attributing it to a line that
+ * only happens to be first. Returns `null` when the company does not tax
+ * shipping, when there is no shipping, when the customer is exempt, or when no
+ * line resolved a context to borrow — in each case nothing is posted and the
+ * behavior is byte-identical to the untaxed-shipping default.
+ */
+export function resolveDocumentShippingTax(args: {
+  /** Header shipping cost, document currency. */
+  shippingCost: number;
+  /** `companySettings.shippingIsTaxable` — default false preserves today. */
+  shippingIsTaxable: boolean;
+  /** The first resolved line's code, or null when no line resolved one. */
+  taxCodeId: string | null;
+  components: EffectiveTaxComponent[];
+  /** The first resolved line's flat percent, used only on the legacy path. */
+  legacyTaxPercent: number;
+  date: string;
+  exchangeRate: number;
+  customerIsTaxExempt: boolean;
+}): SalesLineTax | null {
+  const {
+    shippingCost,
+    shippingIsTaxable,
+    taxCodeId,
+    components,
+    legacyTaxPercent,
+    date,
+    exchangeRate,
+    customerIsTaxExempt,
+  } = args;
+
+  if (!shippingIsTaxable || shippingCost === 0 || customerIsTaxExempt) {
+    return null;
+  }
+
+  const { componentTaxes } = splitLineTax({
+    taxableBase: shippingCost,
+    taxCodeId,
+    components,
+    legacyTaxPercent,
+    date,
+  });
+
+  if (componentTaxes.length === 0) return null;
+
+  const postings: SalesLineTaxPosting[] = componentTaxes.map((componentTax) => ({
+    componentId: componentTax.componentId,
+    taxCodeId: componentTax.componentId === null ? null : taxCodeId,
+    componentName: componentTax.name,
+    taxAuthorityId: componentTax.taxAuthorityId,
+    rate: componentTax.rate,
+    salesTaxAccountId: componentTax.salesTaxAccountId,
+    taxableAmountBase: componentTax.base * exchangeRate,
+    taxAmountBase: componentTax.tax * exchangeRate,
+  }));
+
+  return {
+    postings,
+    totalTaxBase: postings.reduce(
+      (total, posting) => total + posting.taxAmountBase,
+      0
+    ),
+    taxableBaseAmount: shippingCost * exchangeRate,
     resolvedTaxCodeId: taxCodeId,
     exempt: null,
   };
