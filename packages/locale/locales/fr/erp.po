@@ -11913,6 +11913,9 @@ msgstr "Durée de Vie Utile Fiscale (Mois)"
 msgid "Tax:"
 msgstr "Taxe :"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "Taxes"
 

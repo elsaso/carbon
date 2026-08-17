@@ -11913,6 +11913,9 @@ msgstr "Vergi Faydalı Ömrü (Aylar)"
 msgid "Tax:"
 msgstr "Vergi:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "Vergiler"
 

@@ -11913,6 +11913,9 @@ msgstr "Налоговый срок полезного использовани�
 msgid "Tax:"
 msgstr "Налог:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "Налоги"
 

@@ -11913,6 +11913,9 @@ msgstr "税務耐用年数（月）"
 msgid "Tax:"
 msgstr "税:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "税金"
 

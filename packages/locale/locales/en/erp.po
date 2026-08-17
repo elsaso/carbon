@@ -11913,6 +11913,9 @@ msgstr "Tax Useful Life (Months)"
 msgid "Tax:"
 msgstr "Tax:"
 
+msgid "Taxable"
+msgstr "Taxable"
+
 msgid "Taxes"
 msgstr "Taxes"
 

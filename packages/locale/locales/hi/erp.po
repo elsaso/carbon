@@ -11913,6 +11913,9 @@ msgstr "कर उपयोगी जीवन (महीने)"
 msgid "Tax:"
 msgstr "कर:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "कर"
 

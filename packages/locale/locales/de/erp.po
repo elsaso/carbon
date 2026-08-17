@@ -11913,6 +11913,9 @@ msgstr "Steuerliche Nutzungsdauer (Monate)"
 msgid "Tax:"
 msgstr "Steuern:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "Steuern"
 

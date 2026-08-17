@@ -11913,6 +11913,9 @@ msgstr "Vita Utile Fiscale (Mesi)"
 msgid "Tax:"
 msgstr "Imposta:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "Tasse"
 

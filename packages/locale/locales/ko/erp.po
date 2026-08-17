@@ -11913,6 +11913,9 @@ msgstr "세무 내용연수(개월)"
 msgid "Tax:"
 msgstr "세금:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "세금"
 

@@ -11913,6 +11913,9 @@ msgstr "Okres Użyteczności Podatkowej (Miesiące)"
 msgid "Tax:"
 msgstr "Podatek:"
 
+msgid "Taxable"
+msgstr ""
+
 msgid "Taxes"
 msgstr "Podatki"
 

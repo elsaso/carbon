@@ -505,3 +505,30 @@ export type AssetDepreciationHistoryItem = NonNullable<
 export type FixedAssetDisposal = NonNullable<
   Awaited<ReturnType<typeof getFixedAssetDisposal>>["data"]
 >;
+
+// -- Tax types --
+
+import type {
+  getTaxAuthorities,
+  getTaxCode,
+  getTaxCodes,
+  getTaxRegistrations
+} from "./accounting.service";
+
+export type TaxAuthority = NonNullable<
+  Awaited<ReturnType<typeof getTaxAuthorities>>["data"]
+>[number];
+
+export type TaxCode = NonNullable<
+  Awaited<ReturnType<typeof getTaxCodes>>["data"]
+>[number];
+
+export type TaxCodeDetail = NonNullable<
+  Awaited<ReturnType<typeof getTaxCode>>["data"]
+>;
+
+export type TaxCodeComponent = TaxCodeDetail["components"][number];
+
+export type TaxRegistration = NonNullable<
+  Awaited<ReturnType<typeof getTaxRegistrations>>["data"]
+>[number];
