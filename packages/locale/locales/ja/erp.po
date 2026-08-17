@@ -8776,6 +8776,9 @@ msgstr "すべての顧客タイプの価格をオーバーライドする"
 msgid "Override the expiration on {label}."
 msgstr "有効期限を {label} で上書きします。"
 
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
+
 msgid "Overtime"
 msgstr "残業"
 
@@ -10933,6 +10936,9 @@ msgstr "仕入先タイプを選択"
 msgid "Select surfaces"
 msgstr "サーフェスを選択"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "このトレーニングを完了する必要があるグループを選択してください"
 
@@ -12813,6 +12819,11 @@ msgid "These registrations have no matching active tax code:"
 msgstr ""
 
 msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
 msgstr ""
 
 msgid "This completes the Discovery step."

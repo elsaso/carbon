@@ -8776,6 +8776,9 @@ msgstr "Remplacer le prix pour tous les clients d'un type"
 msgid "Override the expiration on {label}."
 msgstr "Remplacer la date d'expiration sur {label}."
 
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
+
 msgid "Overtime"
 msgstr "Heures supplémentaires"
 
@@ -10933,6 +10936,9 @@ msgstr "Sélectionner le type de fournisseur"
 msgid "Select surfaces"
 msgstr "Sélectionner les surfaces"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "Sélectionnez les groupes qui doivent suivre cette formation"
 
@@ -12813,6 +12819,11 @@ msgid "These registrations have no matching active tax code:"
 msgstr ""
 
 msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
 msgstr ""
 
 msgid "This completes the Discovery step."

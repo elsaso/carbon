@@ -8776,6 +8776,9 @@ msgstr "为所有该类型的客户覆盖价格"
 msgid "Override the expiration on {label}."
 msgstr "覆盖 {label} 上的过期日期。"
 
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
+
 msgid "Overtime"
 msgstr "加班"
 
@@ -10933,6 +10936,9 @@ msgstr "选择供应商类型"
 msgid "Select surfaces"
 msgstr "选择表面"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "选择应该完成此培训的组"
 
@@ -12813,6 +12819,11 @@ msgid "These registrations have no matching active tax code:"
 msgstr ""
 
 msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
 msgstr ""
 
 msgid "This completes the Discovery step."

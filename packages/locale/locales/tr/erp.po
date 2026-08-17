@@ -8776,6 +8776,9 @@ msgstr "Bir türdeki tüm müşteriler için fiyatı geçersiz kıl"
 msgid "Override the expiration on {label}."
 msgstr "Süre bitişini {label} üzerinde geçersiz kıl."
 
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
+
 msgid "Overtime"
 msgstr "Fazla Mesai"
 
@@ -10933,6 +10936,9 @@ msgstr "Tedarikçi Türü Seçin"
 msgid "Select surfaces"
 msgstr "Yüzeyleri seç"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "Bu eğitimi tamamlaması gereken grupları seçin"
 
@@ -12813,6 +12819,11 @@ msgid "These registrations have no matching active tax code:"
 msgstr ""
 
 msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
 msgstr ""
 
 msgid "This completes the Discovery step."

@@ -8776,6 +8776,9 @@ msgstr "सभी प्रकार के ग्राहकों के ल�
 msgid "Override the expiration on {label}."
 msgstr "{label} पर समाप्ति को ओवरराइड करें।"
 
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
+
 msgid "Overtime"
 msgstr "ओवरटाइम"
 
@@ -10933,6 +10936,9 @@ msgstr "आपूर्तिकर्ता प्रकार चुनें"
 msgid "Select surfaces"
 msgstr "सतहें चुनें"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "उन समूहों का चयन करें जिन्हें इस प्रशिक्षण को पूरा करना चाहिए"
 
@@ -12813,6 +12819,11 @@ msgid "These registrations have no matching active tax code:"
 msgstr ""
 
 msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
 msgstr ""
 
 msgid "This completes the Discovery step."

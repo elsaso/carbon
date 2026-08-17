@@ -170,6 +170,7 @@ const TaxCodeComponentRow = ({
             onChange(index, { taxAuthorityId: value || null })
           }
           placeholder={t`Tax authority`}
+          emptyMessage={t`No tax authorities`}
           isReadOnly={isDisabled}
           size="sm"
         />
@@ -374,6 +375,7 @@ const TaxCodeForm = ({
     () => computeEffectiveTaxPercent(1, filterEffectiveComponents(rows, today)),
     [rows, today]
   );
+  const effectiveRateLabel = formatPercent(effectiveRate);
 
   return (
     <ModalDrawerProvider type={type}>
@@ -473,9 +475,7 @@ const TaxCodeForm = ({
                   </div>
 
                   <p className="text-sm text-muted-foreground tabular-nums">
-                    <Trans>
-                      Effective rate today: {formatPercent(effectiveRate)}
-                    </Trans>
+                    <Trans>Effective rate today: {effectiveRateLabel}</Trans>
                   </p>
                 </VStack>
 

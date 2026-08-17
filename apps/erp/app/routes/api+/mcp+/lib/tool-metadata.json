@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-17T06:47:22.900Z",
-  "totalTools": 1388,
+  "generated": "2026-08-17T07:43:34.094Z",
+  "totalTools": 1389,
   "modules": 15,
   "tools": [
     {
@@ -3677,6 +3677,38 @@
       "schema": {
         "type": "object",
         "properties": {}
+      }
+    },
+    {
+      "name": "accounting_suggestTaxCode",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "suggest tax code",
+      "paramCount": 2,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "address"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "string"
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "countryCode"
+        ]
       }
     },
     {
@@ -35589,7 +35621,7 @@
       "module": "sales",
       "classification": "WRITE",
       "description": "insert customer location",
-      "paramCount": 4,
+      "paramCount": 5,
       "serviceParams": [
         "client",
         "customerLocation"
@@ -35607,6 +35639,12 @@
           },
           "name": {
             "type": "string"
+          },
+          "taxCodeId": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "address: {\n      addressLine1": {},
           "customFields": {}
@@ -36072,7 +36110,7 @@
       "module": "sales",
       "classification": "WRITE",
       "description": "update customer location",
-      "paramCount": 4,
+      "paramCount": 5,
       "serviceParams": [
         "client",
         "customerLocation"
@@ -36089,6 +36127,12 @@
           },
           "name": {
             "type": "string"
+          },
+          "taxCodeId": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "address: {\n      addressLine1": {},
           "customFields": {}

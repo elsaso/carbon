@@ -362,6 +362,7 @@ export const supplierApprovalValidator = z.object({
 export const supplierTaxValidator = z
   .object({
     supplierId: z.string().min(1),
+    taxCodeId: zfd.text(z.string().optional()),
     taxId: zfd.text(z.string().optional()),
     vatNumber: zfd.text(z.string().optional()),
     eori: zfd.text(z.string().optional()),

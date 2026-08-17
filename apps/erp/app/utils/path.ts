@@ -233,6 +233,10 @@ export const path = {
             itemId ? `&itemId=${itemId}` : ""
           }`
         ),
+      suggestTaxCode: (countryCode: string, state?: string | null) =>
+        `${api}/accounting/suggest-tax-code?countryCode=${encodeURIComponent(
+          countryCode
+        )}${state ? `&state=${encodeURIComponent(state)}` : ""}`,
       supplierContacts: (id: string) =>
         generatePath(`${api}/purchasing/supplier-contacts/${id}`),
       supplierLocations: (id: string) =>

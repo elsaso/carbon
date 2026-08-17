@@ -4177,6 +4177,34 @@ export async function getTaxCodesList(
     .order("name", { ascending: true });
 }
 
+/**
+ * Suggests the tax codes that match an address. Prefers an exact state match,
+ * falling back to the country-wide codes (state is null) when there is none.
+ * Purely advisory — nothing consumes this to auto-assign a code.
+ */
+export async function suggestTaxCode(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  address: { countryCode: string; state?: string | null }
+) {
+  const query = () =>
+    client
+      .from("taxCode")
+      .select("id, name")
+      .eq("companyId", companyId)
+      .eq("active", true)
+      .eq("countryCode", address.countryCode)
+      .order("name", { ascending: true });
+
+  if (address.state) {
+    const exactMatch = await query().eq("state", address.state);
+    if (exactMatch.error) return exactMatch;
+    if (exactMatch.data.length > 0) return exactMatch;
+  }
+
+  return query().is("state", null);
+}
+
 export async function upsertTaxCode(
   client: SupabaseClient<Database>,
   taxCode:

@@ -8776,6 +8776,9 @@ msgstr "특정 유형의 모든 고객에 대한 가격 재정의"
 msgid "Override the expiration on {label}."
 msgstr "{label}의 유효기한을 재정의합니다."
 
+msgid "Overrides the customer's tax code for this location"
+msgstr ""
+
 msgid "Overtime"
 msgstr "초과근무"
 
@@ -10933,6 +10936,9 @@ msgstr "공급업체 유형 선택"
 msgid "Select surfaces"
 msgstr "표면 선택"
 
+msgid "Select Tax Code"
+msgstr ""
+
 msgid "Select the groups that should complete this training"
 msgstr "이 교육을 완료해야 하는 그룹을 선택하세요"
 
@@ -12813,6 +12819,11 @@ msgid "These registrations have no matching active tax code:"
 msgstr ""
 
 msgid "These tax codes have no matching registration:"
+msgstr ""
+
+#. placeholder {0}: suggestion.name
+#. placeholder {0}: taxCodeSuggestion.name
+msgid "This address is in {place} — apply {0}?"
 msgstr ""
 
 msgid "This completes the Discovery step."
