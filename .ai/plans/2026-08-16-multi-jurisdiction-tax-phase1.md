@@ -781,8 +781,12 @@ deno check post-sales-invoice/index.ts 2>&1 | grep -c "index.ts:"             # 
 rm post-sales-invoice/index.orig.ts
 deno test shared/resolve-taxes.test.ts
 # Browser (Task 27): post a QC invoice (100 @ 14.975%) with accounting enabled →
-# journalEntries view shows AR 114.98 Dr, Revenue 100.00 Cr, 2210-or-component accounts
+# journalEntries view shows AR 114.975 Dr, Revenue 99.995 Cr, component accounts
 # 5.00 + 9.98 Cr, totalDebits == totalCredits; two taxLedger rows with correct authorities.
+# NOTE (corrected during implementation): AR is NOT rounded today — totalLineCost is a raw
+# float — so rounding the per-component tax (QST 9.975 -> 9.98) leaves a half-cent residue
+# that lands in revenue: 99.995, not 100.00. Rounding AR would change the customer's payable
+# balance, which is out of scope for the tax fix. Expect 114.975 / 99.995, not 114.98 / 100.00.
 ```
 
 **Out of scope:** the FX divide/multiply asymmetry (owned by upstream #1030 — do not "fix"); COGS logic; `update-purchased-prices`.
