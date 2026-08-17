@@ -961,3 +961,90 @@ export const fixedAssetUsageLogValidator = z.object({
 export const fixedAssetDisposalValidator = z.object({
   disposalDate: z.string().min(1, { message: "Disposal date is required" })
 });
+
+// -- Tax --
+
+export const taxCalculationTypes = ["Normal", "Reverse Charge"] as const;
+
+export const taxReportingCategories = [
+  "Standard",
+  "Reduced",
+  "Zero-Rated",
+  "Exempt",
+  "Reverse Charge",
+  "Export",
+  "Out of Scope"
+] as const;
+
+export const taxAuthorityValidator = z.object({
+  id: zfd.text(z.string().optional()),
+  name: z.string().min(1, { message: "Name is required" }),
+  supplierId: zfd.text(z.string().optional())
+});
+
+// Validates JSON-parsed rows (not FormData), so plain zod types are used here.
+export const taxCodeComponentValidator = z
+  .object({
+    id: z.string().optional(),
+    name: z.string().min(1, { message: "Name is required" }),
+    taxAuthorityId: z.string().optional().nullable(),
+    rate: z
+      .number()
+      .min(0, { message: "Rate must be greater than or equal to 0" })
+      .max(1, { message: "Rate must be less than or equal to 1" }),
+    sequence: z
+      .number()
+      .int()
+      .min(1, { message: "Sequence must be greater than or equal to 1" })
+      .default(1),
+    isCompound: z.boolean().default(false),
+    isRecoverable: z.boolean().default(false),
+    salesTaxAccountId: z.string().optional().nullable(),
+    purchaseTaxAccountId: z.string().optional().nullable(),
+    effectiveDate: z.string().optional().nullable(),
+    expirationDate: z.string().optional().nullable()
+  })
+  // Mirrors the DB CHECK constraint "taxCodeComponent_dates_check"
+  .refine(
+    (component) =>
+      !component.effectiveDate ||
+      !component.expirationDate ||
+      component.expirationDate > component.effectiveDate,
+    {
+      message: "Expiration date must be after the effective date",
+      path: ["expirationDate"]
+    }
+  );
+
+export const taxCodeValidator = z.object({
+  id: zfd.text(z.string().optional()),
+  name: z.string().min(1, { message: "Name is required" }),
+  description: zfd.text(z.string().optional()),
+  calculationType: z
+    .enum(taxCalculationTypes, {
+      errorMap: () => ({ message: "Calculation type is required" })
+    })
+    .default("Normal"),
+  reportingCategory: z
+    .enum(taxReportingCategories, {
+      errorMap: () => ({ message: "Reporting category is required" })
+    })
+    .default("Standard"),
+  invoiceMessage: zfd.text(z.string().optional()),
+  countryCode: zfd.text(z.string().optional()),
+  state: zfd.text(z.string().optional()),
+  // JSON-serialized child rows: the route action parses this string and
+  // validates it with z.array(taxCodeComponentValidator).min(1)
+  components: zfd.text(z.string())
+});
+
+export const taxRegistrationValidator = z.object({
+  id: zfd.text(z.string().optional()),
+  countryCode: z.string().min(1, { message: "Country is required" }),
+  state: zfd.text(z.string().optional()),
+  registrationNumber: z
+    .string()
+    .min(1, { message: "Registration number is required" }),
+  effectiveDate: zfd.text(z.string().optional()),
+  endDate: zfd.text(z.string().optional())
+});

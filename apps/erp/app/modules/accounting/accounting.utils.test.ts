@@ -7,13 +7,18 @@ import {
   calculateDepreciation,
   calculateMacrsDepreciation,
   calculateTaxDepreciation,
+  computeComponentTaxes,
   computeDisposalGainLoss,
+  computeEffectiveTaxPercent,
   depreciationRunLineDisplay,
+  type EffectiveTaxComponent,
+  filterEffectiveComponents,
   getLastDayOfMonth,
   getMacrsPercentage,
   getMonthsBetween,
   getMonthsElapsed,
-  getNextPeriodEnd
+  getNextPeriodEnd,
+  roundCurrency
 } from "./accounting.utils";
 
 // ---------------------------------------------------------------------------
@@ -818,5 +823,274 @@ describe("buildDepreciationLines", () => {
     // Book SL: 108k/60mo * 12mo = $21,600
     // Tax MACRS 5-yr HY: 120k * 20% = $24,000
     expect(lines[0].taxAmount!).toBeGreaterThan(lines[0].amount);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Multi-jurisdiction tax — determination-time math
+//
+// TWIN: `packages/database/supabase/functions/shared/resolve-taxes.ts` runs the
+// same math at posting time. These cases mirror its deno tests — if one side
+// changes, both must.
+// ---------------------------------------------------------------------------
+
+const taxComponent = (
+  overrides: Partial<EffectiveTaxComponent> & { id: string; rate: number }
+): EffectiveTaxComponent => ({
+  name: overrides.id,
+  taxAuthorityId: null,
+  sequence: 1,
+  isCompound: false,
+  isRecoverable: false,
+  salesTaxAccountId: null,
+  purchaseTaxAccountId: null,
+  effectiveDate: null,
+  expirationDate: null,
+  ...overrides
+});
+
+// Quebec: GST 5% + QST 9.975%, both applied to the line amount (QST stopped
+// compounding on GST in 2013) — the driving fixture for Phase 1.
+const qcComponents: EffectiveTaxComponent[] = [
+  taxComponent({ id: "gst", name: "GST", rate: 0.05, sequence: 1 }),
+  taxComponent({ id: "qst", name: "QST", rate: 0.09975, sequence: 2 })
+];
+
+// Historical compound PST: 7% charged on (line + 5% GST).
+const compoundComponents: EffectiveTaxComponent[] = [
+  taxComponent({ id: "gst", name: "GST", rate: 0.05, sequence: 1 }),
+  taxComponent({
+    id: "pst",
+    name: "PST",
+    rate: 0.07,
+    sequence: 2,
+    isCompound: true
+  })
+];
+
+describe("computeComponentTaxes", () => {
+  it("applies each non-compound rate to the line amount (QC: GST + QST)", () => {
+    const taxes = computeComponentTaxes(100, qcComponents);
+    expect(taxes).toHaveLength(2);
+    expect(taxes[0].componentId).toBe("gst");
+    expect(taxes[0].base).toBe(100);
+    expect(taxes[0].tax).toBe(5);
+    // QST is NOT compounded on the GST — its base is still the line amount.
+    expect(taxes[1].componentId).toBe("qst");
+    expect(taxes[1].base).toBe(100);
+    expect(taxes[1].tax).toBeCloseTo(9.975, 10);
+  });
+
+  it("compounds a compound component on the prior-sequence taxes", () => {
+    const taxes = computeComponentTaxes(100, compoundComponents);
+    expect(taxes[0].tax).toBe(5);
+    // 7% of (100 + 5) = 7.35, not 7.00
+    expect(taxes[1].base).toBe(105);
+    expect(taxes[1].tax).toBeCloseTo(7.35, 10);
+  });
+
+  it("returns no taxes for an empty component list", () => {
+    expect(computeComponentTaxes(100, [])).toEqual([]);
+  });
+
+  it("does not round — the cascade runs at full precision", () => {
+    const [tax] = computeComponentTaxes(10.01, [
+      taxComponent({ id: "gst", rate: 0.05 })
+    ]);
+    // 10.01 * 0.05 = 0.5005 — rounding is a posting-time concern, not here.
+    expect(tax.tax).toBeCloseTo(0.5005, 10);
+    expect(roundCurrency(tax.tax)).toBe(0.5);
+  });
+});
+
+describe("computeEffectiveTaxPercent", () => {
+  it("blends the QC components into 14.975%", () => {
+    expect(computeEffectiveTaxPercent(100, qcComponents)).toBeCloseTo(
+      0.14975,
+      10
+    );
+  });
+
+  it("expands compounding into the blended rate (12.35%, not 12%)", () => {
+    expect(computeEffectiveTaxPercent(100, compoundComponents)).toBeCloseTo(
+      0.1235,
+      10
+    );
+  });
+
+  it("computes against a base of 1 when the taxable base is 0", () => {
+    // The tax code form previews the rate before any amount exists; a base of 0
+    // must not divide by zero, and the compound expansion must still hold.
+    expect(computeEffectiveTaxPercent(0, compoundComponents)).toBeCloseTo(
+      0.1235,
+      10
+    );
+    expect(computeEffectiveTaxPercent(0, qcComponents)).toBeCloseTo(
+      0.14975,
+      10
+    );
+  });
+
+  it("returns 0 for an empty component list (at any base)", () => {
+    expect(computeEffectiveTaxPercent(100, [])).toBe(0);
+    expect(computeEffectiveTaxPercent(0, [])).toBe(0);
+  });
+
+  it("is base-independent", () => {
+    expect(computeEffectiveTaxPercent(1234.56, compoundComponents)).toBeCloseTo(
+      computeEffectiveTaxPercent(1, compoundComponents),
+      10
+    );
+  });
+});
+
+describe("filterEffectiveComponents", () => {
+  // Spec acceptance criterion: a rate change on July 1 2026. Both bounds are
+  // INCLUSIVE, so June 30 still gets the old 8.25% and July 1 gets 8.5%.
+  const oldRate = taxComponent({
+    id: "old",
+    name: "State 8.25%",
+    rate: 0.0825,
+    sequence: 1,
+    effectiveDate: null,
+    expirationDate: "2026-06-30"
+  });
+  const newRate = taxComponent({
+    id: "new",
+    name: "State 8.5%",
+    rate: 0.085,
+    sequence: 1,
+    effectiveDate: "2026-07-01",
+    expirationDate: null
+  });
+  const successors = [oldRate, newRate];
+
+  it("selects ONLY the expiring component on its expiration date", () => {
+    const effective = filterEffectiveComponents(successors, "2026-06-30");
+    expect(effective).toHaveLength(1);
+    expect(effective[0].id).toBe("old");
+    expect(effective[0].rate).toBe(0.0825);
+  });
+
+  it("selects ONLY the successor on its effective date", () => {
+    const effective = filterEffectiveComponents(successors, "2026-07-01");
+    expect(effective).toHaveLength(1);
+    expect(effective[0].id).toBe("new");
+    expect(effective[0].rate).toBe(0.085);
+  });
+
+  it("excludes a component the day before it takes effect", () => {
+    expect(filterEffectiveComponents([newRate], "2026-06-30")).toEqual([]);
+  });
+
+  it("excludes a component the day after it expires", () => {
+    expect(filterEffectiveComponents([oldRate], "2026-07-01")).toEqual([]);
+  });
+
+  it("treats null bounds as open-ended", () => {
+    const always = taxComponent({ id: "gst", rate: 0.05 });
+    expect(filterEffectiveComponents([always], "1999-01-01")).toHaveLength(1);
+    expect(filterEffectiveComponents([always], "2099-12-31")).toHaveLength(1);
+  });
+
+  it("normalizes a full ISO timestamp to its calendar day", () => {
+    // A document date may arrive as a timestamp; comparing it raw against the
+    // Postgres DATE "2026-06-30" would push June 30 past the expiration.
+    const effective = filterEffectiveComponents(
+      successors,
+      "2026-06-30T23:59:59.999Z"
+    );
+    expect(effective).toHaveLength(1);
+    expect(effective[0].id).toBe("old");
+  });
+
+  it("sorts by sequence regardless of input order", () => {
+    const shuffled = [
+      taxComponent({ id: "third", rate: 0.01, sequence: 3 }),
+      taxComponent({ id: "first", rate: 0.05, sequence: 1 }),
+      taxComponent({ id: "second", rate: 0.09975, sequence: 2 })
+    ];
+    expect(
+      filterEffectiveComponents(shuffled, "2026-08-17").map((c) => c.id)
+    ).toEqual(["first", "second", "third"]);
+  });
+
+  it("keeps the compound cascade ordered when the input is shuffled", () => {
+    const shuffled = [compoundComponents[1], compoundComponents[0]];
+    const taxes = computeComponentTaxes(
+      100,
+      filterEffectiveComponents(shuffled, "2026-08-17")
+    );
+    // GST first, then PST compounded on it — not the other way around.
+    expect(taxes.map((t) => t.componentId)).toEqual(["gst", "pst"]);
+    expect(taxes[1].base).toBe(105);
+  });
+});
+
+describe("roundCurrency", () => {
+  it("rounds the classic binary-representation traps half away from zero", () => {
+    // 1.005 * 100 is 100.49999999999999 in IEEE-754; a bare Math.round gives
+    // 1.00. The relative epsilon is what closes the gap.
+    expect(roundCurrency(1.005)).toBe(1.01);
+    expect(roundCurrency(2.675)).toBe(2.68);
+    expect(roundCurrency(2.345)).toBe(2.35);
+  });
+
+  it("rounds negative halves away from zero", () => {
+    expect(roundCurrency(-1.005)).toBe(-1.01);
+    expect(roundCurrency(-2.675)).toBe(-2.68);
+    expect(roundCurrency(-2.345)).toBe(-2.35);
+  });
+
+  it("normalizes -0 to 0", () => {
+    expect(Object.is(roundCurrency(-0.001), 0)).toBe(true);
+    expect(Object.is(roundCurrency(-0), 0)).toBe(true);
+  });
+
+  it("leaves already-rounded amounts alone", () => {
+    expect(roundCurrency(0)).toBe(0);
+    expect(roundCurrency(14.98)).toBe(14.98);
+    expect(roundCurrency(100)).toBe(100);
+  });
+
+  it("honors a custom precision", () => {
+    expect(roundCurrency(9.97512, 3)).toBe(9.975);
+    expect(roundCurrency(9.975, 0)).toBe(10);
+  });
+});
+
+describe("parity with the posting-time Deno twin", () => {
+  // resolve-taxes.ts documents QC 5% + 9.975% on 100 → 5.00 + 9.98 (each
+  // component rounded once, half-up), total 14.98. Determination must produce
+  // the identical numbers or the invoice and the GL disagree.
+  it("matches the twin's QC split after per-component rounding at 2dp", () => {
+    const effective = filterEffectiveComponents(qcComponents, "2026-08-17");
+    const rounded = computeComponentTaxes(100, effective).map(
+      ({ componentId, tax }) => ({ componentId, tax: roundCurrency(tax) })
+    );
+    expect(rounded).toEqual([
+      { componentId: "gst", tax: 5 },
+      { componentId: "qst", tax: 9.98 }
+    ]);
+    expect(rounded.reduce((total, { tax }) => total + tax, 0)).toBe(14.98);
+  });
+
+  it("matches the twin's compound split (5.00 + 7.35)", () => {
+    const rounded = computeComponentTaxes(
+      100,
+      filterEffectiveComponents(compoundComponents, "2026-08-17")
+    ).map(({ tax }) => roundCurrency(tax));
+    expect(rounded).toEqual([5, 7.35]);
+  });
+
+  it("drops components whose rounded tax is exactly 0, as the twin's split does", () => {
+    const zeroRated = [
+      taxComponent({ id: "gst", rate: 0.05, sequence: 1 }),
+      taxComponent({ id: "zero", rate: 0, sequence: 2 })
+    ];
+    const kept = computeComponentTaxes(100, zeroRated)
+      .map(({ componentId, tax }) => ({ componentId, tax: roundCurrency(tax) }))
+      .filter(({ tax }) => tax !== 0);
+    expect(kept).toEqual([{ componentId: "gst", tax: 5 }]);
   });
 });
