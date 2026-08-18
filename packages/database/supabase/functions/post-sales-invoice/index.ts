@@ -16,6 +16,7 @@ import {
   resolveInventoryAccount,
 } from "../shared/get-posting-group.ts";
 import {
+  assertJournalBalances,
   getAccountTypes,
   requireAccountType,
 } from "../shared/journal-balance.ts";
@@ -1559,6 +1560,18 @@ serve(async (req: Request) => {
           let journalLineResults: { id: string }[] = [];
           let postedJournalId: string | null = null;
           if (accountingEnabled) {
+            // The same refusal as the purchase side — see the note there. Runs
+            // before the journal header is written so a rejected posting never
+            // leaves a header behind, transaction rollback notwithstanding.
+            assertJournalBalances(
+              journalLineInserts,
+              await getAccountTypes(
+                client,
+                journalLineInserts.map((line) => line.accountId)
+              ),
+              "Sales invoice journal"
+            );
+
             const journalEntryId = await getNextSequence(
               trx,
               "journalEntry",
@@ -2090,7 +2103,12 @@ serve(async (req: Request) => {
 
             voidJournalId = voidJournalResult.id;
 
-                if (reversingJournalEntries.length > 0) {
+            // Deliberately NOT balance-checked, unlike the posting path below/above.
+            // A reversal is a pure sign flip of lines already in the ledger, so it
+            // balances exactly when the original did. Guarding it would only ever
+            // fire on a journal posted BEFORE the sign fix — and would then trap the
+            // user, refusing the very void that clears the bad entry.
+            if (reversingJournalEntries.length > 0) {
               await trx
                 .insertInto("journalLine")
                 .values(

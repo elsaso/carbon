@@ -3,7 +3,19 @@ import type { Database } from "../lib/types.ts";
 import {
   type AccountType,
   accountTypeFromClass,
+  toDebitPositive,
 } from "../lib/account-sign.ts";
+import { assertBalanced } from "./precision.ts";
+
+/** The BUSINESS refusal threshold for a posting journal, matching what
+ *  payment/memo posting passes — deliberately not EPSILON, which is the
+ *  float-noise guard. Every leg a posting function writes is multiplied by the
+ *  document's exchange rate, and multi-currency journals carry genuine sub-cent
+ *  cross-rate residuals; a false refusal here blocks a customer from posting a
+ *  real invoice. So the band is the currency's smallest unit rather than float
+ *  noise. Manual journals and period close are entered in one currency and use
+ *  the tighter 0.001 — do not unify them. */
+export const JOURNAL_BALANCE_TOLERANCE = 0.01;
 
 /** Resolve the real `class` of every account a set of journal legs posts to, in
  *  ONE query. Never call this inside a line loop (N+1). An id that resolves to
@@ -61,4 +73,31 @@ export function requireAccountType(
     );
   }
   return accountType;
+}
+
+/** The ledger invariant at the insert choke point: convert every pending leg
+ *  back to debit-positive using its account's REAL class, and refuse if the two
+ *  sides disagree. This is the guard whose absence let an unbalanced
+ *  purchase-tax journal be written silently. */
+export function assertJournalBalances(
+  journalLines: { accountId?: string | null; amount?: number | null }[],
+  accountTypes: Map<string, AccountType>,
+  label: string,
+  tolerance: number = JOURNAL_BALANCE_TOLERANCE
+): void {
+  let debits = 0;
+  let credits = 0;
+
+  for (const journalLine of journalLines) {
+    const accountType = requireAccountType(
+      accountTypes,
+      journalLine.accountId,
+      label
+    );
+    const asDebit = toDebitPositive(accountType, journalLine.amount ?? 0);
+    if (asDebit >= 0) debits += asDebit;
+    else credits -= asDebit;
+  }
+
+  assertBalanced(debits, credits, tolerance, label);
 }

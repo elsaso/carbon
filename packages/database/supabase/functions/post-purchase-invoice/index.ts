@@ -23,6 +23,7 @@ import {
   resolveInventoryAccount,
 } from "../shared/get-posting-group.ts";
 import {
+  assertJournalBalances,
   getAccountTypes,
   requireAccountType,
 } from "../shared/journal-balance.ts";
@@ -420,6 +421,11 @@ serve(async (req: Request) => {
             .execute();
         }
 
+        // Deliberately NOT balance-checked, unlike the posting path below/above.
+        // A reversal is a pure sign flip of lines already in the ledger, so it
+        // balances exactly when the original did. Guarding it would only ever
+        // fire on a journal posted BEFORE the sign fix — and would then trap the
+        // user, refusing the very void that clears the bad entry.
         if (reversingJournalLines.length > 0) {
           const voidJournalEntryId = await getNextSequence(
             trx,
@@ -2293,6 +2299,21 @@ serve(async (req: Request) => {
       }
 
       if (accountingEnabled && journalLineInserts.length > 0) {
+        // Refuse rather than write a journal that does not balance. Each leg's
+        // amount is stored in the sign convention of ITS OWN account's class, so
+        // the sides only become comparable once those real classes are read —
+        // which is exactly why the absence of this check let an input-tax debit
+        // be stored as a credit without anything complaining. Every accountId in
+        // the journal, not just the tax ones, in one query.
+        assertJournalBalances(
+          journalLineInserts,
+          await getAccountTypes(
+            client,
+            journalLineInserts.map((journalLine) => journalLine.accountId)
+          ),
+          "Purchase invoice journal"
+        );
+
         const journalEntryId = await getNextSequence(
           trx,
           "journalEntry",
