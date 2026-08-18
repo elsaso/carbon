@@ -1307,6 +1307,9 @@ msgstr "Todas las acciones seleccionadas"
 msgid "All Audit Logs"
 msgstr "Todos los Registros de Auditoría"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "Todos los cambios en entidades auditables se están registrando."
 
@@ -2285,6 +2288,9 @@ msgstr "Error de autenticación"
 msgid "Authenticator QR code"
 msgstr "Código QR del autenticador"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "Aplicar automáticamente"
 
@@ -3135,6 +3141,9 @@ msgstr "Contraer preparación"
 msgid "Collapse subtree"
 msgstr "Contraer subárbol"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "Dimensión de columna"
 
@@ -3239,6 +3248,9 @@ msgstr "Código de Barras de Finalización"
 
 msgid "Completion Time"
 msgstr "Tiempo de Finalización"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "Excluido"
 msgid "Executive P&L"
 msgstr "Estado de Resultados Ejecutivo"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "Certificado de Exención"
 
@@ -7737,6 +7755,9 @@ msgstr "Heredado del grupo padre."
 
 msgid "Input"
 msgstr "Entrada"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "Entradas"
@@ -9335,6 +9356,9 @@ msgstr "Cambio Neto"
 msgid "Net Income"
 msgstr "Ingreso Neto"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "Nunca"
 
@@ -9734,6 +9758,9 @@ msgstr "No hay registros archivados aún. Los registros más antiguos de {0} dí
 
 msgid "No attachments."
 msgstr "Sin adjuntos."
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "No hay filtros disponibles"
@@ -14607,6 +14634,9 @@ msgstr "ID Fiscal"
 msgid "Tax Information"
 msgstr "Información Fiscal"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Obligación Fiscal para Transacciones de Inversión del Sujeto Pasivo"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "Impuesto:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

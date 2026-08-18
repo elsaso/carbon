@@ -1307,6 +1307,9 @@ msgstr "Wszystkie akcje zaznaczone"
 msgid "All Audit Logs"
 msgstr "Wszystkie dzienniki audytu"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "Wszystkie zmiany w jednostkach podlegających audytowi są rejestrowane."
 
@@ -2285,6 +2288,9 @@ msgstr "Błąd uwierzytelniania"
 msgid "Authenticator QR code"
 msgstr "Kod QR authenticatora"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "Automatyczne zastosowanie"
 
@@ -3135,6 +3141,9 @@ msgstr "Zwiń Setup"
 msgid "Collapse subtree"
 msgstr "Zwiń poddrzewo"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "Wymiar kolumny"
 
@@ -3239,6 +3248,9 @@ msgstr "Kod kreskowy ukończenia"
 
 msgid "Completion Time"
 msgstr "Czas ukończenia"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "Wykluczone"
 msgid "Executive P&L"
 msgstr "Rachunek zysków i strat dla kierownictwa"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "Certifikat Zwolnienia"
 
@@ -7737,6 +7755,9 @@ msgstr "Odziedziczone z grupy nadrzędnej."
 
 msgid "Input"
 msgstr "Dane wejściowe"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "Dane wejściowe"
@@ -9335,6 +9356,9 @@ msgstr "Zmiana netto"
 msgid "Net Income"
 msgstr "Dochód netto"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "Nigdy"
 
@@ -9734,6 +9758,9 @@ msgstr "Brak zarchiwizowanych dzienników. Dzienniki starsze niż {0} dni będą
 
 msgid "No attachments."
 msgstr "Brak załączników."
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "Brak dostępnych filtrów"
@@ -14607,6 +14634,9 @@ msgstr "Numer identyfikacyjny podatnika"
 msgid "Tax Information"
 msgstr "Informacje Podatkowe"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Zobowiązanie Podatkowe dla Transakcji Odwróconego Obciążenia"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "Podatek:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

@@ -1307,6 +1307,9 @@ msgstr "所有操作已选中"
 msgid "All Audit Logs"
 msgstr "所有审计日志"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "所有可审计实体的更改都正在被记录。"
 
@@ -2285,6 +2288,9 @@ msgstr "身份验证错误"
 msgid "Authenticator QR code"
 msgstr "身份验证器二维码"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "自动应用"
 
@@ -3135,6 +3141,9 @@ msgstr "折叠设置"
 msgid "Collapse subtree"
 msgstr "折叠子树"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "列维度"
 
@@ -3239,6 +3248,9 @@ msgstr "完成条码"
 
 msgid "Completion Time"
 msgstr "完成时间"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "已排除"
 msgid "Executive P&L"
 msgstr "执行损益表"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "豁免证书"
 
@@ -7737,6 +7755,9 @@ msgstr "从父组继承。"
 
 msgid "Input"
 msgstr "输入"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "输入"
@@ -9335,6 +9356,9 @@ msgstr "净变化"
 msgid "Net Income"
 msgstr "净收入"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "永不"
 
@@ -9734,6 +9758,9 @@ msgstr "还没有存档日志。超过 {0} 天的日志将自动存档，并可�
 
 msgid "No attachments."
 msgstr "没有附件。"
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "没有可用的筛选器"
@@ -14607,6 +14634,9 @@ msgstr "税号"
 msgid "Tax Information"
 msgstr "税务信息"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "反向征税交易的税务负债"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "税:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

@@ -1307,6 +1307,9 @@ msgstr "Tüm eylemler seçildi"
 msgid "All Audit Logs"
 msgstr "Tüm Denetim Kayıtları"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "Denetlenebilir varlıklardaki tüm değişiklikler kaydediliyor."
 
@@ -2285,6 +2288,9 @@ msgstr "Kimlik Doğrulama Hatası"
 msgid "Authenticator QR code"
 msgstr "Doğrulayıcı QR kodu"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "Otomatik uygula"
 
@@ -3135,6 +3141,9 @@ msgstr "Kurulumu Daralt"
 msgid "Collapse subtree"
 msgstr "Alt ağacı daralt"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "Sütun boyutu"
 
@@ -3239,6 +3248,9 @@ msgstr "Tamamlama Barkodu"
 
 msgid "Completion Time"
 msgstr "Tamamlama Süresi"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "Hariç Tutulan"
 msgid "Executive P&L"
 msgstr "Yönetici P&L"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "İstisnai Sertifika"
 
@@ -7737,6 +7755,9 @@ msgstr "Ana gruptan devralınan."
 
 msgid "Input"
 msgstr "Giriş"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "Girişler"
@@ -9335,6 +9356,9 @@ msgstr "Net Değişim"
 msgid "Net Income"
 msgstr "Net Gelir"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "Asla"
 
@@ -9734,6 +9758,9 @@ msgstr "Henüz arşivlenmiş günlük yok. {0} günden eski günlükler otomatik
 
 msgid "No attachments."
 msgstr "Ek ekli değil."
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "Kullanılabilir filtre yok"
@@ -14607,6 +14634,9 @@ msgstr "Vergi Kimlik Numarası"
 msgid "Tax Information"
 msgstr "Vergi Bilgileri"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Ters Muhasebeleştirme İşlemleri için Vergi Yükümlülüğü"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "Vergi:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

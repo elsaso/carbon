@@ -1307,6 +1307,9 @@ msgstr "Toutes les actions sélectionnées"
 msgid "All Audit Logs"
 msgstr "Tous les journaux d'audit"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "Tous les changements apportés aux entités vérifiables sont enregistrés."
 
@@ -2285,6 +2288,9 @@ msgstr "Erreur d'authentification"
 msgid "Authenticator QR code"
 msgstr "Code QR de l'authentificateur"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "Appliquer automatiquement"
 
@@ -3135,6 +3141,9 @@ msgstr "Réduire la configuration"
 msgid "Collapse subtree"
 msgstr "Réduire le sous-arbre"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "Dimension de colonne"
 
@@ -3239,6 +3248,9 @@ msgstr "Code-barres d'achèvement"
 
 msgid "Completion Time"
 msgstr "Temps d'exécution"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "Exclu"
 msgid "Executive P&L"
 msgstr "Compte de résultat exécutif"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "Certificat d'Exonération"
 
@@ -7737,6 +7755,9 @@ msgstr "Hérité du groupe parent."
 
 msgid "Input"
 msgstr "Entrée"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "Entrées"
@@ -9335,6 +9356,9 @@ msgstr "Variation nette"
 msgid "Net Income"
 msgstr "Revenu net"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "Jamais"
 
@@ -9734,6 +9758,9 @@ msgstr "Aucun journal archivé pour le moment. Les journaux antérieurs à {0} j
 
 msgid "No attachments."
 msgstr "Aucune pièce jointe."
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "Aucun filtre disponible"
@@ -14607,6 +14634,9 @@ msgstr "Numéro d'identification fiscale"
 msgid "Tax Information"
 msgstr "Informations Fiscales"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Obligation Fiscale pour les Transactions d'Inversion du Mécanisme de Déductibilité"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "Taxe :"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-17T16:48:45.702Z",
-  "totalTools": 1457,
+  "generated": "2026-08-18T02:47:35.147Z",
+  "totalTools": 1461,
   "modules": 15,
   "tools": [
     {
@@ -4455,11 +4455,12 @@
       "module": "accounting",
       "classification": "READ",
       "description": "get tax codes",
-      "paramCount": 3,
+      "paramCount": 2,
       "serviceParams": [
         "client",
         "companyId",
-        "args"
+        "args",
+        "date"
       ],
       "injectAuth": [
         "companyId"
@@ -4485,8 +4486,15 @@
                 ]
               }
             }
+          },
+          "date": {
+            "type": "string"
           }
-        }
+        },
+        "required": [
+          "args",
+          "date"
+        ]
       }
     },
     {
@@ -4537,6 +4545,24 @@
             ]
           }
         }
+      }
+    },
+    {
+      "name": "accounting_getCompanyUsesTaxCodes",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get company uses tax codes",
+      "paramCount": 0,
+      "serviceParams": [
+        "client",
+        "companyId"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {}
       }
     },
     {
@@ -4607,6 +4633,123 @@
       }
     },
     {
+      "name": "accounting_resolveLineTaxes",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "resolve line taxes",
+      "paramCount": 6,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "sales",
+              "purchase"
+            ]
+          },
+          "customerId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "supplierId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "/** Ship-to location, when the document has one. Overrides the party code. */\n    customerLocationId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "itemId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "/** Tax point. Drives which components are in force. */\n    date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "/** Tax point. Drives which components are in force. */\n    date"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getLineTaxDefaults",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get line tax defaults",
+      "paramCount": 7,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "sales",
+              "purchase"
+            ]
+          },
+          "customerId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "supplierId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "customerLocationId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "itemId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date": {
+            "type": "string"
+          },
+          "/** Already on the line — determination leaves these alone. */\n    existing: { taxCodeId": {}
+        },
+        "required": [
+          "source",
+          "date"
+        ]
+      }
+    },
+    {
       "name": "accounting_getTaxRegistration",
       "module": "accounting",
       "classification": "READ",
@@ -4614,7 +4757,8 @@
       "paramCount": 1,
       "serviceParams": [
         "client",
-        "taxRegistrationId"
+        "taxRegistrationId",
+        "companyId"
       ],
       "injectAuth": [
         "companyId"
@@ -4730,7 +4874,8 @@
       "paramCount": 1,
       "serviceParams": [
         "client",
-        "taxRegistrationId"
+        "taxRegistrationId",
+        "companyId"
       ],
       "injectAuth": [
         "companyId"
@@ -4744,6 +4889,42 @@
         },
         "required": [
           "taxRegistrationId"
+        ]
+      }
+    },
+    {
+      "name": "accounting_getTaxLiability",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get tax liability",
+      "paramCount": 3,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "taxAuthorityId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate"
         ]
       }
     },
@@ -37964,7 +38145,7 @@
       "module": "sales",
       "classification": "WRITE",
       "description": "insert customer location",
-      "paramCount": 4,
+      "paramCount": 5,
       "serviceParams": [
         "client",
         "customerLocation"
@@ -37982,6 +38163,12 @@
           },
           "name": {
             "type": "string"
+          },
+          "taxCodeId": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "address: {\n      addressLine1": {},
           "customFields": {}
@@ -38457,7 +38644,7 @@
       "module": "sales",
       "classification": "WRITE",
       "description": "update customer location",
-      "paramCount": 4,
+      "paramCount": 5,
       "serviceParams": [
         "client",
         "customerLocation"
@@ -38474,6 +38661,12 @@
           },
           "name": {
             "type": "string"
+          },
+          "taxCodeId": {
+            "type": [
+              "string",
+              "null"
+            ]
           },
           "address: {\n      addressLine1": {},
           "customFields": {}

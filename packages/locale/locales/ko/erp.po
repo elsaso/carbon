@@ -1307,6 +1307,9 @@ msgstr "모든 조치가 선택됨"
 msgid "All Audit Logs"
 msgstr "모든 감사 로그"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "감사 대상 개체에 대한 모든 변경 사항이 기록되고 있습니다."
 
@@ -2285,6 +2288,9 @@ msgstr "인증 오류"
 msgid "Authenticator QR code"
 msgstr "인증자 QR 코드"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "자동 적용"
 
@@ -3135,6 +3141,9 @@ msgstr "셋업 접기"
 msgid "Collapse subtree"
 msgstr "하위 트리 접기"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "열 차원"
 
@@ -3239,6 +3248,9 @@ msgstr "완료 바코드"
 
 msgid "Completion Time"
 msgstr "완료 시간"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "제외됨"
 msgid "Executive P&L"
 msgstr "경영진 손익계산"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "면세 증명서"
 
@@ -7737,6 +7755,9 @@ msgstr "상위 그룹에서 상속됨."
 
 msgid "Input"
 msgstr "입력"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "입력"
@@ -9335,6 +9356,9 @@ msgstr "순변동"
 msgid "Net Income"
 msgstr "순이익"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "안 함"
 
@@ -9734,6 +9758,9 @@ msgstr "아직 보관된 로그가 없습니다. {0}일이 지난 로그는 자�
 
 msgid "No attachments."
 msgstr "첨부파일이 없습니다."
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "사용 가능한 필터가 없습니다"
@@ -14607,6 +14634,9 @@ msgstr "세금 ID"
 msgid "Tax Information"
 msgstr "세금 정보"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "리버스차지 거래에 대한 세금 부채"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "세금:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

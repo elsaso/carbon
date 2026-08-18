@@ -6715,3 +6715,131 @@ export async function deleteTaxRegistration(
     .eq("id", taxRegistrationId)
     .eq("companyId", companyId);
 }
+
+export type TaxLiabilityLine = {
+  taxAuthorityId: string | null;
+  taxAuthorityName: string | null;
+  /** Null on exemption rows — the posting writes those per line, not per
+   *  component. The legacy flat-taxPercent pseudo-component is the string
+   *  "Tax"; the two must never merge, or an exempt base inflates the legacy
+   *  row. */
+  componentName: string | null;
+  taxableAmount: number;
+  exemptAmount: number;
+  collectedTax: number;
+  inputTax: number;
+  netTax: number;
+};
+
+/**
+ * The tax liability report: what is owed to (and reclaimable from) each
+ * authority over a period, read from the `taxLedger` subledger rather than the
+ * GL — the subledger carries the authority/component identity the GL lines do
+ * not. Grouped by authority + component name (the NAME, not the component id:
+ * an expired component and its successor are the same obligation to the same
+ * authority, and VOID reversals must net against their original rows even if
+ * the code's configuration changed in between).
+ *
+ * Collected = sales-side taxAmount. Input = purchase-side taxAmount that was
+ * actually posted to an input account (`postedToInputAccount`) — capitalized
+ * non-recoverable purchase tax appears in the taxable base but is NOT
+ * reclaimable, so it never reduces the net. Net = collected − input.
+ *
+ * Sums accumulate at full precision and are rounded only at display, per the
+ * three-boundary rule.
+ */
+export async function getTaxLiability(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: {
+    startDate: string;
+    endDate: string;
+    taxAuthorityId?: string | null;
+  }
+) {
+  const [ledger, authorities] = await Promise.all([
+    fetchAllFromTable<{
+      taxAuthorityId: string | null;
+      componentName: string | null;
+      source: Database["public"]["Enums"]["taxLedgerSource"];
+      taxableAmount: number;
+      taxAmount: number;
+      exemptAmount: number;
+      postedToInputAccount: boolean;
+    }>(
+      client,
+      "taxLedger",
+      "taxAuthorityId, componentName, source, taxableAmount, taxAmount, exemptAmount, postedToInputAccount",
+      (query) => {
+        let filtered = query
+          .eq("companyId", companyId)
+          .gte("postingDate", args.startDate)
+          .lte("postingDate", args.endDate);
+        if (args.taxAuthorityId) {
+          filtered = filtered.eq("taxAuthorityId", args.taxAuthorityId);
+        }
+        return filtered;
+      }
+    ),
+    getTaxAuthoritiesList(client, companyId)
+  ]);
+
+  if (ledger.error) {
+    return { data: null, error: ledger.error };
+  }
+  if (authorities.error) {
+    return { data: null, error: authorities.error };
+  }
+
+  const authorityNames = new Map(
+    (authorities.data ?? []).map((authority) => [authority.id, authority.name])
+  );
+
+  const groups = new Map<string, TaxLiabilityLine>();
+  for (const row of ledger.data ?? []) {
+    const componentName = row.componentName;
+    const key = `${row.taxAuthorityId ?? ""}::${componentName ?? "\u0000"}`;
+    let group = groups.get(key);
+    if (!group) {
+      group = {
+        taxAuthorityId: row.taxAuthorityId,
+        taxAuthorityName: row.taxAuthorityId
+          ? (authorityNames.get(row.taxAuthorityId) ?? null)
+          : null,
+        componentName,
+        taxableAmount: 0,
+        exemptAmount: 0,
+        collectedTax: 0,
+        inputTax: 0,
+        netTax: 0
+      };
+      groups.set(key, group);
+    }
+
+    group.taxableAmount += row.taxableAmount;
+    group.exemptAmount += row.exemptAmount;
+    if (row.source === "Sales") {
+      group.collectedTax += row.taxAmount;
+    } else if (row.postedToInputAccount) {
+      group.inputTax += row.taxAmount;
+    }
+  }
+
+  // Named authorities first (alphabetical), then the authority-less legacy
+  // pseudo-component rows; components alphabetical within an authority.
+  const data = [...groups.values()]
+    .map((group) => ({ ...group, netTax: group.collectedTax - group.inputTax }))
+    .sort((a, b) => {
+      if (a.taxAuthorityName === b.taxAuthorityName) {
+        if (a.componentName === b.componentName) return 0;
+        if (a.componentName === null) return 1;
+        if (b.componentName === null) return -1;
+        return a.componentName.localeCompare(b.componentName);
+      }
+      if (a.taxAuthorityName === null) return 1;
+      if (b.taxAuthorityName === null) return -1;
+      return a.taxAuthorityName.localeCompare(b.taxAuthorityName);
+    });
+
+  return { data, error: null };
+}

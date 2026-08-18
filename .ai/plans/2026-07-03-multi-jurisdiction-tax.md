@@ -35,13 +35,13 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 - [x] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes
 - [ ] Task 19: post-memo — net/tax split + signed ledger rows — **not started**
 - [ ] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — **not started**
-- [ ] Task 21: Tax liability report (service + route) — **not started**
+- [x] Task 21: Tax liability report (service + route) — on `feat/tax-phase1-d-liability`; exemption rows (null componentName) deliberately kept separate from the legacy "Tax" pseudo-component
 - [ ] Task 22: Lingui extract + full scoped validation — extract done; full gate re-run pending the remaining tasks
 - [ ] Task 23: Browser verification via /test — **not started** (no runtime verification of posting yet)
 
 Phase 1 is therefore **not complete**, and none of these branches should close
-upstream #1036. What is missing is memo tax, the invoice PDF tax block, the tax
-liability report, the line-level override UI, and the recalculate action.
+upstream #1036. What is missing is memo tax, the invoice PDF tax block, the
+line-level override UI, and the recalculate action.
 
 **External blocker:** #1036 depends on #1030 (FX normalization, PR #1298). The
 posting branch still multiplies by `exchangeRate`, which is the convention #1298

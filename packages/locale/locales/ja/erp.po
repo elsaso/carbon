@@ -1307,6 +1307,9 @@ msgstr "すべてのアクションが選択されました"
 msgid "All Audit Logs"
 msgstr "すべての監査ログ"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "監査対象エンティティへのすべての変更が記録されています。"
 
@@ -2285,6 +2288,9 @@ msgstr "認証エラー"
 msgid "Authenticator QR code"
 msgstr "認証器QRコード"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "自動適用"
 
@@ -3135,6 +3141,9 @@ msgstr "段取りを折りたたむ"
 msgid "Collapse subtree"
 msgstr "サブツリーを折りたたむ"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "列ディメンション"
 
@@ -3239,6 +3248,9 @@ msgstr "完了バーコード"
 
 msgid "Completion Time"
 msgstr "完了時間"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "除外"
 msgid "Executive P&L"
 msgstr "経営幹部向けP&L"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "免除証明書"
 
@@ -7737,6 +7755,9 @@ msgstr "親グループから継承。"
 
 msgid "Input"
 msgstr "入力"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "入力"
@@ -9335,6 +9356,9 @@ msgstr "純変化"
 msgid "Net Income"
 msgstr "純利益"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "なし"
 
@@ -9734,6 +9758,9 @@ msgstr "まだアーカイブされたログはありません。{0}日以上前
 
 msgid "No attachments."
 msgstr "添付ファイルがありません。"
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "利用可能なフィルターがありません"
@@ -14607,6 +14634,9 @@ msgstr "税務ID"
 msgid "Tax Information"
 msgstr "税務情報"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "リバースチャージ取引の税務責任"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "税:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

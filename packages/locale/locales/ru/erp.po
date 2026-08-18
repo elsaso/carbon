@@ -1307,6 +1307,9 @@ msgstr "Все действия выбраны"
 msgid "All Audit Logs"
 msgstr "Все журналы аудита"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "Все изменения в аудируемых сущностях записываются."
 
@@ -2285,6 +2288,9 @@ msgstr "Ошибка аутентификации"
 msgid "Authenticator QR code"
 msgstr "QR-код аутентификатора"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "Автоматически применить"
 
@@ -3135,6 +3141,9 @@ msgstr "Свернуть настройку"
 msgid "Collapse subtree"
 msgstr "Свернуть поддерево"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "Измерение столбца"
 
@@ -3239,6 +3248,9 @@ msgstr "Штрихкод завершения"
 
 msgid "Completion Time"
 msgstr "Время завершения"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "Исключено"
 msgid "Executive P&L"
 msgstr "П&У для руководства"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "Сертификат освобождения"
 
@@ -7737,6 +7755,9 @@ msgstr "Унаследовано от родительской группы."
 
 msgid "Input"
 msgstr "Ввод"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "Входные данные"
@@ -9335,6 +9356,9 @@ msgstr "Чистое изменение"
 msgid "Net Income"
 msgstr "Чистый доход"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "Никогда"
 
@@ -9734,6 +9758,9 @@ msgstr "Нет архивированных логов. Логи старше {0
 
 msgid "No attachments."
 msgstr "Нет вложений."
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "Нет доступных фильтров"
@@ -14607,6 +14634,9 @@ msgstr "Налоговый ID"
 msgid "Tax Information"
 msgstr "Налоговая информация"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Налоговое обязательство по транзакциям с обратным начислением"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "Налог:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"

@@ -1307,6 +1307,9 @@ msgstr "सभी कार्य चयनित"
 msgid "All Audit Logs"
 msgstr "सभी ऑडिट लॉग"
 
+msgid "All authorities"
+msgstr ""
+
 msgid "All changes to auditable entities are being recorded."
 msgstr "सभी ऑडिट योग्य संस्थाओं में किए गए परिवर्तन रिकॉर्ड किए जा रहे हैं।"
 
@@ -2285,6 +2288,9 @@ msgstr "प्रमाणीकरण त्रुटि"
 msgid "Authenticator QR code"
 msgstr "प्रमाणकर्ता QR कोड"
 
+msgid "Authority"
+msgstr ""
+
 msgid "Auto apply"
 msgstr "स्वचालित रूप से लागू करें"
 
@@ -3135,6 +3141,9 @@ msgstr "सेटअप को संक्षिप्त करें"
 msgid "Collapse subtree"
 msgstr "सबट्री को संक्षिप्त करें"
 
+msgid "Collected"
+msgstr ""
+
 msgid "Column dimension"
 msgstr "कॉलम आयाम"
 
@@ -3239,6 +3248,9 @@ msgstr "पूर्ण बारकोड"
 
 msgid "Completion Time"
 msgstr "पूर्ण होने का समय"
+
+msgid "Component"
+msgstr ""
 
 msgid "Component Name"
 msgstr ""
@@ -6176,6 +6188,12 @@ msgstr "बहिष्कृत"
 msgid "Executive P&L"
 msgstr "कार्यकारी P&L"
 
+msgid "Exempt (no component)"
+msgstr ""
+
+msgid "Exempt Amount"
+msgstr ""
+
 msgid "Exemption Certificate"
 msgstr "छूट प्रमाणपत्र"
 
@@ -7737,6 +7755,9 @@ msgstr "मूल समूह से विरासत में मिला�
 
 msgid "Input"
 msgstr "इनपुट"
+
+msgid "Input Tax"
+msgstr ""
 
 msgid "Inputs"
 msgstr "इनपुट्स"
@@ -9335,6 +9356,9 @@ msgstr "शुद्ध परिवर्तन"
 msgid "Net Income"
 msgstr "शुद्ध आय"
 
+msgid "Net Owed"
+msgstr ""
+
 msgid "Never"
 msgstr "कभी नहीं"
 
@@ -9734,6 +9758,9 @@ msgstr "अभी तक कोई संग्रहीत लॉग नही�
 
 msgid "No attachments."
 msgstr "कोई अनुलग्नक नहीं।"
+
+msgid "No authority"
+msgstr ""
 
 msgid "No available filters"
 msgstr "कोई उपलब्ध फ़िल्टर नहीं"
@@ -14607,6 +14634,9 @@ msgstr "टैक्स आईडी"
 msgid "Tax Information"
 msgstr "कर जानकारी"
 
+msgid "Tax Liability"
+msgstr ""
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "रिवर्स-चार्ज लेनदेन के लिए कर देयता"
 
@@ -14647,6 +14677,9 @@ msgid "Tax:"
 msgstr "कर:"
 
 msgid "Taxable"
+msgstr ""
+
+msgid "Taxable Amount"
 msgstr ""
 
 msgid "Taxes"
