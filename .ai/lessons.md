@@ -1066,3 +1066,23 @@ canvas hosting Radix popovers/selects.
 **Rule:** Run seed scripts with `.env.local` explicitly sourced: `set -a; . ./.env.local; set +a` then pass the vars through, or invoke via a dotenv runner pointed at `.env.local`. Also seed the email that matches `DEV_BYPASS_EMAIL` in `.env.local` (default `test@carbon.ms`) — seeding a different address leaves the dev login bypass unusable and the `/auth` skill unable to sign in.
 
 **Applies to:** `packages/database/src/seed-dev.ts`, `src/seed.ts`, and any `packages/*` script using bare `dotenv.config()` that expects crbn-generated values.
+
+## `account` has no `companyId` — the chart of accounts is scoped by `companyGroupId`
+
+**Context:** Adding a batched lookup of `account.class` in `post-purchase-invoice` / `post-sales-invoice` so tax legs could be signed from the real account class instead of a hardcoded one.
+
+**Problem:** The obvious tenant filter, `.eq("companyId", companyId)`, is a runtime error — `column account.companyId does not exist`. `account` is scoped by **`companyGroupId`**: a chart of accounts is shared across a company group, not owned by one company. Because a Supabase filter on a missing column only fails when the query runs, this passed typecheck, passed lint, and turned every sales AND purchase posting into a 500 — the failure surfaced as a wall of unrelated-looking test failures, not as a compile error.
+
+**Rule:** Don't reflexively add `.eq("companyId", ...)` to a `.from("account")` query — check the table's real tenancy column first (`account`, like the rest of the GL config, is group-scoped). Looking accounts up **by id alone** is the established pattern in these functions (see the `G/L Account` line-type fetch in `post-purchase-invoice`), and it is safe when the ids came from rows already scoped to the company (`accountDefault`, `taxCodeComponent`). When a posting function starts returning 500 for every scenario at once, read the edge-runtime container logs before reading the test output — but filter out `event-wake` noise first (it floods the log whenever the `inngest` container is down).
+
+**Applies to:** `packages/database/supabase/functions/shared/journal-balance.ts`, any new query against `account` in an edge function.
+
+## The Deno tests under `supabase/functions/` are not run by CI, and three files fail `--check`
+
+**Context:** Adding committed regression coverage for the journal sign convention.
+
+**Problem:** Two independent gaps. (1) `packages/database` has **no `test` script**, so `turbo run test` (and therefore `pnpm run test` and CI) never runs the ~16 `*.test.ts` files under `supabase/functions/` — they only run via `deno task test`, by hand. A test added there is real coverage but not an automated gate. (2) `deno test` type-checks the whole import graph, and `lib/postgres/index.ts`, `lib/database.ts` and `lib/scheduling/work-center-selector.ts` carry 8 pre-existing type errors (node-vs-deno `Pool` typing). Anything importing `lib/utils.ts` inherits them via its type-only import of `postgres/index.ts`, which is why no test imported `utils.ts` before.
+
+**Rule:** When unit-testing something in `lib/utils.ts`, extract it into a sibling module with a clean graph and re-export it from `utils.ts` (that is why `lib/account-sign.ts` exists) — the 16 existing importers are unaffected by the re-export. Run the whole suite with `deno test --no-lock --no-check` (201 tests) and the files you own with `--check`. Don't claim a Deno test "runs in CI" without grepping for it; and note `deno` is not installed by default on this machine — `curl -fsSL https://deno.land/install.sh | DENO_INSTALL=$HOME/.deno sh -s -- -y` installs it without touching your shell rc.
+
+**Applies to:** `packages/database/supabase/functions/**/*.test.ts`, `packages/database/package.json`.
