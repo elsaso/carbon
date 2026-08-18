@@ -189,6 +189,10 @@ export default function EditSalesOrderLineRoute() {
     storageUnitId: line?.storageUnitId ?? "",
     unitOfMeasureCode: line?.unitOfMeasureCode ?? "",
     unitPrice: line?.unitPrice ?? 0,
+    // The stored code must reach the form, or a coded line reopens as
+    // "None / manual" with an editable percent — the selector would silently
+    // disagree with what is saved.
+    taxCodeId: line?.taxCodeId ?? undefined,
     taxPercent: line?.taxPercent ?? 0,
     shippingCost: line?.shippingCost ?? 0,
     assetReadableId: (line as any)?.assetReadableId ?? undefined,
