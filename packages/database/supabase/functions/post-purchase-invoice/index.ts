@@ -22,7 +22,17 @@ import {
   getDefaultPostingGroup,
   resolveInventoryAccount,
 } from "../shared/get-posting-group.ts";
+import {
+  assertJournalBalances,
+  getAccountTypes,
+  requireAccountType,
+} from "../shared/journal-balance.ts";
 import { round } from "../shared/precision.ts";
+import type { EffectiveTaxComponent } from "../shared/resolve-taxes.ts";
+import {
+  emptyPurchaseLineTaxPlan,
+  resolvePurchaseLineTax,
+} from "./purchase-invoice-tax.ts";
 
 const pool = getConnectionPool(1);
 const db = getDatabaseClient<DB>(pool);
@@ -87,28 +97,38 @@ serve(async (req: Request) => {
         );
       }
 
-      const [originalItemLedger, originalJournalLines, originalCostLedger] =
-        await Promise.all([
-          client
-            .from("itemLedger")
-            .select("*")
-            .eq("documentId", invoiceId)
-            .eq("companyId", companyId),
-          client
-            .from("journalLine")
-            .select("*")
-            .eq("documentId", invoiceId)
-            .eq("documentType", "Invoice")
-            .eq("companyId", companyId),
-          client
-            .from("costLedger")
-            .select("*")
-            .eq("documentId", invoiceId)
-            // 'Purchase Receipt' + documentId=invoiceId are the legacy
-            // self-heal layers this invoice may have created
-            .in("documentType", ["Purchase Invoice", "Purchase Receipt"])
-            .eq("companyId", companyId),
-        ]);
+      const [
+        originalItemLedger,
+        originalJournalLines,
+        originalCostLedger,
+        originalTaxLedger,
+      ] = await Promise.all([
+        client
+          .from("itemLedger")
+          .select("*")
+          .eq("documentId", invoiceId)
+          .eq("companyId", companyId),
+        client
+          .from("journalLine")
+          .select("*")
+          .eq("documentId", invoiceId)
+          .eq("documentType", "Invoice")
+          .eq("companyId", companyId),
+        client
+          .from("costLedger")
+          .select("*")
+          .eq("documentId", invoiceId)
+          // 'Purchase Receipt' + documentId=invoiceId are the legacy
+          // self-heal layers this invoice may have created
+          .in("documentType", ["Purchase Invoice", "Purchase Receipt"])
+          .eq("companyId", companyId),
+        client
+          .from("taxLedger")
+          .select("*")
+          .eq("documentId", invoiceId)
+          .eq("documentType", "Purchase Invoice")
+          .eq("companyId", companyId),
+      ]);
 
       if (originalItemLedger.error)
         throw new Error("Failed to fetch item ledger entries");
@@ -116,6 +136,8 @@ serve(async (req: Request) => {
         throw new Error("Failed to fetch journal lines");
       if (originalCostLedger.error)
         throw new Error("Failed to fetch cost ledger entries");
+      if (originalTaxLedger.error)
+        throw new Error("Failed to fetch tax ledger entries");
 
       const invoiceLinesVoid = await client
         .from("purchaseInvoiceLine")
@@ -334,11 +356,50 @@ serve(async (req: Request) => {
           postingDate: today,
         }));
 
+      // Negated copies of every tax subledger row this document wrote, so the
+      // liability report nets the voided document to zero over any period that
+      // spans both dates. `journalId` is stamped inside the transaction once
+      // the reversing journal exists (null when accounting is disabled).
+      const reversingTaxLedger: Omit<
+        Database["public"]["Tables"]["taxLedger"]["Insert"],
+        "journalId"
+      >[] = originalTaxLedger.data.map(
+        (entry: Database["public"]["Tables"]["taxLedger"]["Row"]) => ({
+          source: entry.source,
+          documentType: entry.documentType,
+          documentId: entry.documentId,
+          documentLineId: entry.documentLineId,
+          supplierId: entry.supplierId,
+          customerId: entry.customerId,
+          postingDate: today,
+          currencyCode: entry.currencyCode,
+          exchangeRate: entry.exchangeRate,
+          taxCodeId: entry.taxCodeId,
+          taxCodeComponentId: entry.taxCodeComponentId,
+          componentName: entry.componentName,
+          taxAuthorityId: entry.taxAuthorityId,
+          rate: entry.rate,
+          taxableAmount: -entry.taxableAmount,
+          taxAmount: -entry.taxAmount,
+          exemptAmount: -entry.exemptAmount,
+          taxExemptionReason: entry.taxExemptionReason,
+          exemptionCertificateNumber: entry.exemptionCertificateNumber,
+          // The reversal unwinds the same account the original hit, so the flag
+          // is copied rather than recomputed.
+          postedToInputAccount: entry.postedToInputAccount,
+          // A reversal is never part of the original's filed return.
+          taxReturnId: null,
+          createdBy: userId,
+          companyId,
+        })
+      );
+
       const accountingPeriodIdVoid = accountingEnabled
         ? await getCurrentAccountingPeriod(client, companyId, db, today)
         : null;
 
       await db.transaction().execute(async (trx) => {
+        let voidJournalId: string | null = null;
         for await (const [purchaseOrderLineId, update] of Object.entries(
           purchaseOrderLineUpdatesVoid
         )) {
@@ -360,6 +421,11 @@ serve(async (req: Request) => {
             .execute();
         }
 
+        // Deliberately NOT balance-checked, unlike the posting path below/above.
+        // A reversal is a pure sign flip of lines already in the ledger, so it
+        // balances exactly when the original did. Guarding it would only ever
+        // fire on a journal posted BEFORE the sign fix — and would then trap the
+        // user, refusing the very void that clears the bad entry.
         if (reversingJournalLines.length > 0) {
           const voidJournalEntryId = await getNextSequence(
             trx,
@@ -386,6 +452,7 @@ serve(async (req: Request) => {
 
           const journalId = journal[0].id;
           if (!journalId) throw new Error("Failed to insert journal");
+          voidJournalId = journalId;
 
           await trx
             .insertInto("journalLine")
@@ -393,6 +460,18 @@ serve(async (req: Request) => {
               reversingJournalLines.map((journalLine) => ({
                 ...journalLine,
                 journalId,
+              }))
+            )
+            .execute();
+        }
+
+        if (reversingTaxLedger.length > 0) {
+          await trx
+            .insertInto("taxLedger")
+            .values(
+              reversingTaxLedger.map((taxLedgerEntry) => ({
+                ...taxLedgerEntry,
+                journalId: voidJournalId,
               }))
             )
             .execute();
@@ -681,6 +760,13 @@ serve(async (req: Request) => {
     const costLedgerInserts: Database["public"]["Tables"]["costLedger"]["Insert"][] =
       [];
 
+    // Immutable tax subledger rows — one per line per effective component.
+    // `journalId` is stamped inside the transaction once the journal exists.
+    const taxLedgerInserts: Omit<
+      Database["public"]["Tables"]["taxLedger"]["Insert"],
+      "journalId"
+    >[] = [];
+
     const journalLineInserts: Omit<
       Database["public"]["Tables"]["journalLine"]["Insert"],
       "journalId"
@@ -833,6 +919,92 @@ serve(async (req: Request) => {
         ? icPayablesAccount
         : accountDefaults?.data?.payablesAccount;
 
+    // ── Tax configuration ────────────────────────────────────────────────
+    // Fetched once, keyed by the distinct codes actually assigned to the
+    // lines. A company that has configured no tax runs zero extra queries and
+    // every line falls through `emptyPurchaseLineTaxPlan()` below, which is
+    // what keeps the journal / cost ledger / item ledger byte-identical to the
+    // pre-tax behavior. Accounts are always resolved BY ID (the columns hold
+    // `account.id`, never an account number).
+    const lineTaxCodeIds = purchaseInvoiceLines.data.reduce<string[]>(
+      (acc, invoiceLine) => {
+        if (invoiceLine.taxCodeId && !acc.includes(invoiceLine.taxCodeId)) {
+          acc.push(invoiceLine.taxCodeId);
+        }
+        return acc;
+      },
+      []
+    );
+
+    const taxCalculationTypeByCodeId = new Map<
+      string,
+      Database["public"]["Enums"]["taxCalculationType"]
+    >();
+    const taxComponentsByCodeId = new Map<string, EffectiveTaxComponent[]>();
+
+    if (lineTaxCodeIds.length > 0) {
+      const [taxCodes, taxCodeComponents] = await Promise.all([
+        client
+          .from("taxCode")
+          .select("id, calculationType")
+          .in("id", lineTaxCodeIds)
+          .eq("companyId", companyId),
+        client
+          .from("taxCodeComponent")
+          .select("*")
+          .in("taxCodeId", lineTaxCodeIds)
+          .eq("companyId", companyId),
+      ]);
+      if (taxCodes.error) throw new Error("Failed to fetch tax codes");
+      if (taxCodeComponents.error)
+        throw new Error("Failed to fetch tax code components");
+
+      for (const taxCode of taxCodes.data as {
+        id: string;
+        calculationType: Database["public"]["Enums"]["taxCalculationType"];
+      }[]) {
+        taxCalculationTypeByCodeId.set(taxCode.id, taxCode.calculationType);
+      }
+
+      for (const component of taxCodeComponents.data as Database["public"]["Tables"]["taxCodeComponent"]["Row"][]) {
+        const components = taxComponentsByCodeId.get(component.taxCodeId) ?? [];
+        components.push({
+          id: component.id,
+          name: component.name,
+          taxAuthorityId: component.taxAuthorityId,
+          rate: Number(component.rate),
+          sequence: component.sequence,
+          isCompound: component.isCompound,
+          isRecoverable: component.isRecoverable,
+          salesTaxAccountId: component.salesTaxAccountId,
+          purchaseTaxAccountId: component.purchaseTaxAccountId,
+          effectiveDate: component.effectiveDate,
+          expirationDate: component.expirationDate,
+        });
+        taxComponentsByCodeId.set(component.taxCodeId, components);
+      }
+    }
+
+    // The SIGN of a tax leg depends on the class of the account it lands on,
+    // and that account is configuration — `component.purchaseTaxAccountId`,
+    // else the `accountDefault`. So resolve the real classes here, in one
+    // `.in()` before the line loop, rather than assuming a class at the call
+    // site: the seeded default (2220 Purchase Tax Payable) is a Liability, so a
+    // literal `"asset"` stored the intended input-tax DEBIT as a credit.
+    const taxAccountTypes = await getAccountTypes(client, [
+      ...[...taxComponentsByCodeId.values()]
+        .flat()
+        .map((component) => component.purchaseTaxAccountId),
+      accountDefaults?.data?.purchaseTaxPayableAccount,
+      accountDefaults?.data?.reverseChargeSalesTaxPayableAccount,
+    ]);
+
+    // Tax point: the supplier's invoice date decides which component rates were
+    // in force (a backdated invoice must use the rate of its own date), while
+    // the journal and the ledger rows still post on `today` like every other
+    // leg this function writes.
+    const taxPointDate = purchaseInvoice.data?.dateIssued ?? today;
+
     // Invoice exchange rate (defaults to 1 for base-currency invoices).
     // The payment chain (post-payment/build-payment-journal) relieves AP at
     // `applied × exchangeRate`, so posting applies the same multiplier to the
@@ -844,6 +1016,38 @@ serve(async (req: Request) => {
     for await (const invoiceLine of purchaseInvoiceLines.data) {
       const invoiceLineQuantityInInventoryUnit =
         invoiceLine.quantity * (invoiceLine.conversionFactor ?? 1);
+
+      // Ex-tax basis for tax determination: the line's own goods + freight,
+      // before any tax and before the header-shipping allocation (header
+      // shipping taxability is a separate setting, not Phase 1 purchase-side).
+      const lineTaxableBase =
+        invoiceLine.quantity * (invoiceLine.unitPrice ?? 0) +
+        (invoiceLine.shippingCost ?? 0);
+
+      // Comment lines post nothing at all, so they are never taxed.
+      // `purchaseInvoiceLine.taxAmount` is a GENERATED STORED column derived
+      // from `supplierTaxAmount / exchangeRate` — read-only, and already base
+      // currency, which is why it is handed straight to the resolver.
+      const lineTaxPlan =
+        invoiceLine.invoiceLineType === "Comment" || !invoiceLine.taxCodeId
+          ? emptyPurchaseLineTaxPlan()
+          : resolvePurchaseLineTax({
+            taxCodeId: invoiceLine.taxCodeId,
+            calculationType:
+              taxCalculationTypeByCodeId.get(invoiceLine.taxCodeId) ?? null,
+            components:
+              taxComponentsByCodeId.get(invoiceLine.taxCodeId) ?? [],
+            taxableBase: lineTaxableBase,
+            storedTaxAmount: invoiceLine.taxAmount ?? 0,
+            date: taxPointDate,
+          });
+
+      // Mis-coded lines still post — conservatively — but must be visible.
+      for (const warning of lineTaxPlan.warnings) {
+        console.warn(
+          `post-purchase-invoice: line ${invoiceLine.id} — ${warning}`
+        );
+      }
 
       const totalLineCost =
         invoiceLine.quantity * (invoiceLine.unitPrice ?? 0) +
@@ -864,10 +1068,35 @@ serve(async (req: Request) => {
         shippingCost * lineCostPercentageOfTotalCost;
       // Line cost and weighted shipping are both base currency here; the
       // exchange-rate multiplier matches the payment chain's AP relief.
+      //
+      // This is the GROSS figure — what the supplier billed — and it remains
+      // the sole basis for every Accounts Payable credit. Tax treatment never
+      // changes what we owe the supplier, only where the debit side lands.
       const totalLineCostWithWeightedShipping =
         (totalLineCost + lineWeightedShippingCost) * invoiceExchangeRate;
 
+      // The COST basis: what reaches the debit legs, `costLedger.cost` and the
+      // inventory unit cost. `costAdjustment` is a literal `0` for every line
+      // without a tax code and for every all-non-recoverable `Normal` code, and
+      // the ternary then hands back the identical double — no arithmetic runs
+      // at all on those paths, which is how the zero-config and
+      // capitalize-non-recoverable guarantees are enforced.
+      const costSideLineTotal =
+        lineTaxPlan.costAdjustment === 0
+          ? totalLineCostWithWeightedShipping
+          : (totalLineCost +
+            lineWeightedShippingCost +
+            lineTaxPlan.costAdjustment) *
+          invoiceExchangeRate;
+
       const invoiceLineUnitCostInInventoryUnit =
+        costSideLineTotal /
+        (invoiceLine.quantity * (invoiceLine.conversionFactor ?? 1));
+
+      // Same unit cost at the gross (AP) basis. Identical to the above whenever
+      // there is no cost adjustment, so the AP credits derived from it are
+      // unchanged for unconfigured companies.
+      const invoiceLinePayableUnitCostInInventoryUnit =
         totalLineCostWithWeightedShipping /
         (invoiceLine.quantity * (invoiceLine.conversionFactor ?? 1));
 
@@ -954,7 +1183,7 @@ serve(async (req: Request) => {
                   nominalCost: round(
                     invoiceLine.quantity * (invoiceLine.unitPrice ?? 0)
                   ),
-                  cost: round(totalLineCostWithWeightedShipping),
+                  cost: round(costSideLineTotal),
                   remainingQuantity: round(invoiceLineQuantityInInventoryUnit),
                   supplierId: purchaseInvoice.data?.supplierId,
                   companyId,
@@ -987,7 +1216,7 @@ serve(async (req: Request) => {
                 journalLineInserts.push({
                   accountId: debitAccount,
                   description: debitDescription,
-                  amount: round(debit("asset", totalLineCostWithWeightedShipping)),
+                  amount: round(debit("asset", costSideLineTotal)),
                   quantity: round(invoiceLineQuantityInInventoryUnit),
                   documentType: "Invoice",
                   documentId: purchaseInvoice.data?.id,
@@ -1123,8 +1352,14 @@ serve(async (req: Request) => {
                   }
                 });
 
+                // Cost basis (net of recoverable tax, gross of capitalized
+                // use tax) — this is what the variance and the layer write-ups
+                // must be measured against.
                 const invoiceCostForReversedQty =
                   quantityToReverse * invoiceLineUnitCostInInventoryUnit;
+                // Gross basis — what the supplier billed for this quantity.
+                const payableForReversedQty =
+                  quantityToReverse * invoiceLinePayableUnitCostInInventoryUnit;
                 const variance =
                   invoiceCostForReversedQty - receiptCostForReversedQty;
 
@@ -1365,11 +1600,11 @@ serve(async (req: Request) => {
                   });
                 }
 
-                // CR Accounts Payable at invoice cost
+                // CR Accounts Payable at the gross invoice cost
                 journalLineInserts.push({
                   accountId: payablesAccountId,
                   description: "Accounts Payable",
-                  amount: round(credit("liability", invoiceCostForReversedQty)),
+                  amount: round(credit("liability", payableForReversedQty)),
                   quantity: round(quantityToReverse),
                   documentType: "Invoice",
                   documentId: purchaseInvoice.data?.id,
@@ -1407,8 +1642,13 @@ serve(async (req: Request) => {
               if (invoiceLineQuantityInInventoryUnit > quantityToReverse && accountingEnabled && accountDefaults?.data) {
                 const quantityToAccrue =
                   invoiceLineQuantityInInventoryUnit - quantityToReverse;
+                // GR/IR (or indirect cost) is debited at the COST basis; AP is
+                // credited at the GROSS basis. They differ only when a tax
+                // plan moved value out of (or into) cost.
                 const accrualCost =
                   quantityToAccrue * invoiceLineUnitCostInInventoryUnit;
+                const accrualPayable =
+                  quantityToAccrue * invoiceLinePayableUnitCostInInventoryUnit;
 
                 journalLineReference = nanoid();
 
@@ -1461,7 +1701,7 @@ serve(async (req: Request) => {
                   accountId: payablesAccountId,
                   description: "Accounts Payable",
                   accrual: isService ? undefined : true,
-                  amount: round(credit("liability", accrualCost)),
+                  amount: round(credit("liability", accrualPayable)),
                   quantity: round(quantityToAccrue),
                   documentType: "Invoice",
                   documentId: purchaseInvoice.data?.id,
@@ -1552,7 +1792,9 @@ serve(async (req: Request) => {
                 }
               }
 
-              const invoiceCost = totalLineCostWithWeightedShipping;
+              // Cost basis: the asset is capitalized (and the variance
+              // measured) net of any recoverable tax.
+              const invoiceCost = costSideLineTotal;
               const variance = invoiceCost - receiptCost;
 
               journalLineReference = nanoid();
@@ -1591,7 +1833,7 @@ serve(async (req: Request) => {
                 });
               }
 
-              // CR Payables at invoice cost
+              // CR Payables at the gross invoice cost
               journalLineInserts.push({
                 accountId: payablesAccountId,
                 description: "Accounts Payable",
@@ -1647,7 +1889,7 @@ serve(async (req: Request) => {
                 accountId: (assetRecord.data.fixedAssetClass as any)
                   .assetAccountId,
                 description: "Fixed Asset Acquisition",
-                amount: round(debit("asset", totalLineCostWithWeightedShipping)),
+                amount: round(debit("asset", costSideLineTotal)),
                 quantity: round(invoiceLineQuantityInInventoryUnit),
                 documentType: "Invoice",
                 documentId: purchaseInvoice.data?.id,
@@ -1681,7 +1923,7 @@ serve(async (req: Request) => {
               const updateData: Record<string, any> = {
                 acquisitionCost:
                   (Number(assetRecord.data.acquisitionCost) ?? 0) +
-                  totalLineCostWithWeightedShipping,
+                  costSideLineTotal,
                 updatedBy: userId,
               };
               if (!assetRecord.data.acquisitionDate) {
@@ -1740,7 +1982,7 @@ serve(async (req: Request) => {
             journalLineInserts.push({
               accountId: account.data.id,
               description: account.data.name!,
-              amount: round(debit("asset", totalLineCostWithWeightedShipping)),
+              amount: round(debit("asset", costSideLineTotal)),
               quantity: round(invoiceLineQuantityInInventoryUnit),
               documentType: "Invoice",
               documentId: purchaseInvoice.data?.id,
@@ -1787,6 +2029,140 @@ serve(async (req: Request) => {
         default:
           throw new Error("Unsupported invoice line type");
       }
+
+      // ── Tax legs + tax subledger for this line ────────────────────────
+      // The AP credits above are always GROSS (what the supplier billed).
+      // These legs carry the difference between that gross and the cost that
+      // was capitalized, so the entry balances in every case:
+      //
+      //   Capitalized (Normal, non-recoverable) — no leg. The tax is already
+      //     inside the cost, exactly as it has always been (correct for US
+      //     purchase tax).
+      //   Recoverable (Normal) — DR input tax. Cost went out net by the same
+      //     amount, so cost + input tax == the gross AP credit.
+      //   Reverse Charge Recoverable — DR input tax / CR reverse-charge
+      //     payable. The pair nets to zero and AP stays net (the supplier
+      //     charged nothing).
+      //   Reverse Charge Capitalized (US use tax) — CR reverse-charge payable
+      //     only; the matching debit is the extra cost capitalized above.
+      //
+      // Amounts carry the same `invoiceExchangeRate` multiplier as every other
+      // leg on this document (see the FX note above — the divide/multiply
+      // asymmetry is owned by the separate FX-normalization spec and is left
+      // exactly as found). `taxLedger` rows stay in base currency.
+      if (lineTaxPlan.components.length > 0) {
+        if (accountingEnabled && accountDefaults?.data) {
+          const taxJournalLineReference = nanoid();
+          const taxLineItemPostingGroupId =
+            itemCosts.data.find((cost) => cost.itemId === invoiceLine.itemId)
+              ?.itemPostingGroupId ?? null;
+          const taxDimMeta = {
+            supplierTypeId: supplier.data.supplierTypeId ?? null,
+            itemPostingGroupId: taxLineItemPostingGroupId,
+            itemId: invoiceLine.itemId ?? null,
+            locationId: invoiceLine.locationId ?? null,
+            costCenterId: invoiceLine.costCenterId ?? null,
+            processId: null,
+            fixedAssetClassId: null,
+          };
+
+          for (const component of lineTaxPlan.components) {
+            const componentTaxInJournalCurrency =
+              component.taxAmount * invoiceExchangeRate;
+
+            if (
+              component.treatment === "Recoverable" ||
+              component.treatment === "Reverse Charge Recoverable"
+            ) {
+              // DR input tax — we reclaim it from the authority. Which account
+              // that is, and therefore which sign a debit takes, is
+              // configuration; read it from the account's real class.
+              const inputTaxAccountId =
+                component.purchaseTaxAccountId ??
+                accountDefaults.data.purchaseTaxPayableAccount;
+
+              journalLineInserts.push({
+                accountId: inputTaxAccountId,
+                description: `${component.name} (Input Tax)`,
+                amount: debit(
+                  requireAccountType(
+                    taxAccountTypes,
+                    inputTaxAccountId,
+                    `${component.name} input tax`
+                  ),
+                  componentTaxInJournalCurrency
+                ),
+                quantity: invoiceLineQuantityInInventoryUnit,
+                documentType: "Invoice",
+                documentId: purchaseInvoice.data?.id,
+                externalDocumentId: purchaseInvoice.data?.supplierReference,
+                journalLineReference: taxJournalLineReference,
+                companyId,
+              });
+              journalLineDimensionsMeta.push(taxDimMeta);
+            }
+
+            if (
+              component.treatment === "Reverse Charge Recoverable" ||
+              component.treatment === "Reverse Charge Capitalized"
+            ) {
+              // CR the self-assessed liability we owe the authority directly.
+              // Signed from the real class like its paired debit above, so the
+              // two legs of the reverse charge can never drift apart.
+              const reverseChargeAccountId =
+                accountDefaults.data.reverseChargeSalesTaxPayableAccount;
+
+              journalLineInserts.push({
+                accountId: reverseChargeAccountId,
+                description: `${component.name} (Reverse Charge)`,
+                amount: credit(
+                  requireAccountType(
+                    taxAccountTypes,
+                    reverseChargeAccountId,
+                    `${component.name} reverse charge`
+                  ),
+                  componentTaxInJournalCurrency
+                ),
+                quantity: invoiceLineQuantityInInventoryUnit,
+                documentType: "Invoice",
+                documentId: purchaseInvoice.data?.id,
+                externalDocumentId: purchaseInvoice.data?.supplierReference,
+                journalLineReference: taxJournalLineReference,
+                companyId,
+              });
+              journalLineDimensionsMeta.push(taxDimMeta);
+            }
+          }
+        }
+
+        // Written whether or not GL posting is enabled — the liability report
+        // reads this subledger, not the journal. Component name / authority /
+        // rate are snapshots so a later config edit can never restate a posted
+        // document.
+        for (const component of lineTaxPlan.components) {
+          taxLedgerInserts.push({
+            source: "Purchase",
+            documentType: "Purchase Invoice",
+            documentId: invoiceId,
+            documentLineId: invoiceLine.id,
+            supplierId: purchaseInvoice.data?.supplierId,
+            postingDate: today,
+            currencyCode: purchaseInvoice.data?.currencyCode,
+            exchangeRate: invoiceExchangeRate,
+            taxCodeId: invoiceLine.taxCodeId,
+            taxCodeComponentId: component.componentId,
+            componentName: component.name,
+            taxAuthorityId: component.taxAuthorityId,
+            rate: component.rate,
+            taxableAmount: component.taxableAmount,
+            taxAmount: component.taxAmount,
+            exemptAmount: 0,
+            postedToInputAccount: component.postedToInputAccount,
+            createdBy: userId,
+            companyId,
+          });
+        }
+      }
     }
 
     const accountingPeriodId = accountingEnabled
@@ -1796,6 +2172,8 @@ serve(async (req: Request) => {
     const createdReceiptIds: string[] = [];
 
     await db.transaction().execute(async (trx) => {
+      let postedJournalId: string | null = null;
+
       if (receiptLineInserts.length > 0) {
         const receiptLinesGroupedByLocationId = receiptLineInserts.reduce<
           Record<string, typeof receiptLineInserts>
@@ -1921,6 +2299,21 @@ serve(async (req: Request) => {
       }
 
       if (accountingEnabled && journalLineInserts.length > 0) {
+        // Refuse rather than write a journal that does not balance. Each leg's
+        // amount is stored in the sign convention of ITS OWN account's class, so
+        // the sides only become comparable once those real classes are read —
+        // which is exactly why the absence of this check let an input-tax debit
+        // be stored as a credit without anything complaining. Every accountId in
+        // the journal, not just the tax ones, in one query.
+        assertJournalBalances(
+          journalLineInserts,
+          await getAccountTypes(
+            client,
+            journalLineInserts.map((journalLine) => journalLine.accountId)
+          ),
+          "Purchase invoice journal"
+        );
+
         const journalEntryId = await getNextSequence(
           trx,
           "journalEntry",
@@ -1946,6 +2339,7 @@ serve(async (req: Request) => {
 
         const journalId = journal[0].id;
         if (!journalId) throw new Error("Failed to insert journal");
+        postedJournalId = journalId;
 
         const journalLineResults = await trx
           .insertInto("journalLine")
@@ -2124,6 +2518,19 @@ serve(async (req: Request) => {
       const dateDue = paymentTerm
         ? calculateDueDate(purchaseInvoice.data?.dateIssued ?? today, paymentTerm)
         : null;
+
+      // After the journal insert so the subledger rows can point at it.
+      if (taxLedgerInserts.length > 0) {
+        await trx
+          .insertInto("taxLedger")
+          .values(
+            taxLedgerInserts.map((taxLedgerEntry) => ({
+              ...taxLedgerEntry,
+              journalId: postedJournalId,
+            }))
+          )
+          .execute();
+      }
 
       await trx
         .updateTable("purchaseInvoice")
