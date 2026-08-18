@@ -15,6 +15,10 @@ import {
   getDefaultPostingGroup,
   resolveInventoryAccount,
 } from "../shared/get-posting-group.ts";
+import {
+  getAccountTypes,
+  requireAccountType,
+} from "../shared/journal-balance.ts";
 import { round } from "../shared/precision.ts";
 import { calculateCOGS } from "../shared/calculate-cogs.ts";
 import type { EffectiveTaxComponent } from "../shared/resolve-taxes.ts";
@@ -431,6 +435,19 @@ serve(async (req: Request) => {
         const salesTaxPayableAccount =
           accountDefaults?.data?.salesTaxPayableAccount;
 
+        // Same treatment as the purchase side: the account a tax leg lands on is
+        // configuration (`posting.salesTaxAccountId`, else the default), so its
+        // class — and therefore the sign a credit takes — is resolved here in
+        // one `.in()`, never assumed at the call site. The seeded default (2210)
+        // is a Liability, which made the old literal correct BY LUCK; a customer
+        // repointing a component's account is all it takes to break it.
+        const taxAccountTypes = await getAccountTypes(client, [
+          ...[...taxComponentsByCodeId.values()]
+            .flat()
+            .map((component) => component.salesTaxAccountId),
+          salesTaxPayableAccount,
+        ]);
+
         // The first line that resolves a real code lends its context to the
         // document-level shipping charge (plan Task 17 step 5). Computed here in
         // document line order rather than as a side effect of the posting loop,
@@ -518,7 +535,16 @@ serve(async (req: Request) => {
             journalLineInserts.push({
               accountId,
               description: `Sales Tax — ${posting.componentName}`,
-              amount: round(credit("liability", posting.taxAmountBase)),
+              amount: round(
+                credit(
+                  requireAccountType(
+                    taxAccountTypes,
+                    accountId,
+                    `${posting.componentName} sales tax`
+                  ),
+                  posting.taxAmountBase
+                )
+              ),
               quantity: context.quantity,
               documentType: "Invoice",
               documentId: salesInvoice.data?.id,
@@ -2064,7 +2090,7 @@ serve(async (req: Request) => {
 
             voidJournalId = voidJournalResult.id;
 
-            if (reversingJournalEntries.length > 0) {
+                if (reversingJournalEntries.length > 0) {
               await trx
                 .insertInto("journalLine")
                 .values(

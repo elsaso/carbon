@@ -22,6 +22,10 @@ import {
   getDefaultPostingGroup,
   resolveInventoryAccount,
 } from "../shared/get-posting-group.ts";
+import {
+  getAccountTypes,
+  requireAccountType,
+} from "../shared/journal-balance.ts";
 import { round } from "../shared/precision.ts";
 import type { EffectiveTaxComponent } from "../shared/resolve-taxes.ts";
 import {
@@ -974,6 +978,20 @@ serve(async (req: Request) => {
         taxComponentsByCodeId.set(component.taxCodeId, components);
       }
     }
+
+    // The SIGN of a tax leg depends on the class of the account it lands on,
+    // and that account is configuration — `component.purchaseTaxAccountId`,
+    // else the `accountDefault`. So resolve the real classes here, in one
+    // `.in()` before the line loop, rather than assuming a class at the call
+    // site: the seeded default (2220 Purchase Tax Payable) is a Liability, so a
+    // literal `"asset"` stored the intended input-tax DEBIT as a credit.
+    const taxAccountTypes = await getAccountTypes(client, [
+      ...[...taxComponentsByCodeId.values()]
+        .flat()
+        .map((component) => component.purchaseTaxAccountId),
+      accountDefaults?.data?.purchaseTaxPayableAccount,
+      accountDefaults?.data?.reverseChargeSalesTaxPayableAccount,
+    ]);
 
     // Tax point: the supplier's invoice date decides which component rates were
     // in force (a backdated invoice must use the rate of its own date), while
@@ -2050,13 +2068,24 @@ serve(async (req: Request) => {
               component.treatment === "Recoverable" ||
               component.treatment === "Reverse Charge Recoverable"
             ) {
-              // DR input tax (an asset — we reclaim it from the authority).
+              // DR input tax — we reclaim it from the authority. Which account
+              // that is, and therefore which sign a debit takes, is
+              // configuration; read it from the account's real class.
+              const inputTaxAccountId =
+                component.purchaseTaxAccountId ??
+                accountDefaults.data.purchaseTaxPayableAccount;
+
               journalLineInserts.push({
-                accountId:
-                  component.purchaseTaxAccountId ??
-                  accountDefaults.data.purchaseTaxPayableAccount,
+                accountId: inputTaxAccountId,
                 description: `${component.name} (Input Tax)`,
-                amount: debit("asset", componentTaxInJournalCurrency),
+                amount: debit(
+                  requireAccountType(
+                    taxAccountTypes,
+                    inputTaxAccountId,
+                    `${component.name} input tax`
+                  ),
+                  componentTaxInJournalCurrency
+                ),
                 quantity: invoiceLineQuantityInInventoryUnit,
                 documentType: "Invoice",
                 documentId: purchaseInvoice.data?.id,
@@ -2072,11 +2101,22 @@ serve(async (req: Request) => {
               component.treatment === "Reverse Charge Capitalized"
             ) {
               // CR the self-assessed liability we owe the authority directly.
+              // Signed from the real class like its paired debit above, so the
+              // two legs of the reverse charge can never drift apart.
+              const reverseChargeAccountId =
+                accountDefaults.data.reverseChargeSalesTaxPayableAccount;
+
               journalLineInserts.push({
-                accountId:
-                  accountDefaults.data.reverseChargeSalesTaxPayableAccount,
+                accountId: reverseChargeAccountId,
                 description: `${component.name} (Reverse Charge)`,
-                amount: credit("liability", componentTaxInJournalCurrency),
+                amount: credit(
+                  requireAccountType(
+                    taxAccountTypes,
+                    reverseChargeAccountId,
+                    `${component.name} reverse charge`
+                  ),
+                  componentTaxInJournalCurrency
+                ),
                 quantity: invoiceLineQuantityInInventoryUnit,
                 documentType: "Invoice",
                 documentId: purchaseInvoice.data?.id,
