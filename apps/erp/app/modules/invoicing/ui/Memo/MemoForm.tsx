@@ -19,7 +19,7 @@ import {
   useDisclosure,
   VStack
 } from "@carbon/react";
-import { INPUT_FORMAT, INPUT_STEP } from "@carbon/utils";
+import { INPUT_FORMAT, INPUT_STEP, round } from "@carbon/utils";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { useState } from "react";
 import { LuCheckCheck, LuTicketX, LuTrash } from "react-icons/lu";
@@ -35,6 +35,7 @@ import {
   Hidden,
   Input,
   Number,
+  NumberControlled,
   Select,
   SequenceOrCustomId,
   Submit,
@@ -53,11 +54,25 @@ import MemoStatus from "./MemoStatus";
 
 type MemoFormValues = z.infer<typeof memoValidator>;
 
-type MemoFormProps = {
-  initialValues: MemoFormValues & { status?: string };
+/** `Number` in this file is the FORM COMPONENT, not the global — so the global
+ *  has to be reached explicitly. An emptied react-aria number input commits NaN
+ *  (not 0), and a NaN amount must not derive a NaN tax that then saves as 0
+ *  against a live tax code. */
+const isFiniteAmount = (value: number) => globalThis.Number.isFinite(value);
+
+type TaxCodeOption = {
+  id: string;
+  name: string;
+  /** Fraction (0.0825), already resolved for the memo's date by the loader. */
+  effectiveRate: number;
 };
 
-const MemoForm = ({ initialValues }: MemoFormProps) => {
+type MemoFormProps = {
+  initialValues: MemoFormValues & { status?: string };
+  taxCodes?: TaxCodeOption[];
+};
+
+const MemoForm = ({ initialValues, taxCodes = [] }: MemoFormProps) => {
   const { t } = useLingui();
   const { company } = useUser();
   const currencyDecimals = useCurrencyDecimals(
@@ -85,6 +100,48 @@ const MemoForm = ({ initialValues }: MemoFormProps) => {
   const [partyType, setPartyType] = useState<"Customer" | "Supplier">(
     initialValues.supplierId ? "Supplier" : "Customer"
   );
+
+  // A memo amount is tax-INCLUSIVE: the party is credited the gross and the tax
+  // is carved OUT of it, so the derivation is amount x r/(1+r), not amount x r.
+  // The amount is tracked here only so selecting a code can re-derive from it;
+  // its own field semantics (gross) are unchanged.
+  const [amount, setAmount] = useState<number>(initialValues.amount ?? 0);
+  const [taxCodeId, setTaxCodeId] = useState<string>(
+    initialValues.taxCodeId ?? ""
+  );
+  const [taxAmount, setTaxAmount] = useState<number>(
+    initialValues.taxAmount ?? 0
+  );
+
+  const taxCodeOptions = taxCodes.map((taxCode) => ({
+    label: `${taxCode.name} (${round(taxCode.effectiveRate * 100, 3)}%)`,
+    value: taxCode.id
+  }));
+
+  // Rounded at the currency's decimals — this is a settlement amount, and it is
+  // what gets stored and split across components at posting.
+  const deriveTax = (base: number, rate: number) =>
+    round((base * rate) / (1 + rate), currencyDecimals);
+
+  const onTaxCodeChange = (newTaxCodeId: string) => {
+    setTaxCodeId(newTaxCodeId);
+    const selected = taxCodes.find((taxCode) => taxCode.id === newTaxCodeId);
+    // Clearing the code clears the tax; the memo must not keep an orphan amount
+    // the posting would then refuse (validator: tax requires a code).
+    setTaxAmount(
+      selected && isFiniteAmount(amount)
+        ? deriveTax(amount, selected.effectiveRate)
+        : 0
+    );
+  };
+
+  const onAmountChange = (newAmount: number) => {
+    setAmount(newAmount);
+    const selected = taxCodes.find((taxCode) => taxCode.id === taxCodeId);
+    if (selected && isFiniteAmount(newAmount)) {
+      setTaxAmount(deriveTax(newAmount, selected.effectiveRate));
+    }
+  };
 
   const directionOptions = memoDirection.map((d) => ({
     label: <Enumerable value={d} />,
@@ -223,13 +280,37 @@ const MemoForm = ({ initialValues }: MemoFormProps) => {
                   step={INPUT_STEP.exchangeRate}
                   formatOptions={INPUT_FORMAT.exchangeRate}
                 />
-                <Number
+                <NumberControlled
                   name="amount"
                   label={t`Amount`}
+                  value={amount}
+                  onChange={onAmountChange}
                   formatOptions={INPUT_FORMAT.money(
                     company?.baseCurrencyCode ?? "USD",
                     currencyDecimals
                   )}
+                />
+                <Select
+                  name="taxCodeId"
+                  label={t`Tax Code`}
+                  options={taxCodeOptions}
+                  value={taxCodeId}
+                  onChange={(option) => onTaxCodeChange(option?.value ?? "")}
+                  isClearable
+                  isOptional
+                  helperText={t`The memo amount includes this tax`}
+                />
+                <NumberControlled
+                  name="taxAmount"
+                  label={t`Tax Included`}
+                  value={taxAmount}
+                  onChange={setTaxAmount}
+                  isDisabled={!taxCodeId}
+                  formatOptions={INPUT_FORMAT.money(
+                    company?.baseCurrencyCode ?? "USD",
+                    currencyDecimals
+                  )}
+                  helperText={t`Derived from the code; edit to match the original document`}
                 />
                 <Input name="reference" label={t`Reference`} />
                 <CustomFormFields table="memo" />

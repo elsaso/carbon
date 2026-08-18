@@ -4998,6 +4998,9 @@ msgstr "Дата начала амортизации"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "Выведите срок хранения этого товара из кратчайшего срока хранения его компонентов, игнорируя поле «Дни» выше."
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "Описание"
 
@@ -14415,6 +14418,9 @@ msgstr "Налог и доставка"
 msgid "Tax Amount"
 msgstr "Сумма налога"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "Налоговые коды, ставки"
 
@@ -14429,6 +14435,9 @@ msgstr "Налоговое освобождение"
 
 msgid "Tax ID"
 msgstr "Налоговый ID"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "Налоговая информация"
@@ -14886,6 +14895,9 @@ msgstr "Материал закупается у поставщика для э�
 
 msgid "The material types you organize your stock by"
 msgstr "Типы материалов, по которым вы организуете свой запас"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "Месяц начала финансового года; периоды нумеруются, начиная с этого месяца."

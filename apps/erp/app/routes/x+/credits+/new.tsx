@@ -5,6 +5,7 @@ import { validationError, validator } from "@carbon/form";
 import { datetime } from "@carbon/utils";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { redirect, useLoaderData } from "react-router";
+import { getTaxCodesListWithRates } from "~/modules/accounting";
 import { MemoForm, memoValidator, upsertMemo } from "~/modules/invoicing";
 import { getCompany, getNextSequence } from "~/modules/settings";
 import { getCompanyTimeZone } from "~/modules/shared/timezone.server";
@@ -18,19 +19,25 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const company = await getCompany(client, companyId);
   const currencyCode = company.data?.baseCurrencyCode ?? "";
+  const memoDate = datetime
+    .today(await getCompanyTimeZone(client, companyId))
+    .toString();
+  // Rates are effective-dated, so they resolve against the memo's own date.
+  const taxCodes = await getTaxCodesListWithRates(client, companyId, memoDate);
 
   return {
+    taxCodes: taxCodes.data ?? [],
     initialValues: {
       memoId: "",
       direction: "Credit" as const,
       customerId: "",
       supplierId: "",
-      memoDate: datetime
-        .today(await getCompanyTimeZone(client, companyId))
-        .toString(),
+      memoDate,
       currencyCode,
       exchangeRate: 1,
       amount: 0,
+      taxCodeId: "",
+      taxAmount: 0,
       reference: "",
       notes: ""
     }
@@ -90,10 +97,10 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function NewMemoRoute() {
-  const { initialValues } = useLoaderData<typeof loader>();
+  const { initialValues, taxCodes } = useLoaderData<typeof loader>();
   return (
     <div className="max-w-4xl w-full p-2 sm:p-0 mx-auto mt-0 md:mt-8">
-      <MemoForm initialValues={initialValues} />
+      <MemoForm initialValues={initialValues} taxCodes={taxCodes} />
     </div>
   );
 }

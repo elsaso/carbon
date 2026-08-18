@@ -5,6 +5,7 @@ import { validationError, validator } from "@carbon/form";
 import { VStack } from "@carbon/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "react-router";
 import { data, redirect, useLoaderData } from "react-router";
+import { getTaxCodesListWithRates } from "~/modules/accounting";
 import {
   getMemo,
   getMemoApplications,
@@ -42,8 +43,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   const applications = await getMemoApplications(client, memoId);
+  // Resolved against the memo's OWN date, so an effective-dated rate change
+  // never restates what an existing memo shows.
+  const taxCodes = await getTaxCodesListWithRates(
+    client,
+    memo.data.companyId,
+    memo.data.memoDate
+  );
 
-  return { memo: memo.data, applications: applications.data ?? [] };
+  return {
+    memo: memo.data,
+    applications: applications.data ?? [],
+    taxCodes: taxCodes.data ?? []
+  };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -96,7 +108,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function MemoDetailRoute() {
-  const { memo, applications } = useLoaderData<typeof loader>();
+  const { memo, applications, taxCodes } = useLoaderData<typeof loader>();
 
   const initialValues = {
     id: memo.id,
@@ -108,6 +120,8 @@ export default function MemoDetailRoute() {
     currencyCode: memo.currencyCode ?? "",
     exchangeRate: Number(memo.exchangeRate ?? 1),
     amount: Number(memo.amount ?? 0),
+    taxCodeId: memo.taxCodeId ?? "",
+    taxAmount: Number(memo.taxAmount ?? 0),
     reference: memo.reference ?? "",
     notes: memo.notes ?? "",
     status: memo.status ?? undefined
@@ -115,7 +129,7 @@ export default function MemoDetailRoute() {
 
   return (
     <VStack spacing={4} className="p-6 max-w-6xl w-full mx-auto">
-      <MemoForm initialValues={initialValues} />
+      <MemoForm initialValues={initialValues} taxCodes={taxCodes} />
       <MemoApplicationsPanel
         rows={applications}
         currencyCode={memo.currencyCode ?? "USD"}

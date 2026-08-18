@@ -4998,6 +4998,9 @@ msgstr "मूल्यह्रास शुरुआत की तारीख
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "इस आइटम की शेल्फ लाइफ को इसके घटकों की सबसे कम शेल्फ लाइफ से निकालें, ऊपर दिए गए डेज़ फील्ड को अनदेखा करते हुए।"
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "विवरण"
 
@@ -14415,6 +14418,9 @@ msgstr "कर और शिपिंग"
 msgid "Tax Amount"
 msgstr "कर राशि"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "कर कोड, दरें"
 
@@ -14429,6 +14435,9 @@ msgstr "कर छूट"
 
 msgid "Tax ID"
 msgstr "टैक्स आईडी"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "कर जानकारी"
@@ -14886,6 +14895,9 @@ msgstr "सामग्री एक विशेष आदेश के लि�
 
 msgid "The material types you organize your stock by"
 msgstr "आप अपने स्टॉक को जिन सामग्री प्रकारों से व्यवस्थित करते हैं"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "वह महीना जब आपका वित्तीय वर्ष शुरू होता है; अवधियों को इस महीने से गिना जाता है।"

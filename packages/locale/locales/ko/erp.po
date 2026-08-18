@@ -4998,6 +4998,9 @@ msgstr "감가상각 시작일"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "위의 '일수' 필드를 무시하고, 이 품목의 유효기간을 구성품 중 가장 짧은 유효기간으로 산출합니다."
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "설명"
 
@@ -14415,6 +14418,9 @@ msgstr "세금 및 배송비"
 msgid "Tax Amount"
 msgstr "세액"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "세금 코드, 세율"
 
@@ -14429,6 +14435,9 @@ msgstr "세금 면제"
 
 msgid "Tax ID"
 msgstr "세금 ID"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "세금 정보"
@@ -14886,6 +14895,9 @@ msgstr "제조하거나 재고에서 가져오는 대신, 해당 특정 주문�
 
 msgid "The material types you organize your stock by"
 msgstr "재고를 분류하는 자재 유형"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "귀사 회계연도가 시작되는 월입니다. 기간은 이 월부터 번호가 매겨집니다."

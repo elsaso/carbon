@@ -17,7 +17,7 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 
 - [x] Task 1: Create the Phase 1 migration
 - [x] Task 2: Regenerate database types
-- [x] Task 3: Add tax validators and enum arrays to accounting.models.ts — **memo validator NOT done** (see Task 19)
+- [x] Task 3: Add tax validators and enum arrays to accounting.models.ts — memo validator done with Task 19
 - [x] Task 4: Add effective-component rate math to accounting.utils.ts with unit tests
 - [x] Task 5: Add tax CRUD service functions
 - [x] Task 6: Add resolveLineTaxes + suggestTaxCode with unit-tested core
@@ -33,7 +33,7 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 - [x] Task 16: Shared edge-function tax resolver helper
 - [x] Task 17: post-sales-invoice — tax split, ledger writes, VOID reversals, shipping taxability
 - [x] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes
-- [ ] Task 19: post-memo — net/tax split + signed ledger rows — **not started**
+- [x] Task 19: post-memo — net/tax split + signed ledger rows — on `feat/tax-phase1-e-memo-tax`; memo amounts are tax-INCLUSIVE (tax carved out, control leg stays gross)
 - [ ] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — **not started**
 - [ ] Task 21: Tax liability report (service + route) — **not started**
 - [ ] Task 22: Lingui extract + full scoped validation — extract done; full gate re-run pending the remaining tasks
