@@ -21,7 +21,7 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 - [x] Task 4: Add effective-component rate math to accounting.utils.ts with unit tests
 - [x] Task 5: Add tax CRUD service functions
 - [x] Task 6: Add resolveLineTaxes + suggestTaxCode with unit-tested core
-- [x] Task 7: Wire determination into sales-side line creation — quote / sales order / sales invoice lines. The `recalculateLineTaxes` action route (step 3) is NOT done.
+- [x] Task 7: Wire determination into sales-side line creation — quote / sales order / sales invoice lines. The recalculate action route is done on `feat/tax-phase1-f-line-tax`.
 - [x] Task 8: Wire determination into purchase-side line creation
 - [x] Task 9: Tax codes routes + table + form (components editor)
 - [x] Task 10: Tax authorities + tax registrations routes
@@ -29,7 +29,7 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 - [x] Task 12: Customer/supplier tax-code assignment UI + taxPercent sunset banner
 - [x] Task 13: Customer location override select
 - [x] Task 14: Item "Taxable" switch
-- [ ] Task 15: Line form tax display + override select + audit coverage — **not started**
+- [x] Task 15: Line form tax display + override select + audit coverage — on `feat/tax-phase1-f-line-tax`; audit sub-step needed no change (all four line tables already configured, diff-based)
 - [x] Task 16: Shared edge-function tax resolver helper
 - [x] Task 17: post-sales-invoice — tax split, ledger writes, VOID reversals, shipping taxability
 - [x] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes

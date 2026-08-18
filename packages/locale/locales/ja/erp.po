@@ -11845,6 +11845,9 @@ msgstr "このロウから別の処分ロウに特定の追跡対象エンティ
 msgid "Recalculate"
 msgstr "再計算"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "単位原価を再計算"
 
@@ -13354,6 +13357,9 @@ msgstr "バージョン {0} をアクティブバージョンとして設定し�
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "プロフィール設定でデフォルトの場所を設定して、保管ユニットを選択してください。"
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "設定"

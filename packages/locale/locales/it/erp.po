@@ -11845,6 +11845,9 @@ msgstr "Riassegna entità tracciate specifiche da questa riga a un'altra riga di
 msgid "Recalculate"
 msgstr "Ricalcola"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "Ricalcola Costo Unitario"
 
@@ -13354,6 +13357,9 @@ msgstr "Imposta la versione {0} come versione attiva?"
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "Imposta la tua posizione predefinita nelle impostazioni del profilo per selezionare un'unità di archiviazione."
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "Impostazioni"

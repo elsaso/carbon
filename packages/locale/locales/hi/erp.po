@@ -11845,6 +11845,9 @@ msgstr "इस पंक्ति से विशिष्ट ट्रैक �
 msgid "Recalculate"
 msgstr "पुनः गणना करें"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "यूनिट कॉस्ट की पुनः गणना करें"
 
@@ -13354,6 +13357,9 @@ msgstr "संस्करण {0} को सक्रिय संस्कर�
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "अपनी डिफ़ॉल्ट स्थान को प्रोफ़ाइल सेटिंग्स में सेट करें स्टोरेज यूनिट चुनने के लिए।"
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "सेटिंग्स"

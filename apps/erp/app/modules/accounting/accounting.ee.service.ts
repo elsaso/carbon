@@ -6169,6 +6169,107 @@ export async function getTaxCodesList(
  * Effective-dated components mean the rate is a function of the document's own
  * date, so it is a required argument rather than "today".
  */
+/**
+ * Re-run tax determination over every line of a sales document and write the
+ * result back. This is the escape hatch determination needs: a line stores what
+ * was resolved WHEN IT WAS CREATED, so changing a customer's tax code, adding a
+ * ship-to override, or fixing a mis-assigned code leaves existing lines stale.
+ * Nothing else re-resolves them — conversions deliberately copy stored values.
+ *
+ * Determination is run ONCE for the document, not once per line: the only
+ * per-line input is `item.taxable`, so those are read in a single batched
+ * lookup and the lines are written back in at most two grouped updates. A
+ * per-line `resolveLineTaxes` call would be an N+1 over the document.
+ *
+ * Returns how many lines changed so the caller can say so.
+ */
+export async function recalculateSalesLineTaxes(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: {
+    lineTable: "salesInvoiceLine" | "salesOrderLine";
+    documentColumn: "invoiceId" | "salesOrderId";
+    documentId: string;
+    customerId: string | null;
+    customerLocationId: string | null;
+    date: string;
+    updatedBy: string;
+  }
+) {
+  const lines = await client
+    .from(args.lineTable)
+    .select("id, itemId, taxCodeId, taxPercent")
+    .eq(args.documentColumn, args.documentId)
+    .eq("companyId", companyId);
+
+  if (lines.error) return { data: null, error: lines.error };
+  if ((lines.data ?? []).length === 0) {
+    return { data: { updated: 0 }, error: null };
+  }
+
+  const resolved = await resolveLineTaxes(client, companyId, {
+    source: "sales",
+    customerId: args.customerId,
+    customerLocationId: args.customerLocationId,
+    itemId: null,
+    date: args.date
+  });
+  if (resolved.error) return { data: null, error: resolved.error };
+
+  const itemIds = [
+    ...new Set((lines.data ?? []).map((line) => line.itemId).filter(Boolean))
+  ] as string[];
+  const items = itemIds.length
+    ? await client
+        .from("item")
+        .select("id, taxable")
+        .in("id", itemIds)
+        .eq("companyId", companyId)
+    : { data: [], error: null };
+  if (items.error) return { data: null, error: items.error };
+
+  const nonTaxable = new Set(
+    (items.data ?? [])
+      .filter((item) => item.taxable === false)
+      .map((item) => item.id)
+  );
+
+  const taxCodeId = resolved.data?.taxCodeId ?? null;
+  const taxPercent = resolved.data?.taxPercent ?? 0;
+
+  // Two groups at most: taxable lines take the resolved pair, non-taxable goods
+  // take none regardless of who the customer is.
+  const taxableIds: string[] = [];
+  const exemptIds: string[] = [];
+  for (const line of lines.data ?? []) {
+    const target =
+      line.itemId && nonTaxable.has(line.itemId) ? exemptIds : taxableIds;
+    target.push(line.id);
+  }
+
+  let updated = 0;
+  if (taxableIds.length > 0) {
+    const result = await client
+      .from(args.lineTable)
+      .update({ taxCodeId, taxPercent, updatedBy: args.updatedBy })
+      .in("id", taxableIds)
+      .eq("companyId", companyId);
+    if (result.error) return { data: null, error: result.error };
+    updated += taxableIds.length;
+  }
+  if (exemptIds.length > 0) {
+    const result = await client
+      .from(args.lineTable)
+      .update({ taxCodeId: null, taxPercent: 0, updatedBy: args.updatedBy })
+      .in("id", exemptIds)
+      .eq("companyId", companyId);
+    if (result.error) return { data: null, error: result.error };
+    updated += exemptIds.length;
+  }
+
+  return { data: { updated }, error: null };
+}
+
 export async function getTaxCodesListWithRates(
   client: SupabaseClient<Database>,
   companyId: string,

@@ -11845,6 +11845,9 @@ msgstr "Réassignez des entités suivies spécifiques de cette ligne à une autr
 msgid "Recalculate"
 msgstr "Recalculer"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "Recalculer le coût unitaire"
 
@@ -13354,6 +13357,9 @@ msgstr "Définir la version {0} comme version active ?"
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "Définissez votre emplacement par défaut dans les paramètres de profil pour sélectionner une unité de stockage."
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "Paramètres"

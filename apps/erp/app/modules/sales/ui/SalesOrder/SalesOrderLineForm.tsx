@@ -57,7 +57,8 @@ import {
   Number,
   NumberControlled,
   StorageUnit,
-  Submit
+  Submit,
+  TaxCode
 } from "~/components/Form";
 import { itemTypeLabel } from "~/components/Form/itemTypeLabel";
 import {
@@ -154,6 +155,25 @@ const SalesOrderLineForm = ({
   const [activeTab, setActiveTab] = useState<"item" | "asset">(
     isFixedAsset ? "asset" : "item"
   );
+
+  // Selecting a code makes the percent a derived, read-only fact; clearing it
+  // returns the line to the manual percent it has always had.
+  const [taxCodeId, setTaxCodeId] = useState<string>(
+    initialValues.taxCodeId ?? ""
+  );
+  // The item branch keeps its percent here (itemData holds pricing, not tax);
+  // the asset branch already carries its own in assetData.
+  const [itemTaxPercent, setItemTaxPercent] = useState<number>(
+    initialValues.taxPercent ?? 0
+  );
+
+  const onTaxCodeChange = (nextTaxCodeId: string, rate: number | null) => {
+    setTaxCodeId(nextTaxCodeId);
+    if (rate !== null) {
+      setItemTaxPercent(rate);
+      setAssetData((d) => ({ ...d, taxPercent: rate }));
+    }
+  };
 
   const [assetOptions, setAssetOptions] = useState<
     { value: string; label: string }[]
@@ -794,13 +814,21 @@ const SalesOrderLineForm = ({
                                 costsDisclosure.isOpen ? "" : "hidden"
                               }`}
                             >
-                              <Number
+                              <TaxCode
+                                name="taxCodeId"
+                                value={taxCodeId}
+                                onChange={onTaxCodeChange}
+                              />
+                              <NumberControlled
                                 name="taxPercent"
                                 label={t`Tax Percent`}
+                                value={itemTaxPercent}
                                 minValue={0}
                                 maxValue={1}
                                 step={INPUT_STEP.percent}
                                 formatOptions={INPUT_FORMAT.percent}
+                                isReadOnly={Boolean(taxCodeId)}
+                                onChange={setItemTaxPercent}
                               />
                               <Number
                                 name="shippingCost"
@@ -972,6 +1000,7 @@ const SalesOrderLineForm = ({
                               maxValue={1}
                               step={INPUT_STEP.percent}
                               formatOptions={INPUT_FORMAT.percent}
+                              isReadOnly={Boolean(taxCodeId)}
                               onChange={(value) =>
                                 setAssetData((d) => ({
                                   ...d,

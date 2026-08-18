@@ -11845,6 +11845,9 @@ msgstr "이 행의 특정 추적 개체를 다른 처리 행으로 재배정합�
 msgid "Recalculate"
 msgstr "재계산"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "단가 재계산"
 
@@ -13354,6 +13357,9 @@ msgstr "버전 {0}을(를) 활성 버전으로 설정하시겠습니까?"
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "저장 단위를 선택하려면 프로필 설정에서 기본 위치를 설정하세요."
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "설정"

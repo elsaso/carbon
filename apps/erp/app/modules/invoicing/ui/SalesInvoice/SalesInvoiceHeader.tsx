@@ -28,6 +28,7 @@ import {
   LuFile,
   LuPanelLeft,
   LuPanelRight,
+  LuRefreshCcw,
   LuTicketX,
   LuTrash,
   LuTruck
@@ -40,7 +41,7 @@ import ConfirmDelete from "~/components/Modals/ConfirmDelete";
 import { usePermissions, useRouteData, useSettings, useUser } from "~/hooks";
 import { ShipmentStatus } from "~/modules/inventory/ui/Shipments";
 import type { SalesInvoice, SalesInvoiceLine } from "~/modules/invoicing";
-import { isInvoicePayable } from "~/modules/invoicing";
+import { isInvoicePayable, isSalesInvoiceLocked } from "~/modules/invoicing";
 import { getPayInvoiceHref } from "~/modules/invoicing/ui/Payment/PaymentForm";
 import type { action } from "~/routes/x+/sales-invoice+/$invoiceId.post";
 import { useItems } from "~/stores";
@@ -103,6 +104,10 @@ const SalesInvoiceHeader = () => {
   const baseStatus = (salesInvoice as { baseStatus?: string | null })
     .baseStatus;
   const statusFetcher = useFetcher<{}>();
+  // Re-resolves every line's tax from the CURRENT configuration. Deliberately
+  // an explicit action: lines store what was resolved when they were created,
+  // and silently restating a document the user is editing would be worse.
+  const recalculateTaxFetcher = useFetcher<{}>();
   const canToggleManualPaid =
     !accountingEnabled && isPosted && permissions.can("update", "invoicing");
   const canMarkPaid = canToggleManualPaid && baseStatus === "Submitted";
@@ -285,6 +290,25 @@ const SalesInvoiceHeader = () => {
                     </DropdownMenuItem>
                   </>
                 )}
+                <DropdownMenuItem
+                  disabled={
+                    isSalesInvoiceLocked(salesInvoice.status) ||
+                    !permissions.can("update", "invoicing") ||
+                    recalculateTaxFetcher.state !== "idle"
+                  }
+                  onClick={() =>
+                    recalculateTaxFetcher.submit(
+                      {},
+                      {
+                        method: "post",
+                        action: path.to.salesInvoiceRecalculateTaxes(invoiceId)
+                      }
+                    )
+                  }
+                >
+                  <DropdownMenuIcon icon={<LuRefreshCcw />} />
+                  <Trans>Recalculate Tax</Trans>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   disabled={

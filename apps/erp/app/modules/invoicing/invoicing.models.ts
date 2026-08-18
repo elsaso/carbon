@@ -128,6 +128,9 @@ export const purchaseInvoiceLineValidator = z
     supplierUnitPrice: zfd.numeric(z.number().optional()),
     supplierShippingCost: zfd.numeric(z.number().optional().default(0)),
     supplierTaxAmount: zfd.numeric(z.number().optional().default(0)),
+    // The tax code the line resolved through. Null is the manual/legacy path,
+    // where `taxPercent` is a typed number rather than a derived one.
+    taxCodeId: zfd.text(z.string().optional()),
     taxPercent: zfd.numeric(z.number().min(0).max(1).optional().default(0)),
     requiredDate: zfd.text(z.string().optional()),
     locationId: zfd.text(z.string().optional()),
@@ -259,6 +262,9 @@ export const salesInvoiceLineValidator = z
     unitOfMeasureCode: zfd.text(z.string().default("EA")),
     unitPrice: zfd.numeric(z.number().optional()),
     shippingCost: zfd.numeric(z.number().optional().default(0)),
+    // The tax code the line resolved through. Null is the manual/legacy path,
+    // where `taxPercent` is a typed number rather than a derived one.
+    taxCodeId: zfd.text(z.string().optional()),
     taxPercent: zfd.numeric(z.number().optional().default(0)),
     locationId: zfd.text(z.string().optional()),
     storageUnitId: zfd.text(z.string().optional()),

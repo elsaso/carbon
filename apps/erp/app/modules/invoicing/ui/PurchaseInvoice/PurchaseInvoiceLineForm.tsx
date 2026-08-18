@@ -48,6 +48,7 @@ import {
   NumberControlled,
   StorageUnit,
   Submit,
+  TaxCode,
   TaxFields,
   UnitOfMeasure,
   useTaxPair
@@ -73,6 +74,7 @@ import { path } from "~/utils/path";
 
 type PurchaseInvoiceLineFormProps = {
   initialValues: z.infer<typeof purchaseInvoiceLineValidator> & {
+    taxCodeId?: string;
     taxPercent?: number;
     assetReadableId?: string;
     assetName?: string;
@@ -154,6 +156,18 @@ const PurchaseInvoiceLineForm = ({
 
   // Re-derive the tax amount when the line's base changes — never on mount, so
   // a saved manual override survives being reopened.
+  // On the PURCHASE side the code never overwrites the supplier's amount — the
+  // supplier's invoice stays authoritative. It sets the expected percent, and
+  // the pair shows what that implies next to what the supplier actually charged.
+  const [taxCodeId, setTaxCodeId] = useState<string>(
+    initialValues.taxCodeId ?? ""
+  );
+
+  const onTaxCodeChange = (nextTaxCodeId: string, rate: number | null) => {
+    setTaxCodeId(nextTaxCodeId);
+    if (rate !== null) setItemData((d) => ({ ...d, taxPercent: rate }));
+  };
+
   const itemTax = useTaxPair({
     unitPrice: itemData.supplierUnitPrice,
     quantity: itemData.quantity,
@@ -742,6 +756,12 @@ const PurchaseInvoiceLineForm = ({
                               supplierShippingCost: value
                             }))
                           }
+                        />
+                        <TaxCode
+                          name="taxCodeId"
+                          value={taxCodeId}
+                          onChange={onTaxCodeChange}
+                          helperText={t`Sets the expected rate; the supplier's tax amount stays as invoiced`}
                         />
                         <TaxFields
                           {...itemTax}
