@@ -1043,3 +1043,22 @@ canvas hosting Radix popovers/selects.
 **Rule:** To validate the full migration set, start a throwaway `supabase/postgres` container (same tag as the dev stack), `pg_dump --schema-only --schema=auth --schema=storage` from the running dev DB into it (dropping the image's stub schemas first, and dropping the copied policies, which reference `public` functions that do not exist yet), then apply every migration in filename order with `psql -v ON_ERROR_STOP=1`. Run as `postgres` over the socket; the dumped schemas must be loaded as `supabase_admin` over **TCP** (the socket refuses that role). This also gives a clean, company-free database that is the ideal source for `generate:types` — no per-tenant `searchIndex_*` / `auditLog_*` tables to strip.
 
 **Applies to:** any migration touching shared views/RPCs; `packages/database/supabase/migrations/`; validating a rebase of a long-lived branch.
+
+## Edge runtime serves a cached module graph across branch switches
+
+- **Context:** Verifying tax posting E2E after switching the working tree between
+  stacked branches (`feat/tax-phase1-*`). The dev edge-runtime container
+  live-mounts `packages/database/supabase/functions/`.
+- **Problem:** Posting silently ran OLD function code — revenue credited gross,
+  no taxLedger rows — even though the new code was on disk. The Deno worker
+  boots its module graph once and keeps serving it; a `git checkout` that
+  changes the mounted files does not recycle the worker, so tests exercise
+  whichever version was on disk when the worker last booted.
+- **Rule:** After switching branches (or overlaying files) under
+  `packages/database/supabase/functions/`, restart the runtime before trusting
+  any posting result: `podman restart carbon-carbon-edge-runtime-1`. If a
+  posting result contradicts the code you are reading, check which version the
+  worker booted before debugging the code.
+- **Applies to:** all edge-function verification against the local stack;
+  any stacked-branch workflow where sibling branches differ under
+  `supabase/functions/`.
