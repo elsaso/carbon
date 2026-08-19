@@ -1086,3 +1086,27 @@ canvas hosting Radix popovers/selects.
 **Rule:** When unit-testing something in `lib/utils.ts`, extract it into a sibling module with a clean graph and re-export it from `utils.ts` (that is why `lib/account-sign.ts` exists) — the 16 existing importers are unaffected by the re-export. Run the whole suite with `deno test --no-lock --no-check` (201 tests) and the files you own with `--check`. Don't claim a Deno test "runs in CI" without grepping for it; and note `deno` is not installed by default on this machine — `curl -fsSL https://deno.land/install.sh | DENO_INSTALL=$HOME/.deno sh -s -- -y` installs it without touching your shell rc.
 
 **Applies to:** `packages/database/supabase/functions/**/*.test.ts`, `packages/database/package.json`.
+
+## The ERP dev server fails hydration, so first clicks are swallowed
+
+- **Context:** Driving the ERP with Playwright/agent-browser against
+  `react-router dev`. Verified on untouched `fork/main`, so this is upstream and
+  pre-existing — not introduced by feature work.
+- **Problem:** `root.tsx` injects `window.env` through
+  `dangerouslySetInnerHTML`; the server renders that script's HTML as `""` while
+  the client renders the full `window.env = {...}`, so React 18 throws
+  "Hydration failed because the initial UI does not match…" and replaces the
+  whole document with a client render. Until that second render lands the markup
+  exists with NO handlers attached, and a single `.click()` is silently
+  swallowed — menus never open, and the login form does not submit (clicking
+  "Sign in with Email" produces no POST; only pressing Enter, a native submit,
+  reaches the action).
+- **Rule:** In browser automation, never trust one `.click()` on this app.
+  Attempt-until-it-takes (click, assert the consequence, retry) and prefer
+  native interactions where they exist — Enter to submit a form. Before blaming
+  your own change for a dead click, check the console for "Hydration failed".
+  Only observed under the Vite dev server; reproduce on `pnpm run build` before
+  treating it as a production defect.
+- **Applies to:** any Playwright/agent-browser work against `apps/erp` in dev;
+  the local UI suite in `.ai/scratch/e2e-ui/` encodes the workaround in
+  `tests/ui.ts` (`clickUntil` / `openHeaderMenu` / `pickCombobox`).
