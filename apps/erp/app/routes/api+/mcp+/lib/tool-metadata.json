@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-18T13:53:20.509Z",
-  "totalTools": 1462,
+  "generated": "2026-08-19T07:21:00.225Z",
+  "totalTools": 1463,
   "modules": 15,
   "tools": [
     {
@@ -4513,6 +4513,46 @@
       "schema": {
         "type": "object",
         "properties": {}
+      }
+    },
+    {
+      "name": "accounting_getSalesInvoiceTaxFacts",
+      "module": "accounting",
+      "classification": "READ",
+      "description": "get sales invoice tax facts",
+      "paramCount": 3,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "taxCodeIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customerId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "/** The document's tax point — dateIssued, not today. */\n    date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "taxCodeIds",
+          "customerId",
+          "/** The document's tax point — dateIssued, not today. */\n    date"
+        ]
       }
     },
     {

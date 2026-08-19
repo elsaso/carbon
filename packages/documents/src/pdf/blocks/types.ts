@@ -11,6 +11,7 @@ import type {
   Company,
   CompanySettings
 } from "../../types";
+import type { TaxSummaryRow } from "../../utils/sales-invoice";
 
 export type SalesInvoiceLocations =
   Database["public"]["Views"]["salesInvoiceLocations"]["Row"] & {
@@ -41,6 +42,19 @@ export interface SalesInvoiceData {
   theme: DocumentTheme;
   /** Resolved shared sections referenced by `shared` blocks, keyed by id. */
   sections: Record<string, ResolvedSection>;
+  /** Per-component tax breakdown for the summary — a compliant VAT/GST invoice
+   *  states each rate and its amount, not one merged figure. Empty falls back
+   *  to the single combined tax row. */
+  taxSummary?: TaxSummaryRow[];
+  /** Distinct `taxCode.invoiceMessage` clauses for the codes on this document
+   *  (e.g. a reverse-charge notice). Rendered as small print under the totals. */
+  taxMessages?: string[];
+  /** The seller's tax registration for the document's jurisdiction, else the
+   *  company's `taxId`. */
+  sellerTaxRegistrationNumber?: string | null;
+  /** The buyer's VAT number — required on the document only when a line is
+   *  Reverse Charge or Export, and omitted otherwise. */
+  customerVatNumber?: string | null;
   /** Precomputed display helpers (built once in the driver). */
   currencyCode: string | null;
   numberFormatter: Intl.NumberFormat;

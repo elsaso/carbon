@@ -34,7 +34,7 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 - [x] Task 17: post-sales-invoice — tax split, ledger writes, VOID reversals, shipping taxability
 - [x] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes
 - [x] Task 19: post-memo — net/tax split + signed ledger rows — on `feat/tax-phase1-e-memo-tax`; memo amounts are tax-INCLUSIVE (tax carved out, control leg stays gross)
-- [ ] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — **not started**
+- [x] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — on `feat/tax-phase1-g-invoice-pdf`; registration numbers are MERGE FIELDS (tax.sellerRegistration / tax.customerVatNumber), not hardcoded blocks
 - [ ] Task 21: Tax liability report (service + route) — **not started**
 - [ ] Task 22: Lingui extract + full scoped validation — extract done; full gate re-run pending the remaining tasks
 - [ ] Task 23: Browser verification via /test — **not started** (no runtime verification of posting yet)

@@ -1,3 +1,4 @@
+import { formatPercent } from "@carbon/utils";
 import { Text, View } from "@react-pdf/renderer";
 import {
   DEFAULT_SUMMARY_OPTIONS,
@@ -20,7 +21,10 @@ export function SummaryBlock({
     salesInvoice,
     salesInvoiceShipment,
     currencyCode,
-    numberFormatter
+    locale,
+    numberFormatter,
+    taxSummary,
+    taxMessages
   } = data;
   const opts = { ...DEFAULT_SUMMARY_OPTIONS, ...block.options };
   const taxLabel = opts.taxLabel?.trim() || DEFAULT_SUMMARY_OPTIONS.taxLabel;
@@ -105,27 +109,48 @@ export function SummaryBlock({
           ) : null;
         })()}
 
-        {/* Taxes */}
-        {salesInvoiceLines.some((line) => (line.taxPercent ?? 0) > 0) && (
-          <View
-            style={[
-              tw("flex flex-row py-1.5 px-3 text-[9px]"),
-              { backgroundColor: "rgba(249, 250, 251, 0.6)" }
-            ]}
-          >
-            <Text style={tw("w-5/6 text-right pr-3 text-gray-600")}>
-              {taxLabel} ({currencyCode})
-            </Text>
-            <Text style={tw("w-1/6 text-center text-gray-800")}>
-              {numberFormatter.format(
-                salesInvoiceLines.reduce((sum, line) => {
-                  const taxPercent = line.taxPercent ?? 0;
-                  return sum + getLineTaxableSubtotal(line) * taxPercent;
-                }, 0)
-              )}
-            </Text>
-          </View>
-        )}
+        {/* Taxes — one row PER COMPONENT when the document resolved through tax
+            codes, because a VAT/GST invoice has to state each rate and its
+            amount separately. Falls back to the single combined row for
+            documents with no per-component breakdown (legacy/manual lines, and
+            any caller that does not supply taxSummary). */}
+        {taxSummary && taxSummary.length > 0
+          ? taxSummary.map((row) => (
+              <View
+                key={row.name}
+                style={[
+                  tw("flex flex-row py-1.5 px-3 text-[9px]"),
+                  { backgroundColor: "rgba(249, 250, 251, 0.6)" }
+                ]}
+              >
+                <Text style={tw("w-5/6 text-right pr-3 text-gray-600")}>
+                  {row.name} {formatPercent(row.rate, locale)} ({currencyCode})
+                </Text>
+                <Text style={tw("w-1/6 text-center text-gray-800")}>
+                  {numberFormatter.format(row.amount)}
+                </Text>
+              </View>
+            ))
+          : salesInvoiceLines.some((line) => (line.taxPercent ?? 0) > 0) && (
+              <View
+                style={[
+                  tw("flex flex-row py-1.5 px-3 text-[9px]"),
+                  { backgroundColor: "rgba(249, 250, 251, 0.6)" }
+                ]}
+              >
+                <Text style={tw("w-5/6 text-right pr-3 text-gray-600")}>
+                  {taxLabel} ({currencyCode})
+                </Text>
+                <Text style={tw("w-1/6 text-center text-gray-800")}>
+                  {numberFormatter.format(
+                    salesInvoiceLines.reduce((sum, line) => {
+                      const taxPercent = line.taxPercent ?? 0;
+                      return sum + getLineTaxableSubtotal(line) * taxPercent;
+                    }, 0)
+                  )}
+                </Text>
+              </View>
+            )}
 
         <View style={tw("h-[1px] bg-gray-200")} />
         <View style={tw("flex flex-row py-2 px-3 text-[9px]")}>
@@ -139,6 +164,18 @@ export function SummaryBlock({
           </Text>
         </View>
       </View>
+
+      {/* Statutory clauses carried by the document's tax codes — e.g. the
+          reverse-charge notice a buyer needs to see on the invoice itself. */}
+      {taxMessages && taxMessages.length > 0 && (
+        <View style={tw("mt-2 px-3")}>
+          {taxMessages.map((message) => (
+            <Text key={message} style={tw("text-[7px] text-gray-500")}>
+              {message}
+            </Text>
+          ))}
+        </View>
+      )}
     </View>
   );
 }

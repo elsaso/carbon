@@ -83,6 +83,18 @@ const SALES_INVOICE_MERGE_FIELDS: MergeField[] = [
   { token: "customer.addressLine1", label: "Address", group: "Customer" },
   { token: "customer.city", label: "City", group: "Customer" },
   { token: "customer.country", label: "Country", group: "Customer" },
+  // Tax identity. Only the sales invoice offers these: it is the document a tax
+  // authority reads, and the buyer's number is only required on it.
+  {
+    token: "tax.sellerRegistration",
+    label: "Our Tax Registration",
+    group: "Tax"
+  },
+  {
+    token: "tax.customerVatNumber",
+    label: "Customer VAT Number",
+    group: "Tax"
+  },
   ...COMPANY_MERGE_FIELDS
 ];
 

@@ -8,7 +8,12 @@ import type { SalesInvoiceData } from "./types";
 export function buildSalesInvoiceVars(
   data: Pick<
     SalesInvoiceData,
-    "salesInvoice" | "salesInvoiceLocations" | "company" | "currencyCode"
+    | "salesInvoice"
+    | "salesInvoiceLocations"
+    | "company"
+    | "currencyCode"
+    | "sellerTaxRegistrationNumber"
+    | "customerVatNumber"
   >
 ): Record<string, string> {
   const inv = data.salesInvoice;
@@ -35,6 +40,14 @@ export function buildSalesInvoiceVars(
     "company.taxId": str(data.company?.taxId),
     "company.eori": str(data.company?.eori),
     "company.vatNumber": str(data.company?.vatNumber),
-    "company.registrationNumber": str(data.company?.registrationNumber)
+    "company.registrationNumber": str(data.company?.registrationNumber),
+    // Falls back to company.taxId when no jurisdiction-specific registration
+    // matches, so a template placing this always shows the seller's identifier.
+    "tax.sellerRegistration": str(
+      data.sellerTaxRegistrationNumber ?? data.company?.taxId
+    ),
+    // Blank unless the document carries a Reverse Charge / Export line — those
+    // are the treatments that legally require the buyer's number on the face.
+    "tax.customerVatNumber": str(data.customerVatNumber)
   };
 }
