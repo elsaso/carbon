@@ -2070,10 +2070,7 @@ serve(async (req: Request) => {
             const componentTaxInJournalCurrency =
               component.taxAmount * invoiceExchangeRate;
 
-            if (
-              component.treatment === "Recoverable" ||
-              component.treatment === "Reverse Charge Recoverable"
-            ) {
+            if (component.postedToInputAccount) {
               // DR input tax — we reclaim it from the authority. Which account
               // that is, and therefore which sign a debit takes, is
               // configuration; read it from the account's real class.
@@ -2102,10 +2099,7 @@ serve(async (req: Request) => {
               journalLineDimensionsMeta.push(taxDimMeta);
             }
 
-            if (
-              component.treatment === "Reverse Charge Recoverable" ||
-              component.treatment === "Reverse Charge Capitalized"
-            ) {
+            if (component.selfAssessedOutputTax) {
               // CR the self-assessed liability we owe the authority directly.
               // Signed from the real class like its paired debit above, so the
               // two legs of the reverse charge can never drift apart.
@@ -2140,8 +2134,7 @@ serve(async (req: Request) => {
         // rate are snapshots so a later config edit can never restate a posted
         // document.
         for (const component of lineTaxPlan.components) {
-          taxLedgerInserts.push({
-            source: "Purchase",
+          const ledgerSnapshot = {
             documentType: "Purchase Invoice",
             documentId: invoiceId,
             documentLineId: invoiceLine.id,
@@ -2157,10 +2150,35 @@ serve(async (req: Request) => {
             taxableAmount: component.taxableAmount,
             taxAmount: component.taxAmount,
             exemptAmount: 0,
-            postedToInputAccount: component.postedToInputAccount,
             createdBy: userId,
             companyId,
+          };
+
+          taxLedgerInserts.push({
+            ...ledgerSnapshot,
+            source: "Purchase",
+            postedToInputAccount: component.postedToInputAccount,
           });
+
+          // Reverse charge: the buyer accounts for the OUTPUT tax the supplier
+          // didn't charge, so the subledger must carry both directions — the
+          // spec's acceptance criterion is literal about this ("the ledger
+          // shows both directions"). `source` is the tax side, not the document
+          // family (post-memo's `isAR ? 'Sales' : 'Purchase'` is the same
+          // convention), so the self-assessed side is a Sales row: the
+          // liability report's collected column and a Phase 2 return's output
+          // box then pick it up with no reverse-charge special case anywhere.
+          // Recoverable RC nets to zero against its paired input row; use tax
+          // (non-recoverable) has no input row, leaving the net owed the GL
+          // already carries. Same base and rate on both rows — a VAT return
+          // reports the acquisition value in the outputs AND inputs boxes.
+          if (component.selfAssessedOutputTax) {
+            taxLedgerInserts.push({
+              ...ledgerSnapshot,
+              source: "Sales",
+              postedToInputAccount: false,
+            });
+          }
         }
       }
     }

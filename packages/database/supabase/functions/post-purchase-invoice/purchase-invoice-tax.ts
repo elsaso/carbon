@@ -83,6 +83,17 @@ export type PurchaseComponentTax = {
   treatment: PurchaseTaxTreatment;
   /** `taxLedger.postedToInputAccount` — true when the tax became an asset. */
   postedToInputAccount: boolean;
+  /**
+   * True on both `Reverse Charge` treatments: the buyer self-assesses the
+   * OUTPUT tax the supplier didn't charge. The driver must then write BOTH
+   * sides — the GL credit to the reverse-charge payable account AND a
+   * `source: 'Sales'` ledger row — from this one flag, so the journal and the
+   * subledger cannot disagree about whether output tax exists. (`source` is
+   * the side of the tax equation, not the document family: `post-memo` writes
+   * `isAR ? 'Sales' : 'Purchase'` for the same reason. Spec: "paired entries
+   * netting zero, both sides in the ledger".)
+   */
+  selfAssessedOutputTax: boolean;
 };
 
 export type PurchaseLineTaxPlan = {
@@ -266,6 +277,7 @@ export function resolvePurchaseLineTax(args: {
       postedToInputAccount:
         treatment === "Recoverable" ||
         treatment === "Reverse Charge Recoverable",
+      selfAssessedOutputTax: isReverseCharge,
     });
   });
 

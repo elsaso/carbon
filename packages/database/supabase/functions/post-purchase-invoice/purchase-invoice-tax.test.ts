@@ -364,3 +364,63 @@ Deno.test("compound components reconcile against the stored total too", () => {
   assertEquals(plan.components[1].taxableAmount, 105);
   assertEquals(plan.costAdjustment, -5);
 });
+
+// ── selfAssessedOutputTax ────────────────────────────────────────────────────
+// The one flag the driver reads to write BOTH sides of a reverse charge: the
+// GL credit to the reverse-charge payable account and the `source: 'Sales'`
+// ledger row. The spec's acceptance criterion is "the ledger shows both
+// directions"; these tests pin which components have a second direction at all.
+
+Deno.test("selfAssessedOutputTax: true on both Reverse Charge treatments", () => {
+  const recoverable = resolvePurchaseLineTax({
+    taxCodeId: "tc_rc",
+    calculationType: "Reverse Charge",
+    components: [component({ isRecoverable: true })],
+    taxableBase: 100,
+    storedTaxAmount: 0,
+    date: DATE,
+  });
+  assertEquals(recoverable.components[0].treatment, "Reverse Charge Recoverable");
+  assertEquals(recoverable.components[0].selfAssessedOutputTax, true);
+
+  const useTax = resolvePurchaseLineTax({
+    taxCodeId: "tc_use",
+    calculationType: "Reverse Charge",
+    components: [component({ isRecoverable: false })],
+    taxableBase: 100,
+    storedTaxAmount: 0,
+    date: DATE,
+  });
+  assertEquals(useTax.components[0].treatment, "Reverse Charge Capitalized");
+  assertEquals(useTax.components[0].selfAssessedOutputTax, true);
+});
+
+Deno.test("selfAssessedOutputTax: false on both Normal treatments", () => {
+  for (const isRecoverable of [true, false]) {
+    const plan = resolvePurchaseLineTax({
+      taxCodeId: "tc_n",
+      calculationType: "Normal",
+      components: [component({ isRecoverable })],
+      taxableBase: 100,
+      storedTaxAmount: 20,
+      date: DATE,
+    });
+    assertEquals(plan.components[0].selfAssessedOutputTax, false);
+  }
+});
+
+Deno.test("selfAssessedOutputTax: false when a mis-coded RC line degrades to Normal", () => {
+  // Supplier billed tax on a Reverse Charge code → treated as Normal; there is
+  // no self-assessment, so there must be no output-side ledger row either.
+  const plan = resolvePurchaseLineTax({
+    taxCodeId: "tc_rc",
+    calculationType: "Reverse Charge",
+    components: [component({ isRecoverable: true })],
+    taxableBase: 100,
+    storedTaxAmount: 20,
+    date: DATE,
+  });
+  assertEquals(plan.warnings.length, 1);
+  assertEquals(plan.components[0].treatment, "Recoverable");
+  assertEquals(plan.components[0].selfAssessedOutputTax, false);
+});
