@@ -1110,3 +1110,22 @@ canvas hosting Radix popovers/selects.
 - **Applies to:** any Playwright/agent-browser work against `apps/erp` in dev;
   the local UI suite in `.ai/scratch/e2e-ui/` encodes the workaround in
   `tests/ui.ts` (`clickUntil` / `openHeaderMenu` / `pickCombobox`).
+
+## Edge runtime serves a cached module graph across branch switches
+
+- **Context:** Verifying tax posting E2E after switching the working tree between
+  stacked branches (`feat/tax-phase1-*`). The dev edge-runtime container
+  live-mounts `packages/database/supabase/functions/`.
+- **Problem:** Posting silently ran OLD function code — revenue credited gross,
+  no taxLedger rows — even though the new code was on disk. The Deno worker
+  boots its module graph once and keeps serving it; a `git checkout` that
+  changes the mounted files does not recycle the worker, so tests exercise
+  whichever version was on disk when the worker last booted.
+- **Rule:** After switching branches (or overlaying files) under
+  `packages/database/supabase/functions/`, restart the runtime before trusting
+  any posting result: `podman restart carbon-carbon-edge-runtime-1`. If a
+  posting result contradicts the code you are reading, check which version the
+  worker booted before debugging the code.
+- **Applies to:** all edge-function verification against the local stack;
+  any stacked-branch workflow where sibling branches differ under
+  `supabase/functions/`.
