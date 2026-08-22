@@ -6183,6 +6183,136 @@ export async function getTaxCodesList(
  *
  * Returns how many lines changed so the caller can say so.
  */
+/**
+ * Everything the sales invoice PDF needs to print a compliant tax block, in one
+ * pass: the effective components behind each code on the document, the codes'
+ * statutory clauses, the seller's registration for the document's jurisdiction,
+ * and — only when a line is Reverse Charge or Export — the buyer's VAT number.
+ *
+ * The document renderer stays pure: it is handed facts, not a client. Component
+ * effectivity is resolved HERE against the document's own date, so reprinting an
+ * old invoice after a rate change still shows the rates it was issued under.
+ */
+export async function getSalesInvoiceTaxFacts(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  args: {
+    taxCodeIds: string[];
+    customerId: string | null;
+    /** The document's tax point — dateIssued, not today. */
+    date: string;
+  }
+) {
+  const distinctCodeIds = [...new Set(args.taxCodeIds.filter(Boolean))];
+
+  const [codes, components, registrations, company, customerTax] =
+    await Promise.all([
+      distinctCodeIds.length
+        ? client
+            .from("taxCode")
+            .select("id, invoiceMessage, reportingCategory")
+            .in("id", distinctCodeIds)
+            .eq("companyId", companyId)
+        : Promise.resolve({ data: [], error: null }),
+      distinctCodeIds.length
+        ? client
+            .from("taxCodeComponent")
+            .select(
+              "taxCodeId, name, rate, sequence, isCompound, effectiveDate, expirationDate"
+            )
+            .in("taxCodeId", distinctCodeIds)
+            .eq("companyId", companyId)
+        : Promise.resolve({ data: [], error: null }),
+      client
+        .from("taxRegistration")
+        .select("countryCode, registrationNumber, effectiveDate, endDate")
+        .eq("companyId", companyId),
+      client
+        .from("company")
+        .select("countryCode, taxId")
+        .eq("id", companyId)
+        .maybeSingle(),
+      args.customerId
+        ? client
+            .from("customerTax")
+            .select("vatNumber")
+            .eq("customerId", args.customerId)
+            .eq("companyId", companyId)
+            .maybeSingle()
+        : Promise.resolve({ data: null, error: null })
+    ]);
+
+  const error =
+    codes.error ?? components.error ?? registrations.error ?? company.error;
+  if (error) return { data: null, error };
+
+  const componentsByTaxCodeId: Record<
+    string,
+    {
+      taxCodeId: string;
+      name: string;
+      rate: number;
+      isCompound: boolean;
+      sequence: number;
+    }[]
+  > = {};
+  for (const component of components.data ?? []) {
+    // Inclusive bounds, matching determination and posting.
+    const from = component.effectiveDate;
+    const to = component.expirationDate;
+    if (from && from.slice(0, 10) > args.date) continue;
+    if (to && args.date > to.slice(0, 10)) continue;
+    (componentsByTaxCodeId[component.taxCodeId] ??= []).push({
+      taxCodeId: component.taxCodeId,
+      name: component.name,
+      rate: Number(component.rate),
+      isCompound: component.isCompound,
+      sequence: component.sequence
+    });
+  }
+
+  const taxMessages = [
+    ...new Set(
+      (codes.data ?? [])
+        .map((code) => code.invoiceMessage?.trim())
+        .filter((message): message is string => Boolean(message))
+    )
+  ];
+
+  // The buyer's number belongs on the face of the document only for the
+  // treatments that legally require it; printing it otherwise is noise.
+  const requiresCustomerVat = (codes.data ?? []).some(
+    (code) =>
+      code.reportingCategory === "Reverse Charge" ||
+      code.reportingCategory === "Export"
+  );
+
+  const countryCode = company.data?.countryCode ?? null;
+  const activeRegistration = (registrations.data ?? []).find((registration) => {
+    if (countryCode && registration.countryCode !== countryCode) return false;
+    if (registration.effectiveDate && registration.effectiveDate > args.date) {
+      return false;
+    }
+    if (registration.endDate && args.date > registration.endDate) return false;
+    return true;
+  });
+
+  return {
+    data: {
+      componentsByTaxCodeId,
+      taxMessages,
+      // Falls back to the company's own tax id when no jurisdiction-specific
+      // registration matches — a document must still identify the seller.
+      sellerTaxRegistrationNumber:
+        activeRegistration?.registrationNumber ?? company.data?.taxId ?? null,
+      customerVatNumber: requiresCustomerVat
+        ? (customerTax.data?.vatNumber ?? null)
+        : null
+    },
+    error: null
+  };
+}
+
 export async function recalculateSalesLineTaxes(
   client: SupabaseClient<Database>,
   companyId: string,

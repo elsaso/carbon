@@ -8,6 +8,7 @@ import {
   resolveTemplate
 } from "../template";
 import type { AccountsReceivableBillingAddress, PDF } from "../types";
+import type { TaxSummaryRow } from "../utils/sales-invoice";
 import {
   getMoneyFormatter,
   getRateFormatter,
@@ -37,11 +38,25 @@ interface SalesInvoicePDFProps extends PDF {
   sections?: Record<string, ResolvedSection>;
   /** Settlement decimals from the document currency's row; null/omitted falls back to 2. */
   currencyDecimals?: number | null;
+  /** Per-component tax breakdown (see getTaxSummaryByComponent). Omitted keeps
+   *  the single combined tax row this document has always rendered. */
+  taxSummary?: TaxSummaryRow[];
+  /** Statutory clauses from the tax codes on this document. */
+  taxMessages?: string[];
+  /** Seller's registration for the document's jurisdiction; falls back to
+   *  `company.taxId` at the merge-field level. */
+  sellerTaxRegistrationNumber?: string | null;
+  /** Buyer's VAT number — only set for Reverse Charge / Export documents. */
+  customerVatNumber?: string | null;
 }
 
 const SalesInvoicePDF = ({
   accountsReceivableBillingAddress,
   company,
+  taxSummary,
+  taxMessages,
+  sellerTaxRegistrationNumber,
+  customerVatNumber,
   companySettings,
   meta,
   salesInvoice,
@@ -109,6 +124,10 @@ const SalesInvoicePDF = ({
     currencyCode,
     numberFormatter,
     rateFormatter,
+    taxSummary,
+    taxMessages,
+    sellerTaxRegistrationNumber,
+    customerVatNumber,
     vars,
     headerOptions
   };

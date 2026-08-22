@@ -1,5 +1,9 @@
 import { requirePermissions } from "@carbon/auth/auth.server";
-import { ensureFont, SalesInvoicePDF } from "@carbon/documents/pdf";
+import {
+  ensureFont,
+  getTaxSummaryByComponent,
+  SalesInvoicePDF
+} from "@carbon/documents/pdf";
 import {
   collectSectionIds,
   resolveTemplate,
@@ -8,10 +12,14 @@ import {
 } from "@carbon/documents/template";
 import { getLogger } from "@carbon/logger";
 import type { JSONContent } from "@carbon/react";
-import { getPreferenceHeaders } from "@carbon/utils";
+import { datetime, getPreferenceHeaders } from "@carbon/utils";
 import { renderToStream } from "@react-pdf/renderer";
 import type { LoaderFunctionArgs } from "react-router";
-import { getCurrencyByCode, getPaymentTermsList } from "~/modules/accounting";
+import {
+  getCurrencyByCode,
+  getPaymentTermsList,
+  getSalesInvoiceTaxFacts
+} from "~/modules/accounting";
 import { getShippingMethodsList } from "~/modules/inventory";
 import {
   getSalesInvoice,
@@ -28,6 +36,7 @@ import {
   resolveSections
 } from "~/modules/settings";
 import { getBase64ImageFromSupabase } from "~/modules/shared";
+import { getCompanyTimeZone } from "~/modules/shared/timezone.server";
 
 const logger = getLogger("erp", "sales-invoice", "pdf");
 
@@ -200,6 +209,31 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     : null;
   const currencyDecimals = currencyRow?.data?.decimalPlaces ?? null;
 
+  // Tax facts for the document's block: resolved against the invoice's OWN date
+  // so reprinting an old invoice after a rate change still shows the rates it
+  // was issued under.
+  const lines = salesInvoiceLines.data ?? [];
+  const taxFacts = await getSalesInvoiceTaxFacts(client, companyId, {
+    taxCodeIds: lines
+      .map((line) => (line as { taxCodeId?: string | null }).taxCodeId ?? null)
+      .filter((id): id is string => Boolean(id)),
+    customerId: salesInvoice.data?.customerId ?? null,
+    date:
+      salesInvoice.data?.dateIssued ??
+      salesInvoice.data?.postingDate ??
+      datetime.today(await getCompanyTimeZone(client, companyId)).toString()
+  });
+  if (taxFacts.error) {
+    // A missing tax block must not lose the customer their invoice — log and
+    // render the document without the breakdown.
+    logger.error("Failed to load invoice tax facts", {
+      error: taxFacts.error
+    });
+  }
+  const taxSummary = taxFacts.data
+    ? getTaxSummaryByComponent(lines, taxFacts.data.componentsByTaxCodeId)
+    : [];
+
   const stream = await renderToStream(
     <SalesInvoicePDF
       company={company.data as any}
@@ -228,6 +262,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
       thumbnails={thumbnails}
       template={templateConfig}
       sections={sections}
+      taxSummary={taxSummary}
+      taxMessages={taxFacts.data?.taxMessages ?? []}
+      sellerTaxRegistrationNumber={
+        taxFacts.data?.sellerTaxRegistrationNumber ?? null
+      }
+      customerVatNumber={taxFacts.data?.customerVatNumber ?? null}
     />
   );
 

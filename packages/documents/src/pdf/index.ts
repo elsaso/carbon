@@ -43,3 +43,12 @@ export {
   StockTransferPDF,
   StorageUnitLabelPDF
 };
+
+// The tax-summary builder ships with the PDF it feeds: a caller assembling
+// SalesInvoicePDF props needs both, and they must agree on the row shape.
+export {
+  getTaxSummaryByComponent,
+  LEGACY_TAX_COMPONENT_NAME,
+  type TaxSummaryComponent,
+  type TaxSummaryRow
+} from "../utils/sales-invoice";

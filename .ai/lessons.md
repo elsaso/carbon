@@ -1110,3 +1110,72 @@ canvas hosting Radix popovers/selects.
 - **Applies to:** any Playwright/agent-browser work against `apps/erp` in dev;
   the local UI suite in `.ai/scratch/e2e-ui/` encodes the workaround in
   `tests/ui.ts` (`clickUntil` / `openHeaderMenu` / `pickCombobox`).
+
+## Edge runtime serves a cached module graph across branch switches
+
+- **Context:** Verifying tax posting E2E after switching the working tree between
+  stacked branches (`feat/tax-phase1-*`). The dev edge-runtime container
+  live-mounts `packages/database/supabase/functions/`.
+- **Problem:** Posting silently ran OLD function code — revenue credited gross,
+  no taxLedger rows — even though the new code was on disk. The Deno worker
+  boots its module graph once and keeps serving it; a `git checkout` that
+  changes the mounted files does not recycle the worker, so tests exercise
+  whichever version was on disk when the worker last booted.
+- **Rule:** After switching branches (or overlaying files) under
+  `packages/database/supabase/functions/`, restart the runtime before trusting
+  any posting result: `podman restart carbon-carbon-edge-runtime-1`. If a
+  posting result contradicts the code you are reading, check which version the
+  worker booted before debugging the code.
+- **Applies to:** all edge-function verification against the local stack;
+  any stacked-branch workflow where sibling branches differ under
+  `supabase/functions/`.
+
+## `lingui extract --clean` prunes the *other* branch's strings in a forked stack
+
+**Context:** Finishing i18n for multi-jurisdiction tax Phase 1, whose seven branches fork into two legs — configuration UI on one, posting and documents on the other.
+
+**Problem:** Standing on the posting leg, `lingui extract` reported **6** missing strings and the catalogs looked finished. The real number across Phase 1 was **83**. `--clean` deletes every msgid it cannot find in source, so extracting on one leg silently strips the other leg's strings from all 13 catalogs — including their `msgstr` if they had been translated. The count is not "missing translations for this feature"; it is "missing translations for the code in *this tree*". A leg can therefore report zero missing while half the feature is untranslated, and translating on one leg before the other would have thrown that work away.
+
+**Rule:** In a forked stack, treat a missing-translation count as scoped to the checked-out tree, never to the feature. Count per leg (`git show <branch>:packages/locale/locales/fr/erp.po` and scan for empty `msgstr`) before believing any single number. Translate at each leg's tip, and give any msgid that *both* legs introduce an identical translation on both sides — then the `.po` files auto-merge into the union instead of conflicting on the one string they share. Verify with `git merge-tree --write-tree <legA> <legB>` and scan the merged blob: the union must show zero empty `msgstr`.
+
+**Applies to:** `packages/locale/locales/**`, `pnpm run lingui:extract`, `.claude/skills/translate/`; any stacked-branch feature whose UI is split across siblings.
+
+## Two branches that append to the same file region conflict — converge them early
+
+**Context:** Merging the two legs of the Phase 1 tax stack reported three conflicts: `.ai/lessons.md`, the Phase 1 plan, and the generated `tool-metadata.json`.
+
+**Problem:** Both legs had appended their own entries to the tail of `.ai/lessons.md` and to the same Progress block. Nothing was incompatible — each side simply had content the other lacked — but git cannot know that a docs append is a union rather than a rewrite, so it stops on every one.
+
+**Rule:** When sibling branches both append to a shared doc, write the **identical union** to both sides before merging. Git sees the same content on both and resolves without asking. This dropped the Phase 1 leg merge from three conflicts to one. Do NOT do this for generated files (`tool-metadata.json` reflects each leg's routes and legitimately differs) — regenerate those after the merge instead.
+
+**Applies to:** `.ai/lessons.md`, `.ai/plans/**`, any long-lived stacked-branch series sharing docs.
+
+## The pre-commit hook sweeps UNSTAGED files into your commit
+
+**Context:** Committing a lint fix and 925 translated `.po` lines as two separate commits on the same branch.
+
+**Problem:** The first commit captured all 14 files. The repo's pre-commit hook runs `lingui:check` (`lingui:extract` + `compile`) and `lingui:clean`, which rewrite `packages/locale/locales/**` in the working tree; lint-staged's "Applying modifications from tasks" then stages whatever those tasks touched. The unstaged catalogs were swept into a commit whose message described only the lint fix, and the second `git commit` found nothing left to commit.
+
+**Rule:** Do not rely on `git add` alone to scope a commit in this repo when `.po` files or other hook-touched paths are dirty. Either commit the hook-affected paths first, or stash the rest (`git stash push -- <paths>`) so the working tree contains only what that commit should carry. If a commit comes back larger than you staged, check `git show --stat` before pushing — the fix is `git reset --soft HEAD~1` and a re-split.
+
+**Applies to:** any multi-commit split in this repo touching `packages/locale/locales/**`; `.husky/`, lint-staged config.
+
+## An interrupted typegen truncates `types.ts`, and the edge runtime blames line 9
+
+**Context:** Running `crbn up` before a GL cross-tie. Every posting scenario then returned 500 and the tax E2E dropped from 77/77 to 0.
+
+**Problem:** `packages/database/src/types.ts` was left **truncated** at 34,713 lines against 81,581 committed — an interrupted `generate:types` wrote a partial file ending mid-object. The edge runtime reports this as `The module's source code could not be parsed: Expected '{', got 'Database' at file:///home/src/types.ts:9:13`. Line 9 is `export type Database = {`, which is perfectly valid: the parser fails at the OUTERMOST unclosed construct, so the error points at the start of the object, never at the truncation ~34k lines later. Nothing in the message says "truncated". This has now happened twice, once via `pnpm db:migrate` and once via `crbn up`.
+
+**Rule:** When the edge runtime reports a parse error in a GENERATED file, check its length before reading its syntax: `wc -l packages/database/src/types.ts` against `git show HEAD:packages/database/src/types.ts | wc -l`. Recover with `git checkout -- packages/database/src/types.ts` — never hand-edit or hand-complete generated types. A blanket "all scenarios return 500" is a runtime-boot failure, not a logic failure; read the container log first.
+
+**Applies to:** `packages/database/src/types.ts`, `pnpm run generate:types`, `crbn up`, `pnpm db:migrate`; any edge-function verification after a stack boot.
+
+## A subledger tie across mixed code versions measures nothing
+
+**Context:** Automating the GL <-> tax-liability cross-tie against the local stack, whose database still held tax postings from several days earlier.
+
+**Problem:** The first tie failed enormously — input tax of 1,669,012 against a GL movement of 21,453 — and the per-journal breakdown "proved" that the sales and purchase paths wrote `taxLedger.taxAmount` in different currencies. The data spanned 2026-08-17 to 08-19 while the journal-sign fix (`d77cb157c`) landed at 2026-08-17 22:12, so the rows straddled it. A reverse-charge journal from that set did not balance at all, which the current balance guard would have refused to post. Every conclusion drawn from it was about code that no longer exists.
+
+**Rule:** Before tying a subledger to the GL, establish that every row was written by the CODE UNDER TEST. Stamp a cutoff (`select now()`), re-run the posting harness, and scope both sides of the tie to rows at or after it — `.ai/scratch/tax-e2e/liability-crosstie.mjs` takes `--since <iso>` for exactly this. Check `min/max(createdAt)` against the dates of the commits that changed posting before trusting any aggregate. An accounting discrepancy found in stale data is a story about the past, not a bug report.
+
+**Applies to:** `.ai/scratch/tax-e2e/`, any GL/subledger reconciliation against a long-lived dev database.
