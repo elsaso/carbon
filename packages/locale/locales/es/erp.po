@@ -11845,6 +11845,9 @@ msgstr "Reasignar entidades rastreadas específicas de esta fila a otra fila de 
 msgid "Recalculate"
 msgstr "Recalcular"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "Recalcular Costo Unitario"
 
@@ -13354,6 +13357,9 @@ msgstr "¿Establecer la versión {0} como versión activa?"
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "Establece tu ubicación predeterminada en la configuración del perfil para seleccionar una unidad de almacenamiento."
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "Configuración"

@@ -1,6 +1,6 @@
 {
-  "generated": "2026-08-18T13:27:42.737Z",
-  "totalTools": 1461,
+  "generated": "2026-08-18T13:53:20.509Z",
+  "totalTools": 1462,
   "modules": 15,
   "tools": [
     {
@@ -4513,6 +4513,67 @@
       "schema": {
         "type": "object",
         "properties": {}
+      }
+    },
+    {
+      "name": "accounting_recalculateSalesLineTaxes",
+      "module": "accounting",
+      "classification": "WRITE",
+      "description": "recalculate sales line taxes",
+      "paramCount": 6,
+      "serviceParams": [
+        "client",
+        "companyId",
+        "args"
+      ],
+      "injectAuth": [
+        "companyId",
+        "updatedBy"
+      ],
+      "schema": {
+        "type": "object",
+        "properties": {
+          "lineTable": {
+            "type": "string",
+            "enum": [
+              "salesInvoiceLine",
+              "salesOrderLine"
+            ]
+          },
+          "documentColumn": {
+            "type": "string",
+            "enum": [
+              "invoiceId",
+              "salesOrderId"
+            ]
+          },
+          "documentId": {
+            "type": "string"
+          },
+          "customerId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "customerLocationId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "lineTable",
+          "documentColumn",
+          "documentId",
+          "customerId",
+          "customerLocationId",
+          "date"
+        ]
       }
     },
     {

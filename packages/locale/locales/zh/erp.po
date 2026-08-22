@@ -11845,6 +11845,9 @@ msgstr "将此行中的特定追踪实体重新分配到另一个处置行。"
 msgid "Recalculate"
 msgstr "重新计算"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "重新计算单位成本"
 
@@ -13354,6 +13357,9 @@ msgstr "将版本 {0} 设置为活跃版本？"
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "在个人资料设置中设置默认位置以选择存储单位。"
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "设置"

@@ -58,6 +58,7 @@ import {
   SelectControlled,
   StorageUnit,
   Submit,
+  TaxCode,
   TaxFields,
   useTaxPair
 } from "~/components/Form";
@@ -78,6 +79,7 @@ import { isSalesInvoiceLocked } from "../../invoicing.models";
 
 type SalesInvoiceLineFormProps = {
   initialValues: z.infer<typeof salesInvoiceLineValidator> & {
+    taxCodeId?: string;
     taxPercent?: number;
     assetReadableId?: string;
     assetName?: string;
@@ -160,6 +162,21 @@ const SalesInvoiceLineForm = ({
     ).amount,
     taxPercent: initialValues.taxPercent ?? 0
   });
+
+  // A coded line's percent is DERIVED (read-only); an uncoded line keeps the
+  // manual pair. Selecting a code sets the percent, and useTaxPair's own effect
+  // re-derives the amount from it — the pair is never written directly here.
+  const [taxCodeId, setTaxCodeId] = useState<string>(
+    initialValues.taxCodeId ?? ""
+  );
+
+  const onTaxCodeChange = (nextTaxCodeId: string, rate: number | null) => {
+    setTaxCodeId(nextTaxCodeId);
+    if (rate !== null) {
+      setItemData((d) => ({ ...d, taxPercent: rate }));
+      setAssetData((d) => ({ ...d, taxPercent: rate }));
+    }
+  };
 
   const itemTax = useTaxPair({
     unitPrice: itemData.unitPrice,
@@ -720,10 +737,16 @@ const SalesInvoiceLineForm = ({
                               costsDisclosure.isOpen ? "" : "hidden"
                             }`}
                           >
+                            <TaxCode
+                              name="taxCodeId"
+                              value={taxCodeId}
+                              onChange={onTaxCodeChange}
+                            />
                             <TaxFields
                               {...itemTax}
                               amountName="taxAmount"
                               percentName="taxPercent"
+                              isReadOnly={Boolean(taxCodeId)}
                             />
                             <NumberControlled
                               name="shippingCost"

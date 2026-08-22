@@ -81,6 +81,7 @@ import SupplierStatus from "./SupplierStatus";
 import Suppliers from "./Suppliers";
 import SupplierType from "./SupplierType";
 import Tags from "./Tags";
+import TaxCode from "./TaxCode";
 import { TaxFields, useTaxPair } from "./TaxFields";
 import Timezone from "./Timezone";
 import Tool from "./Tool";
@@ -143,6 +144,7 @@ export {
   MultiSelect,
   Number,
   NumberControlled,
+  TaxCode,
   Part,
   Password,
   PaymentTerm,

@@ -162,6 +162,10 @@ export default function EditPurchaseInvoiceLineRoute() {
     conversionFactor: purchaseInvoiceLine?.conversionFactor ?? 1,
     storageUnitId: purchaseInvoiceLine?.storageUnitId ?? "",
     costCenterId: purchaseInvoiceLine?.costCenterId ?? "",
+    // The stored code must reach the form, or a coded line reopens as
+    // "None / manual" with an editable percent — the selector would silently
+    // disagree with what is saved.
+    taxCodeId: purchaseInvoiceLine?.taxCodeId ?? undefined,
     taxPercent: purchaseInvoiceLine?.taxPercent ?? 0,
     assetReadableId: (purchaseInvoiceLine as any)?.assetReadableId ?? "",
     assetName: (purchaseInvoiceLine as any)?.assetName ?? "",

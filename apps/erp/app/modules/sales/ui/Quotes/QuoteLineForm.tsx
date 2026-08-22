@@ -38,10 +38,11 @@ import {
   Hidden,
   InputControlled,
   Item,
-  Number,
+  NumberControlled,
   Select,
   SelectControlled,
-  Submit
+  Submit,
+  TaxCode
 } from "~/components/Form";
 import { itemTypeLabel } from "~/components/Form/itemTypeLabel";
 import { QuoteLineStatusIcon } from "~/components/Icons";
@@ -117,6 +118,15 @@ const QuoteLineForm = ({
     uom: initialValues.unitOfMeasureCode ?? "",
     modelUploadId: initialValues.modelUploadId ?? null
   });
+
+  // Selecting a code makes the percent a derived, read-only fact; clearing it
+  // returns the line to the manual percent it has always had.
+  const [taxCodeId, setTaxCodeId] = useState<string>(
+    initialValues.taxCodeId ?? ""
+  );
+  const [taxPercent, setTaxPercent] = useState<number>(
+    initialValues.taxPercent ?? 0
+  );
 
   const [lineType, setLineType] = useState<ItemType>(
     (initialValues.itemType as ItemType) ?? "Part"
@@ -491,13 +501,24 @@ const QuoteLineForm = ({
                           onCustomerPartRevisionChange(e.target.value)
                         }
                       />
-                      <Number
+                      <TaxCode
+                        name="taxCodeId"
+                        value={taxCodeId}
+                        onChange={(nextTaxCodeId, rate) => {
+                          setTaxCodeId(nextTaxCodeId);
+                          if (rate !== null) setTaxPercent(rate);
+                        }}
+                      />
+                      <NumberControlled
                         name="taxPercent"
                         label={t`Tax Percent`}
+                        value={taxPercent}
                         minValue={0}
                         maxValue={1}
                         step={INPUT_STEP.percent}
                         formatOptions={INPUT_FORMAT.percent}
+                        isReadOnly={Boolean(taxCodeId)}
+                        onChange={setTaxPercent}
                       />
 
                       <CustomFormFields table="quoteLine" />

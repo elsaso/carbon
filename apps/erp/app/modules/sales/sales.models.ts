@@ -347,6 +347,9 @@ export const quoteLineValidator = z.object({
   ),
   modelUploadId: zfd.text(z.string().optional()),
   noQuoteReason: zfd.text(z.string().optional()),
+  // The tax code the line resolved through. Null is the manual/legacy path,
+  // where `taxPercent` is a typed number rather than a derived one.
+  taxCodeId: zfd.text(z.string().optional()),
   taxPercent: zfd.numeric(
     z.number().min(0).max(1, { message: "Tax percent must be between 0 and 1" })
   ),
@@ -811,6 +814,9 @@ export const salesOrderLineValidator = z
     serviceId: zfd.text(z.string().optional()),
     setupPrice: zfd.numeric(z.number().optional()),
     storageUnitId: zfd.text(z.string().optional()),
+    // The tax code the line resolved through. Null is the manual/legacy path,
+    // where `taxPercent` is a typed number rather than a derived one.
+    taxCodeId: zfd.text(z.string().optional()),
     taxPercent: zfd.numeric(
       z
         .number()

@@ -39,6 +39,7 @@ import {
   LuLoaderCircle,
   LuPanelLeft,
   LuPanelRight,
+  LuRefreshCcw,
   LuTrash,
   LuTruck
 } from "react-icons/lu";
@@ -204,6 +205,9 @@ const SalesOrderHeader = () => {
 
   const statusFetcher = useFetcher<typeof statusAction>();
   const confirmFetcher = useFetcher<typeof confirmAction>();
+  // See the sales-invoice twin: re-resolution is explicit because lines store
+  // what was resolved when they were created.
+  const recalculateTaxFetcher = useFetcher<{}>();
   const { ship, invoice } = useSalesOrder();
 
   const linesRequireJobs = hasLinesRequiringJobs({
@@ -327,6 +331,25 @@ const SalesOrderHeader = () => {
                 >
                   <DropdownMenuIcon icon={<LuLoaderCircle />} />
                   <Trans>Reopen</Trans>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={
+                    isLocked ||
+                    !permissions.can("update", "sales") ||
+                    recalculateTaxFetcher.state !== "idle"
+                  }
+                  onClick={() =>
+                    recalculateTaxFetcher.submit(
+                      {},
+                      {
+                        method: "post",
+                        action: path.to.salesOrderRecalculateTaxes(orderId)
+                      }
+                    )
+                  }
+                >
+                  <DropdownMenuIcon icon={<LuRefreshCcw />} />
+                  <Trans>Recalculate Tax</Trans>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   destructive

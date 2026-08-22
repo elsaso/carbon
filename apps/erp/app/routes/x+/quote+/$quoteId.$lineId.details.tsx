@@ -350,6 +350,9 @@ export default function QuoteLine() {
     status: line.status ?? "Not Started",
     quantity: line.quantity ?? [1],
     unitOfMeasureCode: line.unitOfMeasureCode ?? "",
+    // The row's column is nullable; the validator's field is optional. "No
+    // code" has to reach the form as undefined, not null.
+    taxCodeId: line.taxCodeId ?? undefined,
     taxPercent: line.taxPercent ?? 0,
     ...getCustomFields(line.customFields)
   };

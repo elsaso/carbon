@@ -268,6 +268,7 @@ export const path = {
       supplierTypes: `${api}/purchasing/supplier-types`,
       tags: (table?: string) =>
         generatePath(`${api}/shared/tags?table=${table}`),
+      taxCodes: `${api}/accounting/tax-codes`,
       timecard: `${api}/people/timecard`,
       timezones: `${api}/timezones`,
       unitOfMeasures: `${api}/items/uoms`,
@@ -1897,6 +1898,8 @@ export const path = {
       generatePath(`${x}/sales-invoice/${id}/line-order`),
     salesInvoicePost: (id: string) =>
       generatePath(`${x}/sales-invoice/${id}/post`),
+    salesInvoiceRecalculateTaxes: (id: string) =>
+      generatePath(`${x}/sales-invoice/:id/recalculate-taxes`, { id }),
     salesInvoiceShipment: (id: string) =>
       generatePath(`${x}/sales-invoice/${id}/shipment`),
     salesInvoiceStatus: (id: string) =>
@@ -1927,6 +1930,8 @@ export const path = {
       generatePath(`${x}/sales-order/${orderId}/${lineId}/job`),
     salesOrderPayment: (id: string) =>
       generatePath(`${x}/sales-order/${id}/payment`),
+    salesOrderRecalculateTaxes: (id: string) =>
+      generatePath(`${x}/sales-order/:id/recalculate-taxes`, { id }),
     salesOrderRelease: (id: string) =>
       generatePath(`${x}/sales-order/${id}/release`),
     salesOrderShipment: (id: string) =>

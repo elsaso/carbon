@@ -11845,6 +11845,9 @@ msgstr "Переназначить конкретные отслеживаемы
 msgid "Recalculate"
 msgstr "Пересчитать"
 
+msgid "Recalculate Tax"
+msgstr ""
+
 msgid "Recalculate Unit Cost"
 msgstr "Пересчитать себестоимость единицы"
 
@@ -13354,6 +13357,9 @@ msgstr "Установить версию {0} как активную верси
 
 msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "Установите местоположение по умолчанию в настройках профиля, чтобы выбрать единицу хранения."
+
+msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
+msgstr ""
 
 msgid "Settings"
 msgstr "Параметры"

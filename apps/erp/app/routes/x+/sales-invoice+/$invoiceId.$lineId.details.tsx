@@ -143,6 +143,10 @@ export default function EditSalesInvoiceLineRoute() {
     quantity: salesInvoiceLine?.quantity ?? 1,
     unitPrice: salesInvoiceLine?.unitPrice ?? 0,
     shippingCost: salesInvoiceLine?.shippingCost ?? 0,
+    // The stored code must reach the form, or a coded line reopens as
+    // "None / manual" with an editable percent — the selector would silently
+    // disagree with what is saved.
+    taxCodeId: salesInvoiceLine?.taxCodeId ?? undefined,
     taxPercent: salesInvoiceLine?.taxPercent ?? 0,
     exchangeRate: salesInvoiceLine?.exchangeRate ?? 1,
     unitOfMeasureCode: salesInvoiceLine?.unitOfMeasureCode ?? "",
