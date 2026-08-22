@@ -1075,7 +1075,7 @@ msgid "Add Company"
 msgstr "Добавить компанию"
 
 msgid "Add Component"
-msgstr ""
+msgstr "Добавить составляющую"
 
 msgid "Add condition"
 msgstr "Добавить условие"
@@ -1244,10 +1244,10 @@ msgid "Address line2"
 msgstr "Адрес строка2"
 
 msgid "Address Match — Country"
-msgstr ""
+msgstr "Совпадение адреса — страна"
 
 msgid "Address Match — State / Province"
-msgstr ""
+msgstr "Совпадение адреса — штат / регион"
 
 msgid "Adjustment Type"
 msgstr "Тип корректировки"
@@ -1308,7 +1308,7 @@ msgid "All Audit Logs"
 msgstr "Все журналы аудита"
 
 msgid "All authorities"
-msgstr ""
+msgstr "Все органы"
 
 msgid "All changes to auditable entities are being recorded."
 msgstr "Все изменения в аудируемых сущностях записываются."
@@ -1971,15 +1971,15 @@ msgstr "Вы уверены, что хотите удалить тип пост�
 
 #. placeholder {0}: taxAuthority.name
 msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
-msgstr ""
+msgstr "Вы уверены, что хотите удалить налоговый орган: {0}? Это действие нельзя отменить."
 
 #. placeholder {0}: taxCode.name
 msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
-msgstr ""
+msgstr "Вы уверены, что хотите удалить налоговый код: {0}? Он больше не будет доступен для новых документов."
 
 #. placeholder {0}: taxRegistration.registrationNumber
 msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
-msgstr ""
+msgstr "Вы уверены, что хотите удалить налоговую регистрацию: {0}? Это действие нельзя отменить."
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -2289,7 +2289,7 @@ msgid "Authenticator QR code"
 msgstr "QR-код аутентификатора"
 
 msgid "Authority"
-msgstr ""
+msgstr "Орган"
 
 msgid "Auto apply"
 msgstr "Автоматически применить"
@@ -2664,7 +2664,7 @@ msgid "Calculation Method"
 msgstr "Метод расчета"
 
 msgid "Calculation Type"
-msgstr ""
+msgstr "Тип расчёта"
 
 msgid "Calibration"
 msgstr "Поверка"
@@ -3142,7 +3142,7 @@ msgid "Collapse subtree"
 msgstr "Свернуть поддерево"
 
 msgid "Collected"
-msgstr ""
+msgstr "Начислено"
 
 msgid "Column dimension"
 msgstr "Измерение столбца"
@@ -3250,19 +3250,19 @@ msgid "Completion Time"
 msgstr "Время завершения"
 
 msgid "Component"
-msgstr ""
+msgstr "Составляющая"
 
 msgid "Component Name"
-msgstr ""
+msgstr "Название составляющей"
 
 msgid "Component name, e.g. GST"
-msgstr ""
+msgstr "Название составляющей, напр. НДС"
 
 msgid "Components"
-msgstr ""
+msgstr "Составляющие"
 
 msgid "Compound"
-msgstr ""
+msgstr "Кумулятивный"
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4081,13 +4081,13 @@ msgid "Created supplier: {0}"
 msgstr "Поставщик создан: {0}"
 
 msgid "Created tax authority"
-msgstr ""
+msgstr "Налоговый орган создан"
 
 msgid "Created tax code"
-msgstr ""
+msgstr "Налоговый код создан"
 
 msgid "Created tax registration"
-msgstr ""
+msgstr "Налоговая регистрация создана"
 
 msgid "Created tool"
 msgstr "Инструмент создан"
@@ -4941,13 +4941,13 @@ msgid "Delete Supplier Type"
 msgstr "Удалить тип поставщика"
 
 msgid "Delete Tax Authority"
-msgstr ""
+msgstr "Удалить налоговый орган"
 
 msgid "Delete Tax Code"
-msgstr ""
+msgstr "Удалить налоговый код"
 
 msgid "Delete Tax Registration"
-msgstr ""
+msgstr "Удалить налоговую регистрацию"
 
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
@@ -5752,13 +5752,13 @@ msgid "Edit Supplier Type"
 msgstr "Редактировать тип поставщика"
 
 msgid "Edit Tax Authority"
-msgstr ""
+msgstr "Изменить налоговый орган"
 
 msgid "Edit Tax Code"
-msgstr ""
+msgstr "Изменить налоговый код"
 
 msgid "Edit Tax Registration"
-msgstr ""
+msgstr "Изменить налоговую регистрацию"
 
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "Отредактируйте правило, чтобы удалить флаг \"Применяется ко всем\""
@@ -5794,13 +5794,13 @@ msgid "Edit Work Center"
 msgstr "Редактировать рабочий центр"
 
 msgid "Effective Date"
-msgstr ""
+msgstr "Дата вступления в силу"
 
 msgid "Effective Rate"
-msgstr ""
+msgstr "Действующая ставка"
 
 msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
+msgstr "Действующая ставка сегодня: {effectiveRateLabel}"
 
 msgid "Eliminated"
 msgstr "Исключено"
@@ -6189,10 +6189,10 @@ msgid "Executive P&L"
 msgstr "П&У для руководства"
 
 msgid "Exempt (no component)"
-msgstr ""
+msgstr "Освобождено (без составляющей)"
 
 msgid "Exempt Amount"
-msgstr ""
+msgstr "Освобождённая сумма"
 
 msgid "Exemption Certificate"
 msgstr "Сертификат освобождения"
@@ -6502,15 +6502,15 @@ msgstr "Ошибка при создании поставщика: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax authority: {0}"
-msgstr ""
+msgstr "Не удалось создать налоговый орган: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax code: {0}"
-msgstr ""
+msgstr "Не удалось создать налоговый код: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax registration: {0}"
-msgstr ""
+msgstr "Не удалось создать налоговую регистрацию: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6915,10 +6915,10 @@ msgid "Flags"
 msgstr "Флаги"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "Единый процент налога устарел — вместо него назначайте налоговые коды. Код определяет ставку, органы, между которыми она распределяется, и счета, на которые она проводится; процент в карточке клиента — лишь запасной вариант для контрагентов, у которых кода ещё нет."
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "Единый процент налога устарел — вместо него назначайте налоговые коды. Код определяет ставку, органы, между которыми она распределяется, и счета, на которые она проводится; процент в карточке поставщика — лишь запасной вариант для контрагентов, у которых кода ещё нет."
 
 msgid "for anything. They'll pull in the right person."
 msgstr "для чего угодно. Они привлекут нужного человека."
@@ -7483,7 +7483,7 @@ msgid "How this price was calculated"
 msgstr "Как была рассчитана эта цена"
 
 msgid "How this treatment is grouped on tax returns"
-msgstr ""
+msgstr "Как этот режим группируется в налоговых декларациях"
 
 msgid "How to reach us"
 msgstr "Как с нами связаться"
@@ -7664,7 +7664,7 @@ msgid "Inactive actions will not appear in selection lists"
 msgstr "Неактивные действия не будут отображаться в списках выбора"
 
 msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
-msgstr ""
+msgstr "Неактивные коды перестают появляться в списках выбора в новых документах. Проведённые документы продолжают их распознавать, поэтому деактивируйте, а не удаляйте."
 
 msgid "Inbound inspection"
 msgstr "Входящая проверка"
@@ -7757,7 +7757,7 @@ msgid "Input"
 msgstr "Ввод"
 
 msgid "Input Tax"
-msgstr ""
+msgstr "Входящий налог"
 
 msgid "Inputs"
 msgstr "Входные данные"
@@ -7973,7 +7973,7 @@ msgid "Invoice Location"
 msgstr "Местоположение счета"
 
 msgid "Invoice Message"
-msgstr ""
+msgstr "Сообщение в счёте"
 
 msgid "Invoice Number"
 msgstr "Номер счета"
@@ -9357,7 +9357,7 @@ msgid "Net Income"
 msgstr "Чистый доход"
 
 msgid "Net Owed"
-msgstr ""
+msgstr "Итого к уплате"
 
 msgid "Never"
 msgstr "Никогда"
@@ -9624,13 +9624,13 @@ msgid "New Supplier Part"
 msgstr "Новая деталь поставщика"
 
 msgid "New Tax Authority"
-msgstr ""
+msgstr "Новый налоговый орган"
 
 msgid "New Tax Code"
-msgstr ""
+msgstr "Новый налоговый код"
 
 msgid "New Tax Registration"
-msgstr ""
+msgstr "Новая налоговая регистрация"
 
 msgid "New Timecard"
 msgstr "Новая табель учета рабочего времени"
@@ -9760,7 +9760,7 @@ msgid "No attachments."
 msgstr "Нет вложений."
 
 msgid "No authority"
-msgstr ""
+msgstr "Без органа"
 
 msgid "No available filters"
 msgstr "Нет доступных фильтров"
@@ -10072,7 +10072,7 @@ msgid "No sync operations yet"
 msgstr "Операции синхронизации еще не выполнены"
 
 msgid "No tax authorities"
-msgstr ""
+msgstr "Нет налоговых органов"
 
 msgid "No time entries for this week"
 msgstr "Нет записей о времени на эту неделю"
@@ -10577,10 +10577,10 @@ msgid "Optional pages & sections"
 msgstr "Дополнительные страницы и разделы"
 
 msgid "Optional. Leave blank for a country-wide registration."
-msgstr ""
+msgstr "Необязательно. Оставьте пустым для регистрации по всей стране."
 
 msgid "Optional. The supplier record used to pay this authority."
-msgstr ""
+msgstr "Необязательно. Карточка поставщика, через которую оплачивается этот орган."
 
 msgid "Options"
 msgstr "Параметры"
@@ -10722,7 +10722,7 @@ msgid "Override the expiration on {label}."
 msgstr "Переопределить срок действия для {label}."
 
 msgid "Overrides the customer's tax code for this location"
-msgstr ""
+msgstr "Заменяет налоговый код клиента для этого местоположения"
 
 msgid "Overtime"
 msgstr "Переработки"
@@ -11370,10 +11370,10 @@ msgid "Print Output ({0})"
 msgstr "Вывод печати ({0})"
 
 msgid "Printed on documents that use this tax code"
-msgstr ""
+msgstr "Печатается на документах, использующих этот налоговый код"
 
 msgid "Printed on sales documents for this jurisdiction"
-msgstr ""
+msgstr "Печатается на документах продажи для этой юрисдикции"
 
 msgid "Printer Settings"
 msgstr "Параметры принтера"
@@ -11658,7 +11658,7 @@ msgid "Purchase Qty"
 msgstr "Кол-во покупки"
 
 msgid "Purchase tax account"
-msgstr ""
+msgstr "Счёт входящего налога"
 
 msgid "Purchase Tax Payable"
 msgstr "Налог на покупку подлежащий уплате (по умолчанию)"
@@ -11915,7 +11915,7 @@ msgid "raise it early and raise it plainly. A problem named in week 2 is a small
 msgstr "поднимайте проблемы рано и говорите о них прямо. Проблема, выявленная на 2-й неделе, — это небольшое исправление; та же проблема при запуске — это задержка."
 
 msgid "Rate (%)"
-msgstr ""
+msgstr "Ставка (%)"
 
 msgid "Rate Limit"
 msgstr "Ограничение скорости"
@@ -12132,7 +12132,7 @@ msgid "Records"
 msgstr "Записи"
 
 msgid "Recoverable"
-msgstr ""
+msgstr "Возмещаемый"
 
 msgid "Recovery Period"
 msgstr "Зарегистрировать"
@@ -12168,7 +12168,7 @@ msgid "Registered"
 msgstr "Точка переза́каза"
 
 msgid "Registration Number"
-msgstr ""
+msgstr "Регистрационный номер"
 
 msgid "Reject"
 msgstr "Отклонить"
@@ -12244,10 +12244,10 @@ msgid "Remove {label}"
 msgstr "Удалить {label}"
 
 msgid "Remove clause"
-msgstr ""
+msgstr "Удалить условие"
 
 msgid "Remove component"
-msgstr ""
+msgstr "Удалить составляющую"
 
 msgid "Remove condition"
 msgstr "Удалить условие"
@@ -12380,7 +12380,7 @@ msgid "Reporting"
 msgstr "Отчетность"
 
 msgid "Reporting Category"
-msgstr ""
+msgstr "Категория отчётности"
 
 msgid "Reporting dimension"
 msgstr "Измерение отчётности"
@@ -12576,7 +12576,7 @@ msgid "Reverse Charge Sales Tax (default)"
 msgstr "Налог на продажи с обратным взиманием (по умолчанию)"
 
 msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
-msgstr ""
+msgstr "Обратное начисление переносит налог на покупателя вместо его начисления"
 
 msgid "Reverse the related journal entries"
 msgstr "Отменить связанные записи в журнале"
@@ -12894,7 +12894,7 @@ msgid "Sales Revenue"
 msgstr "Выручка от продаж"
 
 msgid "Sales tax account"
-msgstr ""
+msgstr "Счёт исходящего налога"
 
 msgid "Sales Tax Payable"
 msgstr "Налог на продажи к уплате"
@@ -13345,7 +13345,7 @@ msgid "Select surfaces"
 msgstr "Выберите поверхности"
 
 msgid "Select Tax Code"
-msgstr ""
+msgstr "Выберите налоговый код"
 
 msgid "Select the groups that should complete this training"
 msgstr "Выберите группы, которые должны пройти это обучение"
@@ -13415,7 +13415,7 @@ msgid "Sent complete date"
 msgstr "Дата отправки выполнена"
 
 msgid "Sequence"
-msgstr ""
+msgstr "Очерёдность"
 
 msgid "Sequences"
 msgstr "Последовательности"
@@ -14292,10 +14292,10 @@ msgid "Suggestion Notifications"
 msgstr "Уведомления о предложениях"
 
 msgid "Suggestion only. Leave blank to match every state in the country above."
-msgstr ""
+msgstr "Только подсказка. Оставьте пустым, чтобы охватить все регионы указанной выше страны."
 
 msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
-msgstr ""
+msgstr "Только подсказка. Используется, чтобы предлагать этот код для подходящих адресов; налог в документе он никогда не определяет."
 
 msgid "Suggestions"
 msgstr "Предложения"
@@ -14602,19 +14602,19 @@ msgid "Tax Amount"
 msgstr "Сумма налога"
 
 msgid "Tax Authorities"
-msgstr ""
+msgstr "Налоговые органы"
 
 msgid "Tax authority"
-msgstr ""
+msgstr "Налоговый орган"
 
 msgid "Tax Authority"
-msgstr ""
+msgstr "Налоговый орган"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "Налоговый код"
 
 msgid "Tax Codes"
-msgstr ""
+msgstr "Налоговые коды"
 
 msgid "Tax codes, rates"
 msgstr "Налоговые коды, ставки"
@@ -14635,7 +14635,7 @@ msgid "Tax Information"
 msgstr "Налоговая информация"
 
 msgid "Tax Liability"
-msgstr ""
+msgstr "Налоговые обязательства"
 
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Налоговое обязательство по транзакциям с обратным начислением"
@@ -14653,13 +14653,13 @@ msgid "Tax Percent"
 msgstr "Процент налога"
 
 msgid "Tax Registration"
-msgstr ""
+msgstr "Налоговая регистрация"
 
 msgid "Tax registration coverage"
-msgstr ""
+msgstr "Охват налоговых регистраций"
 
 msgid "Tax Registrations"
-msgstr ""
+msgstr "Налоговые регистрации"
 
 msgid "Tax Residual Value %"
 msgstr "Налоговая ликвидационная стоимость %"
@@ -14677,10 +14677,10 @@ msgid "Tax:"
 msgstr "Налог:"
 
 msgid "Taxable"
-msgstr ""
+msgstr "Облагается налогом"
 
 msgid "Taxable Amount"
-msgstr ""
+msgstr "Налогооблагаемая сумма"
 
 msgid "Taxes"
 msgstr "Налоги"
@@ -14768,7 +14768,7 @@ msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Авторизация была отклонена в Onshape. Повторите попытку подключения."
 
 msgid "The body you remit this tax to, e.g. Revenu Québec"
-msgstr ""
+msgstr "Ведомство, которому вы перечисляете этот налог, напр. Revenu Québec"
 
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "Книга всех проведенных строк журнала, суммированные по счетам — записывается только при включенной учетной политике компании."
@@ -14846,7 +14846,7 @@ msgid "The corrected expiration for this lot/serial; existing on-hand stock is r
 msgstr "Исправленная дата истечения для этой партии/серийного номера; существующие запасы переоцениваются в соответствии с политикой полезной жизни после изменения."
 
 msgid "The country this registration is filed in"
-msgstr ""
+msgstr "Страна, в которой подана эта регистрация"
 
 msgid "The currencies you trade in and their rates"
 msgstr "Валюты, в которых вы торгуете, и их курсы"
@@ -15486,14 +15486,14 @@ msgid "These journal entries are still Draft, so their debits and credits aren't
 msgstr "Эти записи в журнале всё ещё находятся в статусе «Черновик», поэтому их дебеты и кредиты не находятся в главной книге за этот период. Опубликуйте каждую или переделируйте её на более поздний открытый период."
 
 msgid "These registrations have no matching active tax code:"
-msgstr ""
+msgstr "Для этих регистраций нет подходящего активного налогового кода:"
 
 msgid "These tax codes have no matching registration:"
-msgstr ""
+msgstr "Для этих налоговых кодов нет подходящей регистрации:"
 
 #. placeholder {0}: suggestion.name
 msgid "This address is in {place} — apply {0}?"
-msgstr ""
+msgstr "Этот адрес находится в {place} — применить {0}?"
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "В этом экземпляре Carbon отсутствуют учётные данные OAuth для Onshape. Попросите администратора настроить их."

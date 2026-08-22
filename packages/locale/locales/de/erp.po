@@ -1075,7 +1075,7 @@ msgid "Add Company"
 msgstr "Unternehmen hinzufügen"
 
 msgid "Add Component"
-msgstr ""
+msgstr "Komponente hinzufügen"
 
 msgid "Add condition"
 msgstr "Bedingung hinzufügen"
@@ -1244,10 +1244,10 @@ msgid "Address line2"
 msgstr "Adresszeile 2"
 
 msgid "Address Match — Country"
-msgstr ""
+msgstr "Adressabgleich — Land"
 
 msgid "Address Match — State / Province"
-msgstr ""
+msgstr "Adressabgleich — Bundesland / Provinz"
 
 msgid "Adjustment Type"
 msgstr "Anpassungstyp"
@@ -1308,7 +1308,7 @@ msgid "All Audit Logs"
 msgstr "Alle Audit-Protokolle"
 
 msgid "All authorities"
-msgstr ""
+msgstr "Alle Behörden"
 
 msgid "All changes to auditable entities are being recorded."
 msgstr "Alle Änderungen an prüfbaren Entitäten werden aufgezeichnet."
@@ -1971,15 +1971,15 @@ msgstr "Sind Sie sicher, dass Sie den Lieferantentyp: {0} löschen möchten? Die
 
 #. placeholder {0}: taxAuthority.name
 msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
-msgstr ""
+msgstr "Möchten Sie die Steuerbehörde {0} wirklich löschen? Dies kann nicht rückgängig gemacht werden."
 
 #. placeholder {0}: taxCode.name
 msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
-msgstr ""
+msgstr "Möchten Sie das Steuerkennzeichen {0} wirklich löschen? Es steht für neue Belege nicht mehr zur Verfügung."
 
 #. placeholder {0}: taxRegistration.registrationNumber
 msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
-msgstr ""
+msgstr "Möchten Sie die Steuerregistrierung {0} wirklich löschen? Dies kann nicht rückgängig gemacht werden."
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -2289,7 +2289,7 @@ msgid "Authenticator QR code"
 msgstr "Authentifizierungs-QR-Code"
 
 msgid "Authority"
-msgstr ""
+msgstr "Behörde"
 
 msgid "Auto apply"
 msgstr "Automatisch anwenden"
@@ -2664,7 +2664,7 @@ msgid "Calculation Method"
 msgstr "Berechnungsmethode"
 
 msgid "Calculation Type"
-msgstr ""
+msgstr "Berechnungsart"
 
 msgid "Calibration"
 msgstr "Kalibrierung"
@@ -3142,7 +3142,7 @@ msgid "Collapse subtree"
 msgstr "Teilbaum einklappen"
 
 msgid "Collected"
-msgstr ""
+msgstr "Vereinnahmt"
 
 msgid "Column dimension"
 msgstr "Spaltendimension"
@@ -3250,19 +3250,19 @@ msgid "Completion Time"
 msgstr "Abschlusszeit"
 
 msgid "Component"
-msgstr ""
+msgstr "Komponente"
 
 msgid "Component Name"
-msgstr ""
+msgstr "Komponentenname"
 
 msgid "Component name, e.g. GST"
-msgstr ""
+msgstr "Komponentenname, z. B. USt"
 
 msgid "Components"
-msgstr ""
+msgstr "Komponenten"
 
 msgid "Compound"
-msgstr ""
+msgstr "Kumulativ"
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4081,13 +4081,13 @@ msgid "Created supplier: {0}"
 msgstr "Lieferant erstellt: {0}"
 
 msgid "Created tax authority"
-msgstr ""
+msgstr "Steuerbehörde erstellt"
 
 msgid "Created tax code"
-msgstr ""
+msgstr "Steuerkennzeichen erstellt"
 
 msgid "Created tax registration"
-msgstr ""
+msgstr "Steuerregistrierung erstellt"
 
 msgid "Created tool"
 msgstr "Werkzeug erstellt"
@@ -4941,13 +4941,13 @@ msgid "Delete Supplier Type"
 msgstr "Lieferantentyp löschen"
 
 msgid "Delete Tax Authority"
-msgstr ""
+msgstr "Steuerbehörde löschen"
 
 msgid "Delete Tax Code"
-msgstr ""
+msgstr "Steuerkennzeichen löschen"
 
 msgid "Delete Tax Registration"
-msgstr ""
+msgstr "Steuerregistrierung löschen"
 
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
@@ -5752,13 +5752,13 @@ msgid "Edit Supplier Type"
 msgstr "Lieferantentyp bearbeiten"
 
 msgid "Edit Tax Authority"
-msgstr ""
+msgstr "Steuerbehörde bearbeiten"
 
 msgid "Edit Tax Code"
-msgstr ""
+msgstr "Steuerkennzeichen bearbeiten"
 
 msgid "Edit Tax Registration"
-msgstr ""
+msgstr "Steuerregistrierung bearbeiten"
 
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "Bearbeiten Sie die Regel, um das Flag \"Applies to all\" zu entfernen"
@@ -5794,13 +5794,13 @@ msgid "Edit Work Center"
 msgstr "Arbeitszentrum bearbeiten"
 
 msgid "Effective Date"
-msgstr ""
+msgstr "Gültig ab"
 
 msgid "Effective Rate"
-msgstr ""
+msgstr "Effektiver Steuersatz"
 
 msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
+msgstr "Effektiver Steuersatz heute: {effectiveRateLabel}"
 
 msgid "Eliminated"
 msgstr "Beseitigt"
@@ -6189,10 +6189,10 @@ msgid "Executive P&L"
 msgstr "Geschäftsführungs-Gewinn- und Verlustrechnung"
 
 msgid "Exempt (no component)"
-msgstr ""
+msgstr "Steuerbefreit (keine Komponente)"
 
 msgid "Exempt Amount"
-msgstr ""
+msgstr "Steuerfreier Betrag"
 
 msgid "Exemption Certificate"
 msgstr "Ausnahmezertifikat"
@@ -6502,15 +6502,15 @@ msgstr "Fehler beim Erstellen des Lieferanten: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax authority: {0}"
-msgstr ""
+msgstr "Steuerbehörde konnte nicht erstellt werden: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax code: {0}"
-msgstr ""
+msgstr "Steuerkennzeichen konnte nicht erstellt werden: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax registration: {0}"
-msgstr ""
+msgstr "Steuerregistrierung konnte nicht erstellt werden: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6915,10 +6915,10 @@ msgid "Flags"
 msgstr "Flaggen"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "Der pauschale Steuerprozentsatz ist veraltet — weisen Sie stattdessen Steuerkennzeichen zu. Ein Kennzeichen bestimmt den Satz, die Behörden, auf die er aufgeteilt wird, und die Konten, auf die gebucht wird; der Prozentsatz im Kundenstammsatz dient nur als Rückfalloption für Geschäftspartner ohne Kennzeichen."
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "Der pauschale Steuerprozentsatz ist veraltet — weisen Sie stattdessen Steuerkennzeichen zu. Ein Kennzeichen bestimmt den Satz, die Behörden, auf die er aufgeteilt wird, und die Konten, auf die gebucht wird; der Prozentsatz im Lieferantenstammsatz dient nur als Rückfalloption für Geschäftspartner ohne Kennzeichen."
 
 msgid "for anything. They'll pull in the right person."
 msgstr "für alles. Sie werden die richtige Person hinzuziehen."
@@ -7483,7 +7483,7 @@ msgid "How this price was calculated"
 msgstr "Wie dieser Preis berechnet wurde"
 
 msgid "How this treatment is grouped on tax returns"
-msgstr ""
+msgstr "Wie diese Behandlung in Steuererklärungen gruppiert wird"
 
 msgid "How to reach us"
 msgstr "Wie Sie uns erreichen"
@@ -7664,7 +7664,7 @@ msgid "Inactive actions will not appear in selection lists"
 msgstr "Inaktive Aktionen werden nicht in Auswahlisten angezeigt"
 
 msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
-msgstr ""
+msgstr "Inaktive Kennzeichen erscheinen in neuen Belegen nicht mehr in den Auswahllisten. Gebuchte Belege lösen sie weiterhin auf — deaktivieren Sie sie daher, statt sie zu löschen."
 
 msgid "Inbound inspection"
 msgstr "Wareneingangsprüfung"
@@ -7757,7 +7757,7 @@ msgid "Input"
 msgstr "Eingabe"
 
 msgid "Input Tax"
-msgstr ""
+msgstr "Vorsteuer"
 
 msgid "Inputs"
 msgstr "Eingaben"
@@ -7973,7 +7973,7 @@ msgid "Invoice Location"
 msgstr "Rechnungsort"
 
 msgid "Invoice Message"
-msgstr ""
+msgstr "Rechnungshinweis"
 
 msgid "Invoice Number"
 msgstr "Rechnungsnummer"
@@ -9357,7 +9357,7 @@ msgid "Net Income"
 msgstr "Nettoeinkommen"
 
 msgid "Net Owed"
-msgstr ""
+msgstr "Nettoschuld"
 
 msgid "Never"
 msgstr "Nie"
@@ -9624,13 +9624,13 @@ msgid "New Supplier Part"
 msgstr "Neuer Lieferantenteil"
 
 msgid "New Tax Authority"
-msgstr ""
+msgstr "Neue Steuerbehörde"
 
 msgid "New Tax Code"
-msgstr ""
+msgstr "Neues Steuerkennzeichen"
 
 msgid "New Tax Registration"
-msgstr ""
+msgstr "Neue Steuerregistrierung"
 
 msgid "New Timecard"
 msgstr "Neue Zeiterfassung"
@@ -9760,7 +9760,7 @@ msgid "No attachments."
 msgstr "Keine Anhänge."
 
 msgid "No authority"
-msgstr ""
+msgstr "Keine Behörde"
 
 msgid "No available filters"
 msgstr "Keine verfügbaren Filter"
@@ -10072,7 +10072,7 @@ msgid "No sync operations yet"
 msgstr "Noch keine Synchronisierungsoperationen"
 
 msgid "No tax authorities"
-msgstr ""
+msgstr "Keine Steuerbehörden"
 
 msgid "No time entries for this week"
 msgstr "Keine Zeiteinträge für diese Woche"
@@ -10577,10 +10577,10 @@ msgid "Optional pages & sections"
 msgstr "Optionale Seiten & Abschnitte"
 
 msgid "Optional. Leave blank for a country-wide registration."
-msgstr ""
+msgstr "Optional. Für eine landesweite Registrierung leer lassen."
 
 msgid "Optional. The supplier record used to pay this authority."
-msgstr ""
+msgstr "Optional. Der Lieferantenstammsatz, über den diese Behörde bezahlt wird."
 
 msgid "Options"
 msgstr "Optionen"
@@ -10722,7 +10722,7 @@ msgid "Override the expiration on {label}."
 msgstr "Verfallsdatum für {label} überschreiben."
 
 msgid "Overrides the customer's tax code for this location"
-msgstr ""
+msgstr "Überschreibt das Steuerkennzeichen des Kunden für diesen Standort"
 
 msgid "Overtime"
 msgstr "Überstunden"
@@ -11370,10 +11370,10 @@ msgid "Print Output ({0})"
 msgstr "Druckausgabe ({0})"
 
 msgid "Printed on documents that use this tax code"
-msgstr ""
+msgstr "Wird auf Belegen gedruckt, die dieses Steuerkennzeichen verwenden"
 
 msgid "Printed on sales documents for this jurisdiction"
-msgstr ""
+msgstr "Wird auf Verkaufsbelegen für diesen Steuerbereich gedruckt"
 
 msgid "Printer Settings"
 msgstr "Druckereinstellungen"
@@ -11658,7 +11658,7 @@ msgid "Purchase Qty"
 msgstr "Kaufmenge"
 
 msgid "Purchase tax account"
-msgstr ""
+msgstr "Vorsteuerkonto"
 
 msgid "Purchase Tax Payable"
 msgstr "Umsatzsteuer Verbindlichkeiten (Standard)"
@@ -11915,7 +11915,7 @@ msgid "raise it early and raise it plainly. A problem named in week 2 is a small
 msgstr "Sprechen Sie es früh an und sprechen Sie es deutlich an. Ein Problem, das in Woche 2 benannt wird, ist eine kleine Reparatur; das gleiche Problem beim Go-Live ist eine Verzögerung."
 
 msgid "Rate (%)"
-msgstr ""
+msgstr "Satz (%)"
 
 msgid "Rate Limit"
 msgstr "Ratenlimit"
@@ -12132,7 +12132,7 @@ msgid "Records"
 msgstr "Aufzeichnungen"
 
 msgid "Recoverable"
-msgstr ""
+msgstr "Erstattungsfähig"
 
 msgid "Recovery Period"
 msgstr "Registrieren"
@@ -12168,7 +12168,7 @@ msgid "Registered"
 msgstr "Bestellpunkt"
 
 msgid "Registration Number"
-msgstr ""
+msgstr "Registrierungsnummer"
 
 msgid "Reject"
 msgstr "Ablehnen"
@@ -12247,7 +12247,7 @@ msgid "Remove clause"
 msgstr "Klausel entfernen"
 
 msgid "Remove component"
-msgstr ""
+msgstr "Komponente entfernen"
 
 msgid "Remove condition"
 msgstr "Bedingung entfernen"
@@ -12380,7 +12380,7 @@ msgid "Reporting"
 msgstr "Berichtswesen"
 
 msgid "Reporting Category"
-msgstr ""
+msgstr "Meldekategorie"
 
 msgid "Reporting dimension"
 msgstr "Berichtsdimension"
@@ -12576,7 +12576,7 @@ msgid "Reverse Charge Sales Tax (default)"
 msgstr "Umkehrbuchung Umsatzsteuer (Standard)"
 
 msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
-msgstr ""
+msgstr "Reverse-Charge verlagert die Steuerschuld auf den Käufer, statt die Steuer zu berechnen"
 
 msgid "Reverse the related journal entries"
 msgstr "Kehren Sie die zugehörigen Journaleinträge um"
@@ -12894,7 +12894,7 @@ msgid "Sales Revenue"
 msgstr "Verkaufsumsatz"
 
 msgid "Sales tax account"
-msgstr ""
+msgstr "Umsatzsteuerkonto"
 
 msgid "Sales Tax Payable"
 msgstr "Umsatzsteuer"
@@ -13345,7 +13345,7 @@ msgid "Select surfaces"
 msgstr "Oberflächen auswählen"
 
 msgid "Select Tax Code"
-msgstr ""
+msgstr "Steuerkennzeichen auswählen"
 
 msgid "Select the groups that should complete this training"
 msgstr "Wählen Sie die Gruppen aus, die diese Schulung absolvieren sollen"
@@ -13415,7 +13415,7 @@ msgid "Sent complete date"
 msgstr "Versanddatum abgeschlossen"
 
 msgid "Sequence"
-msgstr ""
+msgstr "Reihenfolge"
 
 msgid "Sequences"
 msgstr "Sequenzen"
@@ -14292,10 +14292,10 @@ msgid "Suggestion Notifications"
 msgstr "Benachrichtigungen für Vorschläge"
 
 msgid "Suggestion only. Leave blank to match every state in the country above."
-msgstr ""
+msgstr "Nur ein Vorschlag. Leer lassen, um alle Bundesländer des oben genannten Landes einzuschließen."
 
 msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
-msgstr ""
+msgstr "Nur ein Vorschlag. Dient dazu, dieses Kennzeichen für passende Adressen vorzuschlagen; es bestimmt niemals die Steuer eines Belegs."
 
 msgid "Suggestions"
 msgstr "Vorschläge"
@@ -14602,19 +14602,19 @@ msgid "Tax Amount"
 msgstr "Steuerbetrag"
 
 msgid "Tax Authorities"
-msgstr ""
+msgstr "Steuerbehörden"
 
 msgid "Tax authority"
-msgstr ""
+msgstr "Steuerbehörde"
 
 msgid "Tax Authority"
-msgstr ""
+msgstr "Steuerbehörde"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "Steuerkennzeichen"
 
 msgid "Tax Codes"
-msgstr ""
+msgstr "Steuerkennzeichen"
 
 msgid "Tax codes, rates"
 msgstr "Steuercodes, Sätze"
@@ -14635,7 +14635,7 @@ msgid "Tax Information"
 msgstr "Steuerinformationen"
 
 msgid "Tax Liability"
-msgstr ""
+msgstr "Steuerverbindlichkeit"
 
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Steuerschuld für Reverse-Charge-Transaktionen"
@@ -14653,13 +14653,13 @@ msgid "Tax Percent"
 msgstr "Steuerprozentsatz"
 
 msgid "Tax Registration"
-msgstr ""
+msgstr "Steuerregistrierung"
 
 msgid "Tax registration coverage"
-msgstr ""
+msgstr "Abdeckung der Steuerregistrierungen"
 
 msgid "Tax Registrations"
-msgstr ""
+msgstr "Steuerregistrierungen"
 
 msgid "Tax Residual Value %"
 msgstr "Steuerlicher Restwert %"
@@ -14677,10 +14677,10 @@ msgid "Tax:"
 msgstr "Steuern:"
 
 msgid "Taxable"
-msgstr ""
+msgstr "Steuerpflichtig"
 
 msgid "Taxable Amount"
-msgstr ""
+msgstr "Steuerpflichtiger Betrag"
 
 msgid "Taxes"
 msgstr "Steuern"
@@ -14768,7 +14768,7 @@ msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Die Autorisierung wurde in Onshape abgelehnt. Versuchen Sie die Verbindung erneut."
 
 msgid "The body you remit this tax to, e.g. Revenu Québec"
-msgstr ""
+msgstr "Die Stelle, an die Sie diese Steuer abführen, z. B. Revenu Québec"
 
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "Das Buch aller gebuchten Journalzeilen, summiert nach Konto – wird nur geschrieben, wenn die Buchhaltung für das Unternehmen aktiviert ist."
@@ -14846,7 +14846,7 @@ msgid "The corrected expiration for this lot/serial; existing on-hand stock is r
 msgstr "Das korrigierte Ablaufdatum für dieses Los/diese Seriennummer; vorhandener Bestand wird nach der Änderung gegen die Haltbarkeitsrichtlinie neu bewertet."
 
 msgid "The country this registration is filed in"
-msgstr ""
+msgstr "Das Land, in dem diese Registrierung eingereicht wird"
 
 msgid "The currencies you trade in and their rates"
 msgstr "Die Währungen, in denen Sie handeln, und deren Kurse"
@@ -15486,14 +15486,14 @@ msgid "These journal entries are still Draft, so their debits and credits aren't
 msgstr "Diese Journaleinträge sind noch im Entwurf, daher befinden sich ihre Belastungen und Gutschriften nicht im Ledger für diese Periode. Buchen Sie jeden Eintrag, oder buchen Sie ihn in eine spätere offene Periode um."
 
 msgid "These registrations have no matching active tax code:"
-msgstr ""
+msgstr "Zu diesen Registrierungen gibt es kein passendes aktives Steuerkennzeichen:"
 
 msgid "These tax codes have no matching registration:"
-msgstr ""
+msgstr "Zu diesen Steuerkennzeichen gibt es keine passende Registrierung:"
 
 #. placeholder {0}: suggestion.name
 msgid "This address is in {place} — apply {0}?"
-msgstr ""
+msgstr "Diese Adresse liegt in {place} — {0} anwenden?"
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "Dieser Carbon-Instanz fehlen die Onshape-OAuth-Anmeldedaten. Bitten Sie einen Administrator, sie einzurichten."

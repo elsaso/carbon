@@ -1075,7 +1075,7 @@ msgid "Add Company"
 msgstr "कंपनी जोड़ें"
 
 msgid "Add Component"
-msgstr ""
+msgstr "घटक जोड़ें"
 
 msgid "Add condition"
 msgstr "शर्त जोड़ें"
@@ -1244,10 +1244,10 @@ msgid "Address line2"
 msgstr "पता पंक्ति 2"
 
 msgid "Address Match — Country"
-msgstr ""
+msgstr "पता मिलान — देश"
 
 msgid "Address Match — State / Province"
-msgstr ""
+msgstr "पता मिलान — राज्य / प्रांत"
 
 msgid "Adjustment Type"
 msgstr "समायोजन प्रकार"
@@ -1308,7 +1308,7 @@ msgid "All Audit Logs"
 msgstr "सभी ऑडिट लॉग"
 
 msgid "All authorities"
-msgstr ""
+msgstr "सभी प्राधिकरण"
 
 msgid "All changes to auditable entities are being recorded."
 msgstr "सभी ऑडिट योग्य संस्थाओं में किए गए परिवर्तन रिकॉर्ड किए जा रहे हैं।"
@@ -1971,15 +1971,15 @@ msgstr "क्या आप सुनिश्चित हैं कि आप 
 
 #. placeholder {0}: taxAuthority.name
 msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
-msgstr ""
+msgstr "क्या आप वाकई कर प्राधिकरण {0} को हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता।"
 
 #. placeholder {0}: taxCode.name
 msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
-msgstr ""
+msgstr "क्या आप वाकई कर कोड {0} को हटाना चाहते हैं? यह नए दस्तावेज़ों के लिए उपलब्ध नहीं रहेगा।"
 
 #. placeholder {0}: taxRegistration.registrationNumber
 msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
-msgstr ""
+msgstr "क्या आप वाकई कर पंजीकरण {0} को हटाना चाहते हैं? इसे पूर्ववत नहीं किया जा सकता।"
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -2289,7 +2289,7 @@ msgid "Authenticator QR code"
 msgstr "प्रमाणकर्ता QR कोड"
 
 msgid "Authority"
-msgstr ""
+msgstr "प्राधिकरण"
 
 msgid "Auto apply"
 msgstr "स्वचालित रूप से लागू करें"
@@ -2664,7 +2664,7 @@ msgid "Calculation Method"
 msgstr "गणना विधि"
 
 msgid "Calculation Type"
-msgstr ""
+msgstr "गणना का प्रकार"
 
 msgid "Calibration"
 msgstr "अंशांकन"
@@ -3142,7 +3142,7 @@ msgid "Collapse subtree"
 msgstr "सबट्री को संक्षिप्त करें"
 
 msgid "Collected"
-msgstr ""
+msgstr "संग्रहित"
 
 msgid "Column dimension"
 msgstr "कॉलम आयाम"
@@ -3250,19 +3250,19 @@ msgid "Completion Time"
 msgstr "पूर्ण होने का समय"
 
 msgid "Component"
-msgstr ""
+msgstr "घटक"
 
 msgid "Component Name"
-msgstr ""
+msgstr "घटक का नाम"
 
 msgid "Component name, e.g. GST"
-msgstr ""
+msgstr "घटक का नाम, जैसे GST"
 
 msgid "Components"
-msgstr ""
+msgstr "घटक"
 
 msgid "Compound"
-msgstr ""
+msgstr "चक्रवृद्धि"
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4081,13 +4081,13 @@ msgid "Created supplier: {0}"
 msgstr "आपूर्तिकर्ता बनाया गया: {0}"
 
 msgid "Created tax authority"
-msgstr ""
+msgstr "कर प्राधिकरण बनाया गया"
 
 msgid "Created tax code"
-msgstr ""
+msgstr "कर कोड बनाया गया"
 
 msgid "Created tax registration"
-msgstr ""
+msgstr "कर पंजीकरण बनाया गया"
 
 msgid "Created tool"
 msgstr "टूल बनाया गया"
@@ -4941,13 +4941,13 @@ msgid "Delete Supplier Type"
 msgstr "आपूर्तिकर्ता प्रकार हटाएं"
 
 msgid "Delete Tax Authority"
-msgstr ""
+msgstr "कर प्राधिकरण हटाएँ"
 
 msgid "Delete Tax Code"
-msgstr ""
+msgstr "कर कोड हटाएँ"
 
 msgid "Delete Tax Registration"
-msgstr ""
+msgstr "कर पंजीकरण हटाएँ"
 
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
@@ -5752,13 +5752,13 @@ msgid "Edit Supplier Type"
 msgstr "आपूर्तिकर्ता प्रकार संपादित करें"
 
 msgid "Edit Tax Authority"
-msgstr ""
+msgstr "कर प्राधिकरण संपादित करें"
 
 msgid "Edit Tax Code"
-msgstr ""
+msgstr "कर कोड संपादित करें"
 
 msgid "Edit Tax Registration"
-msgstr ""
+msgstr "कर पंजीकरण संपादित करें"
 
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "नियम को संपादित करें \"सभी पर लागू करें\" फ़्लैग को हटाने के लिए"
@@ -5794,13 +5794,13 @@ msgid "Edit Work Center"
 msgstr "कार्य केंद्र संपादित करें"
 
 msgid "Effective Date"
-msgstr ""
+msgstr "प्रभावी तिथि"
 
 msgid "Effective Rate"
-msgstr ""
+msgstr "प्रभावी दर"
 
 msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
+msgstr "आज की प्रभावी दर: {effectiveRateLabel}"
 
 msgid "Eliminated"
 msgstr "समाप्त किया गया"
@@ -6189,10 +6189,10 @@ msgid "Executive P&L"
 msgstr "कार्यकारी P&L"
 
 msgid "Exempt (no component)"
-msgstr ""
+msgstr "छूट प्राप्त (कोई घटक नहीं)"
 
 msgid "Exempt Amount"
-msgstr ""
+msgstr "छूट राशि"
 
 msgid "Exemption Certificate"
 msgstr "छूट प्रमाणपत्र"
@@ -6502,15 +6502,15 @@ msgstr "आपूर्तिकर्ता बनाने में विफ
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax authority: {0}"
-msgstr ""
+msgstr "कर प्राधिकरण नहीं बनाया जा सका: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax code: {0}"
-msgstr ""
+msgstr "कर कोड नहीं बनाया जा सका: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax registration: {0}"
-msgstr ""
+msgstr "कर पंजीकरण नहीं बनाया जा सका: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6915,10 +6915,10 @@ msgid "Flags"
 msgstr "झंडे"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "एकसमान कर प्रतिशत अब अनुशंसित नहीं है — इसके बजाय कर कोड निर्दिष्ट करें। कोड दर, वे प्राधिकरण जिनके बीच वह विभाजित होती है, और जिन खातों में प्रविष्टि होती है, ये सब निर्धारित करता है; ग्राहक रिकॉर्ड पर दिया प्रतिशत केवल उन पक्षों के लिए विकल्प है जिनके पास अभी तक कोई कोड नहीं है।"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "एकसमान कर प्रतिशत अब अनुशंसित नहीं है — इसके बजाय कर कोड निर्दिष्ट करें। कोड दर, वे प्राधिकरण जिनके बीच वह विभाजित होती है, और जिन खातों में प्रविष्टि होती है, ये सब निर्धारित करता है; आपूर्तिकर्ता रिकॉर्ड पर दिया प्रतिशत केवल उन पक्षों के लिए विकल्प है जिनके पास अभी तक कोई कोड नहीं है।"
 
 msgid "for anything. They'll pull in the right person."
 msgstr "किसी भी चीज़ के लिए। वे सही व्यक्ति को शामिल करेंगे।"
@@ -7483,7 +7483,7 @@ msgid "How this price was calculated"
 msgstr "इस कीमत की गणना कैसे की गई"
 
 msgid "How this treatment is grouped on tax returns"
-msgstr ""
+msgstr "कर विवरणियों में यह व्यवहार किस प्रकार समूहीकृत होता है"
 
 msgid "How to reach us"
 msgstr "हमसे कैसे संपर्क करें"
@@ -7664,7 +7664,7 @@ msgid "Inactive actions will not appear in selection lists"
 msgstr "निष्क्रिय क्रियाएं चयन सूचियों में दिखाई नहीं देंगी"
 
 msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
-msgstr ""
+msgstr "निष्क्रिय कोड नए दस्तावेज़ों की चयन सूची में दिखना बंद हो जाते हैं। पोस्ट किए गए दस्तावेज़ उन्हें हल करते रहते हैं, इसलिए हटाने के बजाय निष्क्रिय करें।"
 
 msgid "Inbound inspection"
 msgstr "इनबाउंड निरीक्षण"
@@ -7757,7 +7757,7 @@ msgid "Input"
 msgstr "इनपुट"
 
 msgid "Input Tax"
-msgstr ""
+msgstr "इनपुट कर"
 
 msgid "Inputs"
 msgstr "इनपुट्स"
@@ -7973,7 +7973,7 @@ msgid "Invoice Location"
 msgstr "चालान स्थान"
 
 msgid "Invoice Message"
-msgstr ""
+msgstr "चालान संदेश"
 
 msgid "Invoice Number"
 msgstr "चालान संख्या"
@@ -9357,7 +9357,7 @@ msgid "Net Income"
 msgstr "शुद्ध आय"
 
 msgid "Net Owed"
-msgstr ""
+msgstr "शुद्ध देय"
 
 msgid "Never"
 msgstr "कभी नहीं"
@@ -9624,13 +9624,13 @@ msgid "New Supplier Part"
 msgstr "नया आपूर्तिकर्ता भाग"
 
 msgid "New Tax Authority"
-msgstr ""
+msgstr "नया कर प्राधिकरण"
 
 msgid "New Tax Code"
-msgstr ""
+msgstr "नया कर कोड"
 
 msgid "New Tax Registration"
-msgstr ""
+msgstr "नया कर पंजीकरण"
 
 msgid "New Timecard"
 msgstr "नया टाइमकार्ड"
@@ -9760,7 +9760,7 @@ msgid "No attachments."
 msgstr "कोई अनुलग्नक नहीं।"
 
 msgid "No authority"
-msgstr ""
+msgstr "कोई प्राधिकरण नहीं"
 
 msgid "No available filters"
 msgstr "कोई उपलब्ध फ़िल्टर नहीं"
@@ -10072,7 +10072,7 @@ msgid "No sync operations yet"
 msgstr "अभी तक कोई सिंक परिचालन नहीं है"
 
 msgid "No tax authorities"
-msgstr ""
+msgstr "कोई कर प्राधिकरण नहीं"
 
 msgid "No time entries for this week"
 msgstr "इस सप्ताह के लिए कोई समय प्रविष्टि नहीं"
@@ -10577,10 +10577,10 @@ msgid "Optional pages & sections"
 msgstr "वैकल्पिक पृष्ठ और अनुभाग"
 
 msgid "Optional. Leave blank for a country-wide registration."
-msgstr ""
+msgstr "वैकल्पिक। देशव्यापी पंजीकरण के लिए खाली छोड़ें।"
 
 msgid "Optional. The supplier record used to pay this authority."
-msgstr ""
+msgstr "वैकल्पिक। इस प्राधिकरण को भुगतान करने के लिए उपयोग किया जाने वाला आपूर्तिकर्ता रिकॉर्ड।"
 
 msgid "Options"
 msgstr "विकल्प"
@@ -10722,7 +10722,7 @@ msgid "Override the expiration on {label}."
 msgstr "{label} पर समाप्ति को ओवरराइड करें।"
 
 msgid "Overrides the customer's tax code for this location"
-msgstr ""
+msgstr "इस स्थान के लिए ग्राहक के कर कोड को अधिरोहित करता है"
 
 msgid "Overtime"
 msgstr "ओवरटाइम"
@@ -11370,10 +11370,10 @@ msgid "Print Output ({0})"
 msgstr "प्रिंट आउटपुट ({0})"
 
 msgid "Printed on documents that use this tax code"
-msgstr ""
+msgstr "इस कर कोड का उपयोग करने वाले दस्तावेज़ों पर मुद्रित"
 
 msgid "Printed on sales documents for this jurisdiction"
-msgstr ""
+msgstr "इस अधिकार क्षेत्र के बिक्री दस्तावेज़ों पर मुद्रित"
 
 msgid "Printer Settings"
 msgstr "प्रिंटर सेटिंग्स"
@@ -11658,7 +11658,7 @@ msgid "Purchase Qty"
 msgstr "खरीद मात्रा"
 
 msgid "Purchase tax account"
-msgstr ""
+msgstr "क्रय कर खाता"
 
 msgid "Purchase Tax Payable"
 msgstr "खरीद कर देय (डिफ़ॉल्ट)"
@@ -11915,7 +11915,7 @@ msgid "raise it early and raise it plainly. A problem named in week 2 is a small
 msgstr "इसे जल्दी उठाएं और स्पष्ट रूप से उठाएं। सप्ताह 2 में नामित समस्या एक छोटी सी मरम्मत है; go-live पर वही समस्या एक देरी है।"
 
 msgid "Rate (%)"
-msgstr ""
+msgstr "दर (%)"
 
 msgid "Rate Limit"
 msgstr "दर सीमा"
@@ -12132,7 +12132,7 @@ msgid "Records"
 msgstr "रिकॉर्ड"
 
 msgid "Recoverable"
-msgstr ""
+msgstr "वसूली योग्य"
 
 msgid "Recovery Period"
 msgstr "पंजीकृत करें"
@@ -12168,7 +12168,7 @@ msgid "Registered"
 msgstr "पुन: आदेश बिंदु"
 
 msgid "Registration Number"
-msgstr ""
+msgstr "पंजीकरण संख्या"
 
 msgid "Reject"
 msgstr "अस्वीकार करें"
@@ -12247,7 +12247,7 @@ msgid "Remove clause"
 msgstr "खंड हटाएं"
 
 msgid "Remove component"
-msgstr ""
+msgstr "घटक हटाएँ"
 
 msgid "Remove condition"
 msgstr "शर्त हटाएं"
@@ -12380,7 +12380,7 @@ msgid "Reporting"
 msgstr "रिपोर्टिंग"
 
 msgid "Reporting Category"
-msgstr ""
+msgstr "रिपोर्टिंग श्रेणी"
 
 msgid "Reporting dimension"
 msgstr "रिपोर्टिंग आयाम"
@@ -12576,7 +12576,7 @@ msgid "Reverse Charge Sales Tax (default)"
 msgstr "रिवर्स चार्ज बिक्रय कर (डिफ़ॉल्ट)"
 
 msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
-msgstr ""
+msgstr "रिवर्स चार्ज कर वसूलने के बजाय उसका दायित्व क्रेता पर स्थानांतरित कर देता है"
 
 msgid "Reverse the related journal entries"
 msgstr "संबंधित जर्नल प्रविष्टियों को उलट दें"
@@ -12894,7 +12894,7 @@ msgid "Sales Revenue"
 msgstr "बिक्रय राजस्व"
 
 msgid "Sales tax account"
-msgstr ""
+msgstr "बिक्री कर खाता"
 
 msgid "Sales Tax Payable"
 msgstr "देय बिक्रय कर"
@@ -13345,7 +13345,7 @@ msgid "Select surfaces"
 msgstr "सतहें चुनें"
 
 msgid "Select Tax Code"
-msgstr ""
+msgstr "कर कोड चुनें"
 
 msgid "Select the groups that should complete this training"
 msgstr "उन समूहों का चयन करें जिन्हें इस प्रशिक्षण को पूरा करना चाहिए"
@@ -13415,7 +13415,7 @@ msgid "Sent complete date"
 msgstr "भेजे गए पूर्ण दिनांक"
 
 msgid "Sequence"
-msgstr ""
+msgstr "क्रम"
 
 msgid "Sequences"
 msgstr "अनुक्रम"
@@ -14292,10 +14292,10 @@ msgid "Suggestion Notifications"
 msgstr "सुझाव सूचनाएं"
 
 msgid "Suggestion only. Leave blank to match every state in the country above."
-msgstr ""
+msgstr "केवल सुझाव। ऊपर दिए देश के सभी राज्यों से मिलान के लिए खाली छोड़ें।"
 
 msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
-msgstr ""
+msgstr "केवल सुझाव। मिलते-जुलते पतों के लिए यह कोड सुझाने हेतु उपयोग होता है; यह किसी दस्तावेज़ का कर कभी निर्धारित नहीं करता।"
 
 msgid "Suggestions"
 msgstr "सुझाव"
@@ -14602,19 +14602,19 @@ msgid "Tax Amount"
 msgstr "कर राशि"
 
 msgid "Tax Authorities"
-msgstr ""
+msgstr "कर प्राधिकरण"
 
 msgid "Tax authority"
-msgstr ""
+msgstr "कर प्राधिकरण"
 
 msgid "Tax Authority"
-msgstr ""
+msgstr "कर प्राधिकरण"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "कर कोड"
 
 msgid "Tax Codes"
-msgstr ""
+msgstr "कर कोड"
 
 msgid "Tax codes, rates"
 msgstr "कर कोड, दरें"
@@ -14635,7 +14635,7 @@ msgid "Tax Information"
 msgstr "कर जानकारी"
 
 msgid "Tax Liability"
-msgstr ""
+msgstr "कर देयता"
 
 msgid "Tax liability for reverse-charge transactions"
 msgstr "रिवर्स-चार्ज लेनदेन के लिए कर देयता"
@@ -14653,13 +14653,13 @@ msgid "Tax Percent"
 msgstr "कर प्रतिशत"
 
 msgid "Tax Registration"
-msgstr ""
+msgstr "कर पंजीकरण"
 
 msgid "Tax registration coverage"
-msgstr ""
+msgstr "कर पंजीकरण कवरेज"
 
 msgid "Tax Registrations"
-msgstr ""
+msgstr "कर पंजीकरण"
 
 msgid "Tax Residual Value %"
 msgstr "कर अवशिष्ट मूल्य %"
@@ -14677,10 +14677,10 @@ msgid "Tax:"
 msgstr "कर:"
 
 msgid "Taxable"
-msgstr ""
+msgstr "कर योग्य"
 
 msgid "Taxable Amount"
-msgstr ""
+msgstr "कर योग्य राशि"
 
 msgid "Taxes"
 msgstr "कर"
@@ -14768,7 +14768,7 @@ msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Onshape में प्राधिकरण अस्वीकार कर दिया गया। दोबारा कनेक्ट करने का प्रयास करें।"
 
 msgid "The body you remit this tax to, e.g. Revenu Québec"
-msgstr ""
+msgstr "वह निकाय जिसे आप यह कर जमा करते हैं, जैसे Revenu Québec"
 
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "सभी पोस्ट की गई जर्नल पंक्तियों की पुस्तक, खाते द्वारा योग किया गया - केवल तभी लिखा जाता है जब कंपनी के लिए लेखांकन सक्षम हो।"
@@ -14846,7 +14846,7 @@ msgid "The corrected expiration for this lot/serial; existing on-hand stock is r
 msgstr "इस लॉट/सीरीज़ के लिए सही की गई समाप्ति तिथि; परिवर्तन के बाद मौजूदा ऑन-हैंड स्टॉक को शेल्फ-लाइफ नीति के विरुद्ध पुनः मूल्यांकन किया जाता है।"
 
 msgid "The country this registration is filed in"
-msgstr ""
+msgstr "वह देश जिसमें यह पंजीकरण दाखिल किया गया है"
 
 msgid "The currencies you trade in and their rates"
 msgstr "आप जिन मुद्राओं में व्यापार करते हैं और उनकी दरें"
@@ -15486,14 +15486,14 @@ msgid "These journal entries are still Draft, so their debits and credits aren't
 msgstr "ये जर्नल प्रविष्टियाँ अभी भी ड्राफ्ट हैं, इसलिए उनके डेबिट और क्रेडिट इस अवधि के लिए लेजर में नहीं हैं। प्रत्येक को पोस्ट करें, या इसे बाद की खुली अवधि में पुनः दिनांकित करें।"
 
 msgid "These registrations have no matching active tax code:"
-msgstr ""
+msgstr "इन पंजीकरणों के लिए कोई मिलान करता सक्रिय कर कोड नहीं है:"
 
 msgid "These tax codes have no matching registration:"
-msgstr ""
+msgstr "इन कर कोडों के लिए कोई मिलान करता पंजीकरण नहीं है:"
 
 #. placeholder {0}: suggestion.name
 msgid "This address is in {place} — apply {0}?"
-msgstr ""
+msgstr "यह पता {place} में है — क्या {0} लागू करें?"
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "इस Carbon इंस्टेंस में Onshape OAuth क्रेडेंशियल नहीं हैं। किसी व्यवस्थापक से उन्हें सेट करने के लिए कहें।"

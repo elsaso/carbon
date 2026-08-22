@@ -1075,7 +1075,7 @@ msgid "Add Company"
 msgstr "会社を追加"
 
 msgid "Add Component"
-msgstr ""
+msgstr "構成要素を追加"
 
 msgid "Add condition"
 msgstr "条件を追加"
@@ -1244,10 +1244,10 @@ msgid "Address line2"
 msgstr "住所 行2"
 
 msgid "Address Match — Country"
-msgstr ""
+msgstr "住所の一致 — 国"
 
 msgid "Address Match — State / Province"
-msgstr ""
+msgstr "住所の一致 — 州 / 県"
 
 msgid "Adjustment Type"
 msgstr "調整タイプ"
@@ -1308,7 +1308,7 @@ msgid "All Audit Logs"
 msgstr "すべての監査ログ"
 
 msgid "All authorities"
-msgstr ""
+msgstr "すべての税務当局"
 
 msgid "All changes to auditable entities are being recorded."
 msgstr "監査対象エンティティへのすべての変更が記録されています。"
@@ -1971,15 +1971,15 @@ msgstr "サプライヤータイプ: {0} を削除してもよろしいですか
 
 #. placeholder {0}: taxAuthority.name
 msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
-msgstr ""
+msgstr "税務当局「{0}」を削除してもよろしいですか？この操作は取り消せません。"
 
 #. placeholder {0}: taxCode.name
 msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
-msgstr ""
+msgstr "税コード「{0}」を削除してもよろしいですか？新規伝票では使用できなくなります。"
 
 #. placeholder {0}: taxRegistration.registrationNumber
 msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
-msgstr ""
+msgstr "税務登録「{0}」を削除してもよろしいですか？この操作は取り消せません。"
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -2289,7 +2289,7 @@ msgid "Authenticator QR code"
 msgstr "認証器QRコード"
 
 msgid "Authority"
-msgstr ""
+msgstr "税務当局"
 
 msgid "Auto apply"
 msgstr "自動適用"
@@ -2664,7 +2664,7 @@ msgid "Calculation Method"
 msgstr "計算方法"
 
 msgid "Calculation Type"
-msgstr ""
+msgstr "計算方式"
 
 msgid "Calibration"
 msgstr "キャリブレーション"
@@ -3142,7 +3142,7 @@ msgid "Collapse subtree"
 msgstr "サブツリーを折りたたむ"
 
 msgid "Collected"
-msgstr ""
+msgstr "受取税額"
 
 msgid "Column dimension"
 msgstr "列ディメンション"
@@ -3250,19 +3250,19 @@ msgid "Completion Time"
 msgstr "完了時間"
 
 msgid "Component"
-msgstr ""
+msgstr "構成要素"
 
 msgid "Component Name"
-msgstr ""
+msgstr "構成要素名"
 
 msgid "Component name, e.g. GST"
-msgstr ""
+msgstr "構成要素名（例：消費税）"
 
 msgid "Components"
-msgstr ""
+msgstr "構成要素"
 
 msgid "Compound"
-msgstr ""
+msgstr "複合"
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4081,13 +4081,13 @@ msgid "Created supplier: {0}"
 msgstr "仕入先を作成しました: {0}"
 
 msgid "Created tax authority"
-msgstr ""
+msgstr "税務当局を作成しました"
 
 msgid "Created tax code"
-msgstr ""
+msgstr "税コードを作成しました"
 
 msgid "Created tax registration"
-msgstr ""
+msgstr "税務登録を作成しました"
 
 msgid "Created tool"
 msgstr "ツールを作成しました"
@@ -4941,13 +4941,13 @@ msgid "Delete Supplier Type"
 msgstr "サプライヤータイプを削除"
 
 msgid "Delete Tax Authority"
-msgstr ""
+msgstr "税務当局を削除"
 
 msgid "Delete Tax Code"
-msgstr ""
+msgstr "税コードを削除"
 
 msgid "Delete Tax Registration"
-msgstr ""
+msgstr "税務登録を削除"
 
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
@@ -5752,13 +5752,13 @@ msgid "Edit Supplier Type"
 msgstr "サプライヤータイプを編集"
 
 msgid "Edit Tax Authority"
-msgstr ""
+msgstr "税務当局を編集"
 
 msgid "Edit Tax Code"
-msgstr ""
+msgstr "税コードを編集"
 
 msgid "Edit Tax Registration"
-msgstr ""
+msgstr "税務登録を編集"
 
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "ルールを編集して「すべてに適用」フラグを削除する"
@@ -5794,13 +5794,13 @@ msgid "Edit Work Center"
 msgstr "ワークセンターを編集"
 
 msgid "Effective Date"
-msgstr ""
+msgstr "適用開始日"
 
 msgid "Effective Rate"
-msgstr ""
+msgstr "実効税率"
 
 msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
+msgstr "本日の実効税率：{effectiveRateLabel}"
 
 msgid "Eliminated"
 msgstr "削除済み"
@@ -6189,10 +6189,10 @@ msgid "Executive P&L"
 msgstr "経営幹部向けP&L"
 
 msgid "Exempt (no component)"
-msgstr ""
+msgstr "非課税（構成要素なし）"
 
 msgid "Exempt Amount"
-msgstr ""
+msgstr "非課税額"
 
 msgid "Exemption Certificate"
 msgstr "免除証明書"
@@ -6502,15 +6502,15 @@ msgstr "サプライヤーの作成に失敗しました: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax authority: {0}"
-msgstr ""
+msgstr "税務当局を作成できませんでした：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax code: {0}"
-msgstr ""
+msgstr "税コードを作成できませんでした：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax registration: {0}"
-msgstr ""
+msgstr "税務登録を作成できませんでした：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6915,10 +6915,10 @@ msgid "Flags"
 msgstr "フラグ"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "一律の税率（％）は非推奨です。代わりに税コードを割り当ててください。税コードは税率、按分先の税務当局、計上先の勘定科目を決定します。得意先マスタの税率は、まだ税コードが設定されていない取引先のための予備の設定にすぎません。"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "一律の税率（％）は非推奨です。代わりに税コードを割り当ててください。税コードは税率、按分先の税務当局、計上先の勘定科目を決定します。仕入先マスタの税率は、まだ税コードが設定されていない取引先のための予備の設定にすぎません。"
 
 msgid "for anything. They'll pull in the right person."
 msgstr "何でも構いません。彼らが適切な人を連れてきます。"
@@ -7483,7 +7483,7 @@ msgid "How this price was calculated"
 msgstr "この価格がどのように計算されたか"
 
 msgid "How this treatment is grouped on tax returns"
-msgstr ""
+msgstr "この取扱いが税務申告書でどのように区分されるか"
 
 msgid "How to reach us"
 msgstr "お問い合わせ方法"
@@ -7664,7 +7664,7 @@ msgid "Inactive actions will not appear in selection lists"
 msgstr "非アクティブなアクションは選択リストに表示されません"
 
 msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
-msgstr ""
+msgstr "無効な税コードは新規伝票の選択肢に表示されなくなります。計上済みの伝票では引き続き参照されるため、削除せず無効化してください。"
 
 msgid "Inbound inspection"
 msgstr "受入検査"
@@ -7757,7 +7757,7 @@ msgid "Input"
 msgstr "入力"
 
 msgid "Input Tax"
-msgstr ""
+msgstr "仮払税額"
 
 msgid "Inputs"
 msgstr "入力"
@@ -7973,7 +7973,7 @@ msgid "Invoice Location"
 msgstr "請求書の場所"
 
 msgid "Invoice Message"
-msgstr ""
+msgstr "請求書メッセージ"
 
 msgid "Invoice Number"
 msgstr "請求書番号"
@@ -9357,7 +9357,7 @@ msgid "Net Income"
 msgstr "純利益"
 
 msgid "Net Owed"
-msgstr ""
+msgstr "納付税額（純額）"
 
 msgid "Never"
 msgstr "なし"
@@ -9624,13 +9624,13 @@ msgid "New Supplier Part"
 msgstr "新しいサプライヤー部品"
 
 msgid "New Tax Authority"
-msgstr ""
+msgstr "新しい税務当局"
 
 msgid "New Tax Code"
-msgstr ""
+msgstr "新しい税コード"
 
 msgid "New Tax Registration"
-msgstr ""
+msgstr "新しい税務登録"
 
 msgid "New Timecard"
 msgstr "新しいタイムカード"
@@ -9760,7 +9760,7 @@ msgid "No attachments."
 msgstr "添付ファイルがありません。"
 
 msgid "No authority"
-msgstr ""
+msgstr "税務当局なし"
 
 msgid "No available filters"
 msgstr "利用可能なフィルターがありません"
@@ -10072,7 +10072,7 @@ msgid "No sync operations yet"
 msgstr "同期操作がまだありません"
 
 msgid "No tax authorities"
-msgstr ""
+msgstr "税務当局がありません"
 
 msgid "No time entries for this week"
 msgstr "今週のタイムエントリがありません"
@@ -10577,10 +10577,10 @@ msgid "Optional pages & sections"
 msgstr "オプションページとセクション"
 
 msgid "Optional. Leave blank for a country-wide registration."
-msgstr ""
+msgstr "任意。全国単位の登録の場合は空欄にしてください。"
 
 msgid "Optional. The supplier record used to pay this authority."
-msgstr ""
+msgstr "任意。この税務当局への納付に使用する仕入先マスタ。"
 
 msgid "Options"
 msgstr "オプション"
@@ -10722,7 +10722,7 @@ msgid "Override the expiration on {label}."
 msgstr "有効期限を {label} で上書きします。"
 
 msgid "Overrides the customer's tax code for this location"
-msgstr ""
+msgstr "この拠点について得意先の税コードを上書きします"
 
 msgid "Overtime"
 msgstr "残業"
@@ -11370,10 +11370,10 @@ msgid "Print Output ({0})"
 msgstr "印刷出力 ({0})"
 
 msgid "Printed on documents that use this tax code"
-msgstr ""
+msgstr "この税コードを使用する帳票に印刷されます"
 
 msgid "Printed on sales documents for this jurisdiction"
-msgstr ""
+msgstr "この管轄区域の販売帳票に印刷されます"
 
 msgid "Printer Settings"
 msgstr "プリンター設定"
@@ -11658,7 +11658,7 @@ msgid "Purchase Qty"
 msgstr "購入数量"
 
 msgid "Purchase tax account"
-msgstr ""
+msgstr "仮払税額の勘定科目"
 
 msgid "Purchase Tax Payable"
 msgstr "仕入税金支払い（デフォルト）"
@@ -11915,7 +11915,7 @@ msgid "raise it early and raise it plainly. A problem named in week 2 is a small
 msgstr "早期に報告し、明確に報告してください。2週目に特定された問題は小さな修正で済みますが、本番リリース時の同じ問題は遅延につながります。"
 
 msgid "Rate (%)"
-msgstr ""
+msgstr "税率（%）"
 
 msgid "Rate Limit"
 msgstr "レート制限"
@@ -12132,7 +12132,7 @@ msgid "Records"
 msgstr "記録"
 
 msgid "Recoverable"
-msgstr ""
+msgstr "控除可能"
 
 msgid "Recovery Period"
 msgstr "登録"
@@ -12168,7 +12168,7 @@ msgid "Registered"
 msgstr "再注文点"
 
 msgid "Registration Number"
-msgstr ""
+msgstr "登録番号"
 
 msgid "Reject"
 msgstr "却下"
@@ -12247,7 +12247,7 @@ msgid "Remove clause"
 msgstr "句を削除"
 
 msgid "Remove component"
-msgstr ""
+msgstr "構成要素を削除"
 
 msgid "Remove condition"
 msgstr "条件を削除"
@@ -12380,7 +12380,7 @@ msgid "Reporting"
 msgstr "レポーティング"
 
 msgid "Reporting Category"
-msgstr ""
+msgstr "申告区分"
 
 msgid "Reporting dimension"
 msgstr "報告ディメンション"
@@ -12576,7 +12576,7 @@ msgid "Reverse Charge Sales Tax (default)"
 msgstr "逆請求売上税 (既定)"
 
 msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
-msgstr ""
+msgstr "リバースチャージは税を請求せず、買い手に納税義務を移転します"
 
 msgid "Reverse the related journal entries"
 msgstr "関連する仕訳エントリを取り消す"
@@ -12894,7 +12894,7 @@ msgid "Sales Revenue"
 msgstr "売上収益"
 
 msgid "Sales tax account"
-msgstr ""
+msgstr "仮受税額の勘定科目"
 
 msgid "Sales Tax Payable"
 msgstr "売上税支払い勘定"
@@ -13345,7 +13345,7 @@ msgid "Select surfaces"
 msgstr "サーフェスを選択"
 
 msgid "Select Tax Code"
-msgstr ""
+msgstr "税コードを選択"
 
 msgid "Select the groups that should complete this training"
 msgstr "このトレーニングを完了する必要があるグループを選択してください"
@@ -13415,7 +13415,7 @@ msgid "Sent complete date"
 msgstr "送信完了日"
 
 msgid "Sequence"
-msgstr ""
+msgstr "順序"
 
 msgid "Sequences"
 msgstr "シーケンス"
@@ -14292,10 +14292,10 @@ msgid "Suggestion Notifications"
 msgstr "提案通知"
 
 msgid "Suggestion only. Leave blank to match every state in the country above."
-msgstr ""
+msgstr "提案のみ。上記の国のすべての州を対象にする場合は空欄にしてください。"
 
 msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
-msgstr ""
+msgstr "提案のみ。一致する住所にこの税コードを提案するために使用され、帳票の税額を決定することはありません。"
 
 msgid "Suggestions"
 msgstr "提案"
@@ -14602,19 +14602,19 @@ msgid "Tax Amount"
 msgstr "税額"
 
 msgid "Tax Authorities"
-msgstr ""
+msgstr "税務当局"
 
 msgid "Tax authority"
-msgstr ""
+msgstr "税務当局"
 
 msgid "Tax Authority"
-msgstr ""
+msgstr "税務当局"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "税コード"
 
 msgid "Tax Codes"
-msgstr ""
+msgstr "税コード"
 
 msgid "Tax codes, rates"
 msgstr "税コード、レート"
@@ -14635,7 +14635,7 @@ msgid "Tax Information"
 msgstr "税務情報"
 
 msgid "Tax Liability"
-msgstr ""
+msgstr "納税義務"
 
 msgid "Tax liability for reverse-charge transactions"
 msgstr "リバースチャージ取引の税務責任"
@@ -14653,13 +14653,13 @@ msgid "Tax Percent"
 msgstr "税率"
 
 msgid "Tax Registration"
-msgstr ""
+msgstr "税務登録"
 
 msgid "Tax registration coverage"
-msgstr ""
+msgstr "税務登録のカバー範囲"
 
 msgid "Tax Registrations"
-msgstr ""
+msgstr "税務登録"
 
 msgid "Tax Residual Value %"
 msgstr "税務残存価額 %"
@@ -14677,10 +14677,10 @@ msgid "Tax:"
 msgstr "税:"
 
 msgid "Taxable"
-msgstr ""
+msgstr "課税対象"
 
 msgid "Taxable Amount"
-msgstr ""
+msgstr "課税標準額"
 
 msgid "Taxes"
 msgstr "税金"
@@ -14768,7 +14768,7 @@ msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Onshape で認可が拒否されました。もう一度接続してください。"
 
 msgid "The body you remit this tax to, e.g. Revenu Québec"
-msgstr ""
+msgstr "この税を納付する機関（例：Revenu Québec）"
 
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "投稿されたすべての仕訳行のブック（勘定ごとに合計）。会社で会計が有効な場合にのみ記入されます。"
@@ -14846,7 +14846,7 @@ msgid "The corrected expiration for this lot/serial; existing on-hand stock is r
 msgstr "このロット/シリアル番号の修正された有効期限。変更後、既存のオンハンド在庫は棚寿命ポリシーに対して再評価されます。"
 
 msgid "The country this registration is filed in"
-msgstr ""
+msgstr "この登録を提出した国"
 
 msgid "The currencies you trade in and their rates"
 msgstr "あなたが取引する通貨とそのレート"
@@ -15486,14 +15486,14 @@ msgid "These journal entries are still Draft, so their debits and credits aren't
 msgstr "これらの仕訳はまだ下書きであるため、それらの借方と貸方は当期の元帳に含まれていません。各仕訳を転記するか、後の開いている期間に再度日付を付け直してください。"
 
 msgid "These registrations have no matching active tax code:"
-msgstr ""
+msgstr "これらの登録に一致する有効な税コードがありません："
 
 msgid "These tax codes have no matching registration:"
-msgstr ""
+msgstr "これらの税コードに一致する登録がありません："
 
 #. placeholder {0}: suggestion.name
 msgid "This address is in {place} — apply {0}?"
-msgstr ""
+msgstr "この住所は{place}にあります — {0}を適用しますか？"
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "この Carbon インスタンスには Onshape の OAuth 認証情報がありません。管理者に設定を依頼してください。"
