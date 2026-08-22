@@ -10,18 +10,31 @@
 
 ## Progress
 
-Split across three stacked branches: `feat/tax-phase1-a1-backend` (foundation),
-`feat/tax-phase1-a2-ui` (configuration + assignment UI), and
-`feat/tax-phase1-c-posting` (posting). Note the module rename upstream —
-tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
+Split across seven branches that fork into **two legs** off the shared backend.
+Neither leg on its own contains Phase 1 — the configuration UI and the liability
+report are on one, posting and the documents are on the other:
+
+```
+fork/main
+ └─ a1-backend .......... PR #1 → main         schema, types, services
+     ├─ a2-ui ........... PR #2 → a1           config screens, party assignment
+     │   └─ d-liability .. no PR               Task 21 liability report
+     └─ c-posting ....... PR #3 → a1           the revenue misstatement fix
+         └─ e-memo-tax ... no PR               Task 19 memo tax
+             └─ f-line-tax  no PR              Task 15 line UI + recalculate
+                 └─ g-invoice-pdf  no PR       Task 20 PDF tax block
+```
+
+Note the module rename upstream — tax services live in
+`accounting.ee.service.ts`, not `accounting.service.ts`.
 
 - [x] Task 1: Create the Phase 1 migration
 - [x] Task 2: Regenerate database types
-- [x] Task 3: Add tax validators and enum arrays to accounting.models.ts — **memo validator NOT done** (see Task 19)
+- [x] Task 3: Add tax validators and enum arrays to accounting.models.ts — memo validator done with Task 19
 - [x] Task 4: Add effective-component rate math to accounting.utils.ts with unit tests
 - [x] Task 5: Add tax CRUD service functions
 - [x] Task 6: Add resolveLineTaxes + suggestTaxCode with unit-tested core
-- [x] Task 7: Wire determination into sales-side line creation — quote / sales order / sales invoice lines. The `recalculateLineTaxes` action route (step 3) is NOT done.
+- [x] Task 7: Wire determination into sales-side line creation — quote / sales order / sales invoice lines. The recalculate action route is done on `feat/tax-phase1-f-line-tax`.
 - [x] Task 8: Wire determination into purchase-side line creation
 - [x] Task 9: Tax codes routes + table + form (components editor)
 - [x] Task 10: Tax authorities + tax registrations routes
@@ -29,23 +42,28 @@ tax services live in `accounting.ee.service.ts`, not `accounting.service.ts`.
 - [x] Task 12: Customer/supplier tax-code assignment UI + taxPercent sunset banner
 - [x] Task 13: Customer location override select
 - [x] Task 14: Item "Taxable" switch
-- [ ] Task 15: Line form tax display + override select + audit coverage — **not started**
+- [x] Task 15: Line form tax display + override select + audit coverage — on `feat/tax-phase1-f-line-tax`; audit sub-step needed no change (all four line tables already configured, diff-based)
 - [x] Task 16: Shared edge-function tax resolver helper
 - [x] Task 17: post-sales-invoice — tax split, ledger writes, VOID reversals, shipping taxability
 - [x] Task 18: post-purchase-invoice — recoverable input tax, reverse charge, ledger writes
-- [ ] Task 19: post-memo — net/tax split + signed ledger rows — **not started**
-- [ ] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — **not started**
-- [x] Task 21: Tax liability report (service + route) — on `feat/tax-phase1-d-liability`; exemption rows (null componentName) deliberately kept separate from the legacy "Tax" pseudo-component
-- [ ] Task 22: Lingui extract + full scoped validation — extract done; full gate re-run pending the remaining tasks
-- [ ] Task 23: Browser verification via /test — **not started** (no runtime verification of posting yet)
+- [x] Task 19: post-memo — net/tax split + signed ledger rows — on `feat/tax-phase1-e-memo-tax`; memo amounts are tax-INCLUSIVE (tax carved out, control leg stays gross)
+- [x] Task 20: Sales invoice PDF tax summary, clauses, registration numbers — on `feat/tax-phase1-g-invoice-pdf`; registration numbers are MERGE FIELDS (tax.sellerRegistration / tax.customerVatNumber), not hardcoded blocks
+- [x] Task 21: Tax liability report (service + route) — on `feat/tax-phase1-d-liability`; aggregates the `taxLedger` subledger by authority + component, net = collected − input tax
+- [x] Task 22: Lingui extract + full scoped validation — 997 translations across 12 locales, split by leg (925 on `d-liability`, 72 on `g-invoice-pdf`). Both legs at zero missing msgstr, matching `fork/main`'s convention. The full gate on the merged tree is Task 23's prerequisite
+- [ ] Task 23: Browser verification via /test — **blocked on an integration merge**; the scenario spans both legs, so no existing branch can run it end to end (see `.ai/plans/2026-08-21-tax-phase1-finish.md`)
 
-Phase 1 is therefore **not complete**, and none of these branches should close
-upstream #1036. What is missing is memo tax, the invoice PDF tax block, the
-line-level override UI, and the recalculate action.
+Every code task is implemented. What remains is **runtime verification**: the
+Task 23 scenario walks config → assignment → order → post → journal → liability
+report → memo, which no single branch can serve. A `git merge-tree` dry run of
+the two legs reports three conflicts — `.ai/lessons.md`, this file, and the
+generated `tool-metadata.json` — and confirms the 13 `erp.po` catalogs union
+cleanly with zero untranslated strings. The finishing plan is
+`.ai/plans/2026-08-21-tax-phase1-finish.md`.
 
-**External blocker:** #1036 depends on #1030 (FX normalization, PR #1298). The
-posting branch still multiplies by `exchangeRate`, which is the convention #1298
-removes — posting must not merge before that lands.
+**External blocker:** #1036 depends on #1030 (FX normalization, PR #1298), still
+OPEN as of 2026-08-22. The posting branch still multiplies by `exchangeRate`,
+which is the convention #1298 removes — posting must not merge before that
+lands, and none of these branches should close #1036 until it does.
 
 ## Dependencies
 
