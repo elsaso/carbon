@@ -1075,7 +1075,7 @@ msgid "Add Company"
 msgstr "添加公司"
 
 msgid "Add Component"
-msgstr ""
+msgstr "添加组成部分"
 
 msgid "Add condition"
 msgstr "添加条件"
@@ -1244,10 +1244,10 @@ msgid "Address line2"
 msgstr "地址行2"
 
 msgid "Address Match — Country"
-msgstr ""
+msgstr "地址匹配 — 国家/地区"
 
 msgid "Address Match — State / Province"
-msgstr ""
+msgstr "地址匹配 — 州/省"
 
 msgid "Adjustment Type"
 msgstr "调整类型"
@@ -1306,6 +1306,9 @@ msgstr "所有操作已选中"
 
 msgid "All Audit Logs"
 msgstr "所有审计日志"
+
+msgid "All authorities"
+msgstr "所有税务机关"
 
 msgid "All changes to auditable entities are being recorded."
 msgstr "所有可审计实体的更改都正在被记录。"
@@ -1968,15 +1971,15 @@ msgstr "您确定要删除供应商类型：{0}？此操作无法撤销。"
 
 #. placeholder {0}: taxAuthority.name
 msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
-msgstr ""
+msgstr "确定要删除税务机关 {0} 吗？此操作无法撤销。"
 
 #. placeholder {0}: taxCode.name
 msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
-msgstr ""
+msgstr "确定要删除税码 {0} 吗？新单据将无法再使用该税码。"
 
 #. placeholder {0}: taxRegistration.registrationNumber
 msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
-msgstr ""
+msgstr "确定要删除税务登记 {0} 吗？此操作无法撤销。"
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -2284,6 +2287,9 @@ msgstr "身份验证错误"
 
 msgid "Authenticator QR code"
 msgstr "身份验证器二维码"
+
+msgid "Authority"
+msgstr "税务机关"
 
 msgid "Auto apply"
 msgstr "自动应用"
@@ -2658,7 +2664,7 @@ msgid "Calculation Method"
 msgstr "计算方法"
 
 msgid "Calculation Type"
-msgstr ""
+msgstr "计算类型"
 
 msgid "Calibration"
 msgstr "校准"
@@ -3135,6 +3141,9 @@ msgstr "折叠设置"
 msgid "Collapse subtree"
 msgstr "折叠子树"
 
+msgid "Collected"
+msgstr "已收税额"
+
 msgid "Column dimension"
 msgstr "列维度"
 
@@ -3240,17 +3249,20 @@ msgstr "完成条码"
 msgid "Completion Time"
 msgstr "完成时间"
 
+msgid "Component"
+msgstr "组成部分"
+
 msgid "Component Name"
-msgstr ""
+msgstr "组成部分名称"
 
 msgid "Component name, e.g. GST"
-msgstr ""
+msgstr "组成部分名称，例如增值税"
 
 msgid "Components"
-msgstr ""
+msgstr "组成部分"
 
 msgid "Compound"
-msgstr ""
+msgstr "复合计税"
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4069,13 +4081,13 @@ msgid "Created supplier: {0}"
 msgstr "已创建供应商：{0}"
 
 msgid "Created tax authority"
-msgstr ""
+msgstr "已创建税务机关"
 
 msgid "Created tax code"
-msgstr ""
+msgstr "已创建税码"
 
 msgid "Created tax registration"
-msgstr ""
+msgstr "已创建税务登记"
 
 msgid "Created tool"
 msgstr "已创建工具"
@@ -4929,13 +4941,13 @@ msgid "Delete Supplier Type"
 msgstr "删除供应商类型"
 
 msgid "Delete Tax Authority"
-msgstr ""
+msgstr "删除税务机关"
 
 msgid "Delete Tax Code"
-msgstr ""
+msgstr "删除税码"
 
 msgid "Delete Tax Registration"
-msgstr ""
+msgstr "删除税务登记"
 
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
@@ -5740,13 +5752,13 @@ msgid "Edit Supplier Type"
 msgstr "编辑供应商类型"
 
 msgid "Edit Tax Authority"
-msgstr ""
+msgstr "编辑税务机关"
 
 msgid "Edit Tax Code"
-msgstr ""
+msgstr "编辑税码"
 
 msgid "Edit Tax Registration"
-msgstr ""
+msgstr "编辑税务登记"
 
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "编辑规则以移除\"应用于全部\"标志"
@@ -5782,13 +5794,13 @@ msgid "Edit Work Center"
 msgstr "编辑工作中心"
 
 msgid "Effective Date"
-msgstr ""
+msgstr "生效日期"
 
 msgid "Effective Rate"
-msgstr ""
+msgstr "实际税率"
 
 msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
+msgstr "今日实际税率：{effectiveRateLabel}"
 
 msgid "Eliminated"
 msgstr "已消除"
@@ -6176,6 +6188,12 @@ msgstr "已排除"
 msgid "Executive P&L"
 msgstr "执行损益表"
 
+msgid "Exempt (no component)"
+msgstr "免税（无组成部分）"
+
+msgid "Exempt Amount"
+msgstr "免税金额"
+
 msgid "Exemption Certificate"
 msgstr "豁免证书"
 
@@ -6484,15 +6502,15 @@ msgstr "创建供应商失败：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax authority: {0}"
-msgstr ""
+msgstr "创建税务机关失败：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax code: {0}"
-msgstr ""
+msgstr "创建税码失败：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax registration: {0}"
-msgstr ""
+msgstr "创建税务登记失败：{0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6897,10 +6915,10 @@ msgid "Flags"
 msgstr "标志"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "统一税率百分比已弃用，请改为分配税码。税码决定税率、税额在各税务机关之间的分摊方式，以及入账的科目；客户记录上的百分比仅作为尚未设置税码的往来单位的备用值。"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "统一税率百分比已弃用，请改为分配税码。税码决定税率、税额在各税务机关之间的分摊方式，以及入账的科目；供应商记录上的百分比仅作为尚未设置税码的往来单位的备用值。"
 
 msgid "for anything. They'll pull in the right person."
 msgstr "用于任何事情。他们会找到合适的人。"
@@ -7465,7 +7483,7 @@ msgid "How this price was calculated"
 msgstr "此价格是如何计算的"
 
 msgid "How this treatment is grouped on tax returns"
-msgstr ""
+msgstr "该处理方式在纳税申报表中的归类方式"
 
 msgid "How to reach us"
 msgstr "如何联系我们"
@@ -7646,7 +7664,7 @@ msgid "Inactive actions will not appear in selection lists"
 msgstr "不活跃的操作将不会出现在选择列表中"
 
 msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
-msgstr ""
+msgstr "停用的税码不再出现在新单据的选择列表中。已过账的单据仍会继续解析这些税码，因此请停用而非删除。"
 
 msgid "Inbound inspection"
 msgstr "入站检验"
@@ -7737,6 +7755,9 @@ msgstr "从父组继承。"
 
 msgid "Input"
 msgstr "输入"
+
+msgid "Input Tax"
+msgstr "进项税额"
 
 msgid "Inputs"
 msgstr "输入"
@@ -7952,7 +7973,7 @@ msgid "Invoice Location"
 msgstr "发票地点"
 
 msgid "Invoice Message"
-msgstr ""
+msgstr "发票附言"
 
 msgid "Invoice Number"
 msgstr "发票号码"
@@ -9335,6 +9356,9 @@ msgstr "净变化"
 msgid "Net Income"
 msgstr "净收入"
 
+msgid "Net Owed"
+msgstr "应缴净额"
+
 msgid "Never"
 msgstr "永不"
 
@@ -9600,13 +9624,13 @@ msgid "New Supplier Part"
 msgstr "新供应商零件"
 
 msgid "New Tax Authority"
-msgstr ""
+msgstr "新建税务机关"
 
 msgid "New Tax Code"
-msgstr ""
+msgstr "新建税码"
 
 msgid "New Tax Registration"
-msgstr ""
+msgstr "新建税务登记"
 
 msgid "New Timecard"
 msgstr "新时间卡"
@@ -9734,6 +9758,9 @@ msgstr "还没有存档日志。超过 {0} 天的日志将自动存档，并可�
 
 msgid "No attachments."
 msgstr "没有附件。"
+
+msgid "No authority"
+msgstr "无税务机关"
 
 msgid "No available filters"
 msgstr "没有可用的筛选器"
@@ -10045,7 +10072,7 @@ msgid "No sync operations yet"
 msgstr "尚无同步操作"
 
 msgid "No tax authorities"
-msgstr ""
+msgstr "暂无税务机关"
 
 msgid "No time entries for this week"
 msgstr "本周没有时间条目"
@@ -10550,10 +10577,10 @@ msgid "Optional pages & sections"
 msgstr "可选页面和部分"
 
 msgid "Optional. Leave blank for a country-wide registration."
-msgstr ""
+msgstr "可选。若为全国范围的登记，请留空。"
 
 msgid "Optional. The supplier record used to pay this authority."
-msgstr ""
+msgstr "可选。用于向该税务机关缴款的供应商记录。"
 
 msgid "Options"
 msgstr "选项"
@@ -10695,7 +10722,7 @@ msgid "Override the expiration on {label}."
 msgstr "覆盖 {label} 上的过期日期。"
 
 msgid "Overrides the customer's tax code for this location"
-msgstr ""
+msgstr "针对此地点覆盖客户的税码"
 
 msgid "Overtime"
 msgstr "加班"
@@ -11343,10 +11370,10 @@ msgid "Print Output ({0})"
 msgstr "打印输出 ({0})"
 
 msgid "Printed on documents that use this tax code"
-msgstr ""
+msgstr "打印在使用该税码的单据上"
 
 msgid "Printed on sales documents for this jurisdiction"
-msgstr ""
+msgstr "打印在该税收管辖区的销售单据上"
 
 msgid "Printer Settings"
 msgstr "打印机设置"
@@ -11631,7 +11658,7 @@ msgid "Purchase Qty"
 msgstr "采购数量"
 
 msgid "Purchase tax account"
-msgstr ""
+msgstr "进项税科目"
 
 msgid "Purchase Tax Payable"
 msgstr "应付采购税（默认）"
@@ -11888,7 +11915,7 @@ msgid "raise it early and raise it plainly. A problem named in week 2 is a small
 msgstr "尽早提出问题，直言不讳地提出。第2周发现的问题很容易修复；同样的问题在上线时就会导致延期。"
 
 msgid "Rate (%)"
-msgstr ""
+msgstr "税率 (%)"
 
 msgid "Rate Limit"
 msgstr "速率限制"
@@ -12105,7 +12132,7 @@ msgid "Records"
 msgstr "记录"
 
 msgid "Recoverable"
-msgstr ""
+msgstr "可抵扣"
 
 msgid "Recovery Period"
 msgstr "注册"
@@ -12141,7 +12168,7 @@ msgid "Registered"
 msgstr "重新订购点"
 
 msgid "Registration Number"
-msgstr ""
+msgstr "登记号"
 
 msgid "Reject"
 msgstr "拒绝"
@@ -12220,7 +12247,7 @@ msgid "Remove clause"
 msgstr "移除条款"
 
 msgid "Remove component"
-msgstr ""
+msgstr "移除组成部分"
 
 msgid "Remove condition"
 msgstr "移除条件"
@@ -12353,7 +12380,7 @@ msgid "Reporting"
 msgstr "报表"
 
 msgid "Reporting Category"
-msgstr ""
+msgstr "申报类别"
 
 msgid "Reporting dimension"
 msgstr "报告维度"
@@ -12549,7 +12576,7 @@ msgid "Reverse Charge Sales Tax (default)"
 msgstr "反向收费销售税 (默认)"
 
 msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
-msgstr ""
+msgstr "反向征收将纳税义务转移给买方，而不是向其收取税款"
 
 msgid "Reverse the related journal entries"
 msgstr "反转相关日记账分录"
@@ -12867,7 +12894,7 @@ msgid "Sales Revenue"
 msgstr "销售收入"
 
 msgid "Sales tax account"
-msgstr ""
+msgstr "销项税科目"
 
 msgid "Sales Tax Payable"
 msgstr "应付销售税"
@@ -13318,7 +13345,7 @@ msgid "Select surfaces"
 msgstr "选择表面"
 
 msgid "Select Tax Code"
-msgstr ""
+msgstr "选择税码"
 
 msgid "Select the groups that should complete this training"
 msgstr "选择应该完成此培训的组"
@@ -13388,7 +13415,7 @@ msgid "Sent complete date"
 msgstr "发送完成日期"
 
 msgid "Sequence"
-msgstr ""
+msgstr "顺序"
 
 msgid "Sequences"
 msgstr "序列"
@@ -14265,10 +14292,10 @@ msgid "Suggestion Notifications"
 msgstr "建议通知"
 
 msgid "Suggestion only. Leave blank to match every state in the country above."
-msgstr ""
+msgstr "仅作建议。留空可匹配上述国家/地区的所有州/省。"
 
 msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
-msgstr ""
+msgstr "仅作建议。用于为匹配的地址推荐该税码；它从不决定单据上的税额。"
 
 msgid "Suggestions"
 msgstr "建议"
@@ -14575,19 +14602,19 @@ msgid "Tax Amount"
 msgstr "税额"
 
 msgid "Tax Authorities"
-msgstr ""
+msgstr "税务机关"
 
 msgid "Tax authority"
-msgstr ""
+msgstr "税务机关"
 
 msgid "Tax Authority"
-msgstr ""
+msgstr "税务机关"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "税码"
 
 msgid "Tax Codes"
-msgstr ""
+msgstr "税码"
 
 msgid "Tax codes, rates"
 msgstr "税码、税率"
@@ -14607,6 +14634,9 @@ msgstr "税号"
 msgid "Tax Information"
 msgstr "税务信息"
 
+msgid "Tax Liability"
+msgstr "应缴税款"
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "反向征税交易的税务负债"
 
@@ -14623,13 +14653,13 @@ msgid "Tax Percent"
 msgstr "税收百分比"
 
 msgid "Tax Registration"
-msgstr ""
+msgstr "税务登记"
 
 msgid "Tax registration coverage"
-msgstr ""
+msgstr "税务登记覆盖情况"
 
 msgid "Tax Registrations"
-msgstr ""
+msgstr "税务登记"
 
 msgid "Tax Residual Value %"
 msgstr "税务残值 %"
@@ -14647,7 +14677,10 @@ msgid "Tax:"
 msgstr "税:"
 
 msgid "Taxable"
-msgstr ""
+msgstr "应税"
+
+msgid "Taxable Amount"
+msgstr "计税金额"
 
 msgid "Taxes"
 msgstr "税"
@@ -14735,7 +14768,7 @@ msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "授权在 Onshape 中被拒绝。请重新连接。"
 
 msgid "The body you remit this tax to, e.g. Revenu Québec"
-msgstr ""
+msgstr "您缴纳该税款的机构，例如 Revenu Québec"
 
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "所有已记账的日记账行书，按账户汇总 - 仅在公司启用会计时编写。"
@@ -14813,7 +14846,7 @@ msgid "The corrected expiration for this lot/serial; existing on-hand stock is r
 msgstr "此批次/序列号的修正有效期；更改后，现有库存会根据保质期政策重新评估。"
 
 msgid "The country this registration is filed in"
-msgstr ""
+msgstr "该登记所在的国家/地区"
 
 msgid "The currencies you trade in and their rates"
 msgstr "您交易的货币及其汇率"
@@ -15453,14 +15486,14 @@ msgid "These journal entries are still Draft, so their debits and credits aren't
 msgstr "这些日记账条目仍为草稿状态，因此其借贷金额不在本期分类账中。过账每一份，或将其重新标记日期至较晚的开放期间。"
 
 msgid "These registrations have no matching active tax code:"
-msgstr ""
+msgstr "以下登记没有匹配的启用税码："
 
 msgid "These tax codes have no matching registration:"
-msgstr ""
+msgstr "以下税码没有匹配的登记："
 
 #. placeholder {0}: suggestion.name
 msgid "This address is in {place} — apply {0}?"
-msgstr ""
+msgstr "该地址位于{place} — 是否应用 {0}？"
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "此 Carbon 实例缺少 Onshape 的 OAuth 凭据。请让管理员进行设置。"

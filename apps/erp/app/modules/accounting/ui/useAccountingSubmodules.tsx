@@ -17,6 +17,7 @@ import {
   LuLandmark,
   LuLayers,
   LuPercent,
+  LuReceipt,
   LuScale,
   LuSheet
 } from "react-icons/lu";
@@ -115,6 +116,12 @@ export default function useAccountingSubmodules() {
             to: path.to.taxRegistrations,
             role: "employee",
             icon: <LuFileBadge />
+          },
+          {
+            name: t`Tax Liability`,
+            to: path.to.taxLiability,
+            role: "employee",
+            icon: <LuReceipt />
           }
         ]
       },

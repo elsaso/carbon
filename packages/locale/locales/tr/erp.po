@@ -1075,7 +1075,7 @@ msgid "Add Company"
 msgstr "Şirket Ekle"
 
 msgid "Add Component"
-msgstr ""
+msgstr "Bileşen ekle"
 
 msgid "Add condition"
 msgstr "Koşul ekle"
@@ -1244,10 +1244,10 @@ msgid "Address line2"
 msgstr "Adres satırı 2"
 
 msgid "Address Match — Country"
-msgstr ""
+msgstr "Adres eşleşmesi — Ülke"
 
 msgid "Address Match — State / Province"
-msgstr ""
+msgstr "Adres eşleşmesi — Eyalet / İl"
 
 msgid "Adjustment Type"
 msgstr "Ayarlama Türü"
@@ -1306,6 +1306,9 @@ msgstr "Tüm eylemler seçildi"
 
 msgid "All Audit Logs"
 msgstr "Tüm Denetim Kayıtları"
+
+msgid "All authorities"
+msgstr "Tüm kurumlar"
 
 msgid "All changes to auditable entities are being recorded."
 msgstr "Denetlenebilir varlıklardaki tüm değişiklikler kaydediliyor."
@@ -1968,15 +1971,15 @@ msgstr "Tedarikçi türünü silmek istediğinizden emin misiniz: {0}? Bu geri a
 
 #. placeholder {0}: taxAuthority.name
 msgid "Are you sure you want to delete the tax authority: {0}? This cannot be undone."
-msgstr ""
+msgstr "{0} vergi dairesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
 
 #. placeholder {0}: taxCode.name
 msgid "Are you sure you want to delete the tax code: {0}? It will no longer be available for new documents."
-msgstr ""
+msgstr "{0} vergi kodunu silmek istediğinizden emin misiniz? Yeni belgelerde artık kullanılamayacak."
 
 #. placeholder {0}: taxRegistration.registrationNumber
 msgid "Are you sure you want to delete the tax registration: {0}? This cannot be undone."
-msgstr ""
+msgstr "{0} vergi kaydını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz."
 
 #. placeholder {0}: unitOfMeasure.name
 msgid "Are you sure you want to delete the unit of measure: {0}? This cannot be undone."
@@ -2284,6 +2287,9 @@ msgstr "Kimlik Doğrulama Hatası"
 
 msgid "Authenticator QR code"
 msgstr "Doğrulayıcı QR kodu"
+
+msgid "Authority"
+msgstr "Kurum"
 
 msgid "Auto apply"
 msgstr "Otomatik uygula"
@@ -2658,7 +2664,7 @@ msgid "Calculation Method"
 msgstr "Hesaplama Yöntemi"
 
 msgid "Calculation Type"
-msgstr ""
+msgstr "Hesaplama türü"
 
 msgid "Calibration"
 msgstr "Kalibrasyon"
@@ -3135,6 +3141,9 @@ msgstr "Kurulumu Daralt"
 msgid "Collapse subtree"
 msgstr "Alt ağacı daralt"
 
+msgid "Collected"
+msgstr "Tahsil edilen"
+
 msgid "Column dimension"
 msgstr "Sütun boyutu"
 
@@ -3240,17 +3249,20 @@ msgstr "Tamamlama Barkodu"
 msgid "Completion Time"
 msgstr "Tamamlama Süresi"
 
+msgid "Component"
+msgstr "Bileşen"
+
 msgid "Component Name"
-msgstr ""
+msgstr "Bileşen adı"
 
 msgid "Component name, e.g. GST"
-msgstr ""
+msgstr "Bileşen adı, ör. KDV"
 
 msgid "Components"
-msgstr ""
+msgstr "Bileşenler"
 
 msgid "Compound"
-msgstr ""
+msgstr "Bileşik"
 
 #. placeholder {0}: formatRelativeTime(tieOut.computedAt)
 msgid "computed {0}"
@@ -4069,13 +4081,13 @@ msgid "Created supplier: {0}"
 msgstr "Oluşturulan tedarikçi: {0}"
 
 msgid "Created tax authority"
-msgstr ""
+msgstr "Vergi dairesi oluşturuldu"
 
 msgid "Created tax code"
-msgstr ""
+msgstr "Vergi kodu oluşturuldu"
 
 msgid "Created tax registration"
-msgstr ""
+msgstr "Vergi kaydı oluşturuldu"
 
 msgid "Created tool"
 msgstr "Oluşturulan araç"
@@ -4929,13 +4941,13 @@ msgid "Delete Supplier Type"
 msgstr "Tedarikçi Türünü Sil"
 
 msgid "Delete Tax Authority"
-msgstr ""
+msgstr "Vergi dairesini sil"
 
 msgid "Delete Tax Code"
-msgstr ""
+msgstr "Vergi kodunu sil"
 
 msgid "Delete Tax Registration"
-msgstr ""
+msgstr "Vergi kaydını sil"
 
 #. placeholder {0}: pendingDelete.quantity
 msgid "Delete the price break for quantity {0}? This can't be undone."
@@ -5740,13 +5752,13 @@ msgid "Edit Supplier Type"
 msgstr "Tedarikçi Türünü Düzenle"
 
 msgid "Edit Tax Authority"
-msgstr ""
+msgstr "Vergi dairesini düzenle"
 
 msgid "Edit Tax Code"
-msgstr ""
+msgstr "Vergi kodunu düzenle"
 
 msgid "Edit Tax Registration"
-msgstr ""
+msgstr "Vergi kaydını düzenle"
 
 msgid "Edit the rule to remove the \"Applies to all\" flag"
 msgstr "Kuralı düzenleyerek \"Tümüne uygulanır\" işaretini kaldırın"
@@ -5782,13 +5794,13 @@ msgid "Edit Work Center"
 msgstr "İş Merkezi Düzenle"
 
 msgid "Effective Date"
-msgstr ""
+msgstr "Yürürlük tarihi"
 
 msgid "Effective Rate"
-msgstr ""
+msgstr "Efektif oran"
 
 msgid "Effective rate today: {effectiveRateLabel}"
-msgstr ""
+msgstr "Bugünkü efektif oran: {effectiveRateLabel}"
 
 msgid "Eliminated"
 msgstr "Ortadan Kaldırılmış"
@@ -6176,6 +6188,12 @@ msgstr "Hariç Tutulan"
 msgid "Executive P&L"
 msgstr "Yönetici P&L"
 
+msgid "Exempt (no component)"
+msgstr "İstisna (bileşen yok)"
+
+msgid "Exempt Amount"
+msgstr "İstisna tutarı"
+
 msgid "Exemption Certificate"
 msgstr "İstisnai Sertifika"
 
@@ -6484,15 +6502,15 @@ msgstr "Tedarikçi oluşturulamadı: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax authority: {0}"
-msgstr ""
+msgstr "Vergi dairesi oluşturulamadı: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax code: {0}"
-msgstr ""
+msgstr "Vergi kodu oluşturulamadı: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tax registration: {0}"
-msgstr ""
+msgstr "Vergi kaydı oluşturulamadı: {0}"
 
 #. placeholder {0}: fetcher.data.error.message
 msgid "Failed to create tool: {0}"
@@ -6897,10 +6915,10 @@ msgid "Flags"
 msgstr "Bayraklar"
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the customer record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "Sabit vergi yüzdesi kullanımdan kaldırıldı — bunun yerine vergi kodu atayın. Bir kod; oranı, oranın paylaştırıldığı kurumları ve kaydedildiği hesapları belirler. Müşteri kartındaki yüzde yalnızca henüz kodu olmayan taraflar için bir yedek çözümdür."
 
 msgid "Flat tax percent is deprecated — assign tax codes instead. A code determines the rate, the authorities it splits across, and the accounts it posts to; the percent on the supplier record is only a fallback for parties that have no code yet."
-msgstr ""
+msgstr "Sabit vergi yüzdesi kullanımdan kaldırıldı — bunun yerine vergi kodu atayın. Bir kod; oranı, oranın paylaştırıldığı kurumları ve kaydedildiği hesapları belirler. Tedarikçi kartındaki yüzde yalnızca henüz kodu olmayan taraflar için bir yedek çözümdür."
 
 msgid "for anything. They'll pull in the right person."
 msgstr "herhangi bir şey için. Doğru kişiyi çekerler."
@@ -7465,7 +7483,7 @@ msgid "How this price was calculated"
 msgstr "Bu fiyat nasıl hesaplandı"
 
 msgid "How this treatment is grouped on tax returns"
-msgstr ""
+msgstr "Bu uygulamanın vergi beyannamelerinde nasıl gruplandırıldığı"
 
 msgid "How to reach us"
 msgstr "Bize nasıl ulaşabilirsiniz"
@@ -7646,7 +7664,7 @@ msgid "Inactive actions will not appear in selection lists"
 msgstr "Etkin olmayan eylemler seçim listelerinde görünmeyecektir"
 
 msgid "Inactive codes stop appearing in the selects on new documents. Posted documents keep resolving them, so deactivate rather than delete."
-msgstr ""
+msgstr "Pasif kodlar yeni belgelerdeki seçim listelerinde görünmez. Kaydedilmiş belgeler bunları çözümlemeye devam eder; bu nedenle silmek yerine pasifleştirin."
 
 msgid "Inbound inspection"
 msgstr "Gelen Muhasebesi"
@@ -7737,6 +7755,9 @@ msgstr "Ana gruptan devralınan."
 
 msgid "Input"
 msgstr "Giriş"
+
+msgid "Input Tax"
+msgstr "İndirilecek vergi"
 
 msgid "Inputs"
 msgstr "Girişler"
@@ -7952,7 +7973,7 @@ msgid "Invoice Location"
 msgstr "Fatura Konumu"
 
 msgid "Invoice Message"
-msgstr ""
+msgstr "Fatura mesajı"
 
 msgid "Invoice Number"
 msgstr "Fatura Numarası"
@@ -9335,6 +9356,9 @@ msgstr "Net Değişim"
 msgid "Net Income"
 msgstr "Net Gelir"
 
+msgid "Net Owed"
+msgstr "Net borç"
+
 msgid "Never"
 msgstr "Asla"
 
@@ -9600,13 +9624,13 @@ msgid "New Supplier Part"
 msgstr "Yeni Tedarikçi Parçası"
 
 msgid "New Tax Authority"
-msgstr ""
+msgstr "Yeni vergi dairesi"
 
 msgid "New Tax Code"
-msgstr ""
+msgstr "Yeni vergi kodu"
 
 msgid "New Tax Registration"
-msgstr ""
+msgstr "Yeni vergi kaydı"
 
 msgid "New Timecard"
 msgstr "Yeni Vardiya"
@@ -9734,6 +9758,9 @@ msgstr "Henüz arşivlenmiş günlük yok. {0} günden eski günlükler otomatik
 
 msgid "No attachments."
 msgstr "Ek ekli değil."
+
+msgid "No authority"
+msgstr "Kurum yok"
 
 msgid "No available filters"
 msgstr "Kullanılabilir filtre yok"
@@ -10045,7 +10072,7 @@ msgid "No sync operations yet"
 msgstr "Henüz hiçbir eşitleme işlemi yok"
 
 msgid "No tax authorities"
-msgstr ""
+msgstr "Vergi dairesi yok"
 
 msgid "No time entries for this week"
 msgstr "Bu hafta için zaman girişi yok"
@@ -10550,10 +10577,10 @@ msgid "Optional pages & sections"
 msgstr "İsteğe bağlı sayfalar ve bölümler"
 
 msgid "Optional. Leave blank for a country-wide registration."
-msgstr ""
+msgstr "İsteğe bağlı. Ülke genelinde bir kayıt için boş bırakın."
 
 msgid "Optional. The supplier record used to pay this authority."
-msgstr ""
+msgstr "İsteğe bağlı. Bu kuruma ödeme yapmak için kullanılan tedarikçi kaydı."
 
 msgid "Options"
 msgstr "Seçenekler"
@@ -10695,7 +10722,7 @@ msgid "Override the expiration on {label}."
 msgstr "Süre bitişini {label} üzerinde geçersiz kıl."
 
 msgid "Overrides the customer's tax code for this location"
-msgstr ""
+msgstr "Bu konum için müşterinin vergi kodunu geçersiz kılar"
 
 msgid "Overtime"
 msgstr "Fazla Mesai"
@@ -11343,10 +11370,10 @@ msgid "Print Output ({0})"
 msgstr "Yazdırma Çıktısı ({0})"
 
 msgid "Printed on documents that use this tax code"
-msgstr ""
+msgstr "Bu vergi kodunu kullanan belgelere basılır"
 
 msgid "Printed on sales documents for this jurisdiction"
-msgstr ""
+msgstr "Bu yargı bölgesine ait satış belgelerine basılır"
 
 msgid "Printer Settings"
 msgstr "Yazıcı Ayarları"
@@ -11631,7 +11658,7 @@ msgid "Purchase Qty"
 msgstr "Satın Alma Miktarı"
 
 msgid "Purchase tax account"
-msgstr ""
+msgstr "Alış vergisi hesabı"
 
 msgid "Purchase Tax Payable"
 msgstr "Satın Alma Vergisi Ödenecek (varsayılan)"
@@ -11888,7 +11915,7 @@ msgid "raise it early and raise it plainly. A problem named in week 2 is a small
 msgstr "bunu erken ve açık bir şekilde dile getir. 2. haftada adı konulan bir sorun küçük bir düzeltmedir; go-live'da aynı sorun bir gecikmedir."
 
 msgid "Rate (%)"
-msgstr ""
+msgstr "Oran (%)"
 
 msgid "Rate Limit"
 msgstr "Hız Sınırı"
@@ -12105,7 +12132,7 @@ msgid "Records"
 msgstr "Kayıtlar"
 
 msgid "Recoverable"
-msgstr ""
+msgstr "İndirilebilir"
 
 msgid "Recovery Period"
 msgstr "Kayıt Yap"
@@ -12141,7 +12168,7 @@ msgid "Registered"
 msgstr "Kayıtlı"
 
 msgid "Registration Number"
-msgstr ""
+msgstr "Kayıt numarası"
 
 msgid "Reject"
 msgstr "Reddet"
@@ -12220,7 +12247,7 @@ msgid "Remove clause"
 msgstr "Maddeyi kaldır"
 
 msgid "Remove component"
-msgstr ""
+msgstr "Bileşeni kaldır"
 
 msgid "Remove condition"
 msgstr "Koşulu kaldır"
@@ -12353,7 +12380,7 @@ msgid "Reporting"
 msgstr "Raporlama"
 
 msgid "Reporting Category"
-msgstr ""
+msgstr "Raporlama kategorisi"
 
 msgid "Reporting dimension"
 msgstr "Raporlama boyutu"
@@ -12549,7 +12576,7 @@ msgid "Reverse Charge Sales Tax (default)"
 msgstr "Ters yükleme satış vergisi (varsayılan)"
 
 msgid "Reverse Charge shifts the tax to the buyer instead of charging it"
-msgstr ""
+msgstr "Tevkifat, vergiyi tahsil etmek yerine alıcıya aktarır"
 
 msgid "Reverse the related journal entries"
 msgstr "İlgili günlük girişlerini tersine çevir"
@@ -12867,7 +12894,7 @@ msgid "Sales Revenue"
 msgstr "Satış Geliri"
 
 msgid "Sales tax account"
-msgstr ""
+msgstr "Satış vergisi hesabı"
 
 msgid "Sales Tax Payable"
 msgstr "Ödenmesi gereken satış vergisi"
@@ -13318,7 +13345,7 @@ msgid "Select surfaces"
 msgstr "Yüzeyleri seç"
 
 msgid "Select Tax Code"
-msgstr ""
+msgstr "Vergi kodu seçin"
 
 msgid "Select the groups that should complete this training"
 msgstr "Bu eğitimi tamamlaması gereken grupları seçin"
@@ -13388,7 +13415,7 @@ msgid "Sent complete date"
 msgstr "Gönderilen tamamlama tarihi"
 
 msgid "Sequence"
-msgstr ""
+msgstr "Sıra"
 
 msgid "Sequences"
 msgstr "Sıralamalar"
@@ -14265,10 +14292,10 @@ msgid "Suggestion Notifications"
 msgstr "Öneri Bildirimleri"
 
 msgid "Suggestion only. Leave blank to match every state in the country above."
-msgstr ""
+msgstr "Yalnızca öneri. Yukarıdaki ülkedeki tüm eyaletlerle eşleşmesi için boş bırakın."
 
 msgid "Suggestion only. Used to suggest this code for matching addresses; it never determines the tax on a document."
-msgstr ""
+msgstr "Yalnızca öneri. Eşleşen adreslerde bu kodu önermek için kullanılır; bir belgedeki vergiyi asla belirlemez."
 
 msgid "Suggestions"
 msgstr "Öneriler"
@@ -14575,19 +14602,19 @@ msgid "Tax Amount"
 msgstr "Vergi Tutarı"
 
 msgid "Tax Authorities"
-msgstr ""
+msgstr "Vergi daireleri"
 
 msgid "Tax authority"
-msgstr ""
+msgstr "Vergi dairesi"
 
 msgid "Tax Authority"
-msgstr ""
+msgstr "Vergi dairesi"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "Vergi kodu"
 
 msgid "Tax Codes"
-msgstr ""
+msgstr "Vergi kodları"
 
 msgid "Tax codes, rates"
 msgstr "Vergi kodları, oranları"
@@ -14607,6 +14634,9 @@ msgstr "Vergi Kimlik Numarası"
 msgid "Tax Information"
 msgstr "Vergi Bilgileri"
 
+msgid "Tax Liability"
+msgstr "Vergi yükümlülüğü"
+
 msgid "Tax liability for reverse-charge transactions"
 msgstr "Ters Muhasebeleştirme İşlemleri için Vergi Yükümlülüğü"
 
@@ -14623,13 +14653,13 @@ msgid "Tax Percent"
 msgstr "Vergi Yüzdesi"
 
 msgid "Tax Registration"
-msgstr ""
+msgstr "Vergi kaydı"
 
 msgid "Tax registration coverage"
-msgstr ""
+msgstr "Vergi kaydı kapsamı"
 
 msgid "Tax Registrations"
-msgstr ""
+msgstr "Vergi kayıtları"
 
 msgid "Tax Residual Value %"
 msgstr "Vergi Kalıntı Değeri %"
@@ -14647,7 +14677,10 @@ msgid "Tax:"
 msgstr "Vergi:"
 
 msgid "Taxable"
-msgstr ""
+msgstr "Vergiye tabi"
+
+msgid "Taxable Amount"
+msgstr "Vergiye tabi tutar"
 
 msgid "Taxes"
 msgstr "Vergiler"
@@ -14735,7 +14768,7 @@ msgid "The authorization was refused in Onshape. Try connecting again."
 msgstr "Yetkilendirme Onshape'te reddedildi. Yeniden bağlanmayı deneyin."
 
 msgid "The body you remit this tax to, e.g. Revenu Québec"
-msgstr ""
+msgstr "Bu vergiyi ödediğiniz kurum, ör. Revenu Québec"
 
 msgid "The book of all posted journal lines, summed by account — written only when the company has accounting enabled."
 msgstr "Tüm kaydedilen günlük satırlarının defteri, hesaba göre özetlenmiş — yalnızca şirket muhasebesi etkinleştirildiğinde yazılır."
@@ -14813,7 +14846,7 @@ msgid "The corrected expiration for this lot/serial; existing on-hand stock is r
 msgstr "Bu lot/seri numarası için düzeltilmiş son kullanma tarihi; mevcut eldeki stok, değişiklikten sonra raf ömrü politikasına göre yeniden değerlendirilir."
 
 msgid "The country this registration is filed in"
-msgstr ""
+msgstr "Bu kaydın yapıldığı ülke"
 
 msgid "The currencies you trade in and their rates"
 msgstr "Ticaret yaptığınız para birimleri ve bunların oranları"
@@ -15453,14 +15486,14 @@ msgid "These journal entries are still Draft, so their debits and credits aren't
 msgstr "Bu muhasebe kayıtları hâlâ Taslak durumundadır, bu nedenle borç ve alacakları bu dönem için defteri kebir'de değildir. Her birini deftere geçirin veya daha sonraki bir açık döneme yeniden tarihlendiriniz."
 
 msgid "These registrations have no matching active tax code:"
-msgstr ""
+msgstr "Bu kayıtlarla eşleşen aktif bir vergi kodu yok:"
 
 msgid "These tax codes have no matching registration:"
-msgstr ""
+msgstr "Bu vergi kodlarıyla eşleşen bir kayıt yok:"
 
 #. placeholder {0}: suggestion.name
 msgid "This address is in {place} — apply {0}?"
-msgstr ""
+msgstr "Bu adres {place} bölgesinde — {0} uygulansın mı?"
 
 msgid "This Carbon instance is missing its Onshape OAuth credentials. Ask an administrator to set them."
 msgstr "Bu Carbon örneğinde Onshape OAuth kimlik bilgileri eksik. Bir yöneticiden bunları ayarlamasını isteyin."

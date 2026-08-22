@@ -3,6 +3,7 @@ import TaxAuthorityForm from "./TaxAuthorityForm";
 import TaxCodeForm from "./TaxCodeForm";
 import TaxCodeSuggestion from "./TaxCodeSuggestion";
 import TaxCodesTable from "./TaxCodesTable";
+import TaxLiabilityTable from "./TaxLiabilityTable";
 import TaxRegistrationForm from "./TaxRegistrationForm";
 import TaxRegistrationsTable from "./TaxRegistrationsTable";
 
@@ -14,6 +15,7 @@ export {
   TaxCodeForm,
   TaxCodesTable,
   TaxCodeSuggestion,
+  TaxLiabilityTable,
   TaxRegistrationForm,
   TaxRegistrationsTable
 };

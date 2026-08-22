@@ -574,3 +574,5 @@ export type TaxCodeComponent = TaxCodeDetail["components"][number];
 export type TaxRegistration = NonNullable<
   Awaited<ReturnType<typeof getTaxRegistrations>>["data"]
 >[number];
+
+export type { TaxLiabilityLine } from "./accounting.ee.service";
