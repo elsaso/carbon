@@ -1159,3 +1159,23 @@ canvas hosting Radix popovers/selects.
 **Rule:** Do not rely on `git add` alone to scope a commit in this repo when `.po` files or other hook-touched paths are dirty. Either commit the hook-affected paths first, or stash the rest (`git stash push -- <paths>`) so the working tree contains only what that commit should carry. If a commit comes back larger than you staged, check `git show --stat` before pushing — the fix is `git reset --soft HEAD~1` and a re-split.
 
 **Applies to:** any multi-commit split in this repo touching `packages/locale/locales/**`; `.husky/`, lint-staged config.
+
+## An interrupted typegen truncates `types.ts`, and the edge runtime blames line 9
+
+**Context:** Running `crbn up` before a GL cross-tie. Every posting scenario then returned 500 and the tax E2E dropped from 77/77 to 0.
+
+**Problem:** `packages/database/src/types.ts` was left **truncated** at 34,713 lines against 81,581 committed — an interrupted `generate:types` wrote a partial file ending mid-object. The edge runtime reports this as `The module's source code could not be parsed: Expected '{', got 'Database' at file:///home/src/types.ts:9:13`. Line 9 is `export type Database = {`, which is perfectly valid: the parser fails at the OUTERMOST unclosed construct, so the error points at the start of the object, never at the truncation ~34k lines later. Nothing in the message says "truncated". This has now happened twice, once via `pnpm db:migrate` and once via `crbn up`.
+
+**Rule:** When the edge runtime reports a parse error in a GENERATED file, check its length before reading its syntax: `wc -l packages/database/src/types.ts` against `git show HEAD:packages/database/src/types.ts | wc -l`. Recover with `git checkout -- packages/database/src/types.ts` — never hand-edit or hand-complete generated types. A blanket "all scenarios return 500" is a runtime-boot failure, not a logic failure; read the container log first.
+
+**Applies to:** `packages/database/src/types.ts`, `pnpm run generate:types`, `crbn up`, `pnpm db:migrate`; any edge-function verification after a stack boot.
+
+## A subledger tie across mixed code versions measures nothing
+
+**Context:** Automating the GL <-> tax-liability cross-tie against the local stack, whose database still held tax postings from several days earlier.
+
+**Problem:** The first tie failed enormously — input tax of 1,669,012 against a GL movement of 21,453 — and the per-journal breakdown "proved" that the sales and purchase paths wrote `taxLedger.taxAmount` in different currencies. The data spanned 2026-08-17 to 08-19 while the journal-sign fix (`d77cb157c`) landed at 2026-08-17 22:12, so the rows straddled it. A reverse-charge journal from that set did not balance at all, which the current balance guard would have refused to post. Every conclusion drawn from it was about code that no longer exists.
+
+**Rule:** Before tying a subledger to the GL, establish that every row was written by the CODE UNDER TEST. Stamp a cutoff (`select now()`), re-run the posting harness, and scope both sides of the tie to rows at or after it — `.ai/scratch/tax-e2e/liability-crosstie.mjs` takes `--since <iso>` for exactly this. Check `min/max(createdAt)` against the dates of the commits that changed posting before trusting any aggregate. An accounting discrepancy found in stale data is a story about the past, not a bug report.
+
+**Applies to:** `.ai/scratch/tax-e2e/`, any GL/subledger reconciliation against a long-lived dev database.
