@@ -1129,3 +1129,33 @@ canvas hosting Radix popovers/selects.
 - **Applies to:** all edge-function verification against the local stack;
   any stacked-branch workflow where sibling branches differ under
   `supabase/functions/`.
+
+## `lingui extract --clean` prunes the *other* branch's strings in a forked stack
+
+**Context:** Finishing i18n for multi-jurisdiction tax Phase 1, whose seven branches fork into two legs — configuration UI on one, posting and documents on the other.
+
+**Problem:** Standing on the posting leg, `lingui extract` reported **6** missing strings and the catalogs looked finished. The real number across Phase 1 was **83**. `--clean` deletes every msgid it cannot find in source, so extracting on one leg silently strips the other leg's strings from all 13 catalogs — including their `msgstr` if they had been translated. The count is not "missing translations for this feature"; it is "missing translations for the code in *this tree*". A leg can therefore report zero missing while half the feature is untranslated, and translating on one leg before the other would have thrown that work away.
+
+**Rule:** In a forked stack, treat a missing-translation count as scoped to the checked-out tree, never to the feature. Count per leg (`git show <branch>:packages/locale/locales/fr/erp.po` and scan for empty `msgstr`) before believing any single number. Translate at each leg's tip, and give any msgid that *both* legs introduce an identical translation on both sides — then the `.po` files auto-merge into the union instead of conflicting on the one string they share. Verify with `git merge-tree --write-tree <legA> <legB>` and scan the merged blob: the union must show zero empty `msgstr`.
+
+**Applies to:** `packages/locale/locales/**`, `pnpm run lingui:extract`, `.claude/skills/translate/`; any stacked-branch feature whose UI is split across siblings.
+
+## Two branches that append to the same file region conflict — converge them early
+
+**Context:** Merging the two legs of the Phase 1 tax stack reported three conflicts: `.ai/lessons.md`, the Phase 1 plan, and the generated `tool-metadata.json`.
+
+**Problem:** Both legs had appended their own entries to the tail of `.ai/lessons.md` and to the same Progress block. Nothing was incompatible — each side simply had content the other lacked — but git cannot know that a docs append is a union rather than a rewrite, so it stops on every one.
+
+**Rule:** When sibling branches both append to a shared doc, write the **identical union** to both sides before merging. Git sees the same content on both and resolves without asking. This dropped the Phase 1 leg merge from three conflicts to one. Do NOT do this for generated files (`tool-metadata.json` reflects each leg's routes and legitimately differs) — regenerate those after the merge instead.
+
+**Applies to:** `.ai/lessons.md`, `.ai/plans/**`, any long-lived stacked-branch series sharing docs.
+
+## The pre-commit hook sweeps UNSTAGED files into your commit
+
+**Context:** Committing a lint fix and 925 translated `.po` lines as two separate commits on the same branch.
+
+**Problem:** The first commit captured all 14 files. The repo's pre-commit hook runs `lingui:check` (`lingui:extract` + `compile`) and `lingui:clean`, which rewrite `packages/locale/locales/**` in the working tree; lint-staged's "Applying modifications from tasks" then stages whatever those tasks touched. The unstaged catalogs were swept into a commit whose message described only the lint fix, and the second `git commit` found nothing left to commit.
+
+**Rule:** Do not rely on `git add` alone to scope a commit in this repo when `.po` files or other hook-touched paths are dirty. Either commit the hook-affected paths first, or stash the rest (`git stash push -- <paths>`) so the working tree contains only what that commit should carry. If a commit comes back larger than you staged, check `git show --stat` before pushing — the fix is `git reset --soft HEAD~1` and a re-split.
+
+**Applies to:** any multi-commit split in this repo touching `packages/locale/locales/**`; `.husky/`, lint-staged config.
