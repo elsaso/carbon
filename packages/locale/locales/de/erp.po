@@ -4999,7 +4999,7 @@ msgid "Derive this item's shelf life from the shortest shelf life of its compone
 msgstr "Leiten Sie die Haltbarkeitsdauer dieses Elements aus der kürzesten Haltbarkeitsdauer seiner Komponenten ab, wobei das obige Feld \"Tage\" ignoriert wird."
 
 msgid "Derived from the code; edit to match the original document"
-msgstr ""
+msgstr "Aus dem Steuerkennzeichen abgeleitet; passen Sie es an den Originalbeleg an"
 
 msgid "Description"
 msgstr "Beschreibung"
@@ -11846,7 +11846,7 @@ msgid "Recalculate"
 msgstr "Neu berechnen"
 
 msgid "Recalculate Tax"
-msgstr ""
+msgstr "Steuer neu berechnen"
 
 msgid "Recalculate Unit Cost"
 msgstr "Einheitenkosten neu berechnen"
@@ -13359,7 +13359,7 @@ msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "Legen Sie Ihren Standardort in den Profileinstellungen fest, um eine Lagereinheit auszuwählen."
 
 msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
-msgstr ""
+msgstr "Legt den erwarteten Satz fest; der Steuerbetrag des Lieferanten bleibt wie in Rechnung gestellt"
 
 msgid "Settings"
 msgstr "Einstellungen"
@@ -14425,7 +14425,7 @@ msgid "Tax Amount"
 msgstr "Steuerbetrag"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "Steuerkennzeichen"
 
 msgid "Tax codes, rates"
 msgstr "Steuercodes, Sätze"
@@ -14443,7 +14443,7 @@ msgid "Tax ID"
 msgstr "Steuernummer"
 
 msgid "Tax Included"
-msgstr ""
+msgstr "Steuer inbegriffen"
 
 msgid "Tax Information"
 msgstr "Steuerinformationen"
@@ -14903,7 +14903,7 @@ msgid "The material types you organize your stock by"
 msgstr "Die Materialtypen, nach denen Sie Ihren Bestand organisieren"
 
 msgid "The memo amount includes this tax"
-msgstr ""
+msgstr "Der Betrag der Gut-/Lastschrift enthält diese Steuer"
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "Der Monat, in dem Ihr Geschäftsjahr beginnt; Perioden werden von diesem Monat an nummeriert."

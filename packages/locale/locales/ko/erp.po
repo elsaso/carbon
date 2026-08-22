@@ -4999,7 +4999,7 @@ msgid "Derive this item's shelf life from the shortest shelf life of its compone
 msgstr "위의 '일수' 필드를 무시하고, 이 품목의 유효기간을 구성품 중 가장 짧은 유효기간으로 산출합니다."
 
 msgid "Derived from the code; edit to match the original document"
-msgstr ""
+msgstr "세금 코드에서 산출되었습니다. 원본 문서에 맞게 편집하세요"
 
 msgid "Description"
 msgstr "설명"
@@ -11846,7 +11846,7 @@ msgid "Recalculate"
 msgstr "재계산"
 
 msgid "Recalculate Tax"
-msgstr ""
+msgstr "세금 다시 계산"
 
 msgid "Recalculate Unit Cost"
 msgstr "단가 재계산"
@@ -13359,7 +13359,7 @@ msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "저장 단위를 선택하려면 프로필 설정에서 기본 위치를 설정하세요."
 
 msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
-msgstr ""
+msgstr "예상 세율을 설정합니다. 공급업체의 세액은 청구된 그대로 유지됩니다"
 
 msgid "Settings"
 msgstr "설정"
@@ -14425,7 +14425,7 @@ msgid "Tax Amount"
 msgstr "세액"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "세금 코드"
 
 msgid "Tax codes, rates"
 msgstr "세금 코드, 세율"
@@ -14443,7 +14443,7 @@ msgid "Tax ID"
 msgstr "세금 ID"
 
 msgid "Tax Included"
-msgstr ""
+msgstr "세금 포함"
 
 msgid "Tax Information"
 msgstr "세금 정보"
@@ -14903,7 +14903,7 @@ msgid "The material types you organize your stock by"
 msgstr "재고를 분류하는 자재 유형"
 
 msgid "The memo amount includes this tax"
-msgstr ""
+msgstr "전표 금액에 이 세금이 포함되어 있습니다"
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "귀사 회계연도가 시작되는 월입니다. 기간은 이 월부터 번호가 매겨집니다."

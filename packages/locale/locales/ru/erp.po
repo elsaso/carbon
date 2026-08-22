@@ -4999,7 +4999,7 @@ msgid "Derive this item's shelf life from the shortest shelf life of its compone
 msgstr "Выведите срок хранения этого товара из кратчайшего срока хранения его компонентов, игнорируя поле «Дни» выше."
 
 msgid "Derived from the code; edit to match the original document"
-msgstr ""
+msgstr "Рассчитано по налоговому коду; измените, чтобы совпадало с исходным документом"
 
 msgid "Description"
 msgstr "Описание"
@@ -11846,7 +11846,7 @@ msgid "Recalculate"
 msgstr "Пересчитать"
 
 msgid "Recalculate Tax"
-msgstr ""
+msgstr "Пересчитать налог"
 
 msgid "Recalculate Unit Cost"
 msgstr "Пересчитать себестоимость единицы"
@@ -13359,7 +13359,7 @@ msgid "Set your default location in profile settings to pick a storage unit."
 msgstr "Установите местоположение по умолчанию в настройках профиля, чтобы выбрать единицу хранения."
 
 msgid "Sets the expected rate; the supplier's tax amount stays as invoiced"
-msgstr ""
+msgstr "Задаёт ожидаемую ставку; сумма налога поставщика остаётся такой, как выставлена в счёте"
 
 msgid "Settings"
 msgstr "Параметры"
@@ -14425,7 +14425,7 @@ msgid "Tax Amount"
 msgstr "Сумма налога"
 
 msgid "Tax Code"
-msgstr ""
+msgstr "Налоговый код"
 
 msgid "Tax codes, rates"
 msgstr "Налоговые коды, ставки"
@@ -14443,7 +14443,7 @@ msgid "Tax ID"
 msgstr "Налоговый ID"
 
 msgid "Tax Included"
-msgstr ""
+msgstr "Налог включён"
 
 msgid "Tax Information"
 msgstr "Налоговая информация"
@@ -14903,7 +14903,7 @@ msgid "The material types you organize your stock by"
 msgstr "Типы материалов, по которым вы организуете свой запас"
 
 msgid "The memo amount includes this tax"
-msgstr ""
+msgstr "Сумма ноты включает этот налог"
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "Месяц начала финансового года; периоды нумеруются, начиная с этого месяца."
