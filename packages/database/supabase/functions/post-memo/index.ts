@@ -9,7 +9,13 @@ import { getSupabaseServiceRole } from "../lib/supabase.ts";
 import { getCurrentAccountingPeriod } from "../shared/get-accounting-period.ts";
 import { getNextSequence } from "../shared/get-next-sequence.ts";
 import { getDefaultPostingGroup } from "../shared/get-posting-group.ts";
-import { buildMemoJournal, type MemoJournalLine } from "./build-memo-journal.ts";
+import { reconcileToStoredTaxAmount } from "../post-purchase-invoice/purchase-invoice-tax.ts";
+import { splitLineTax } from "../shared/resolve-taxes.ts";
+import {
+  buildMemoJournal,
+  type MemoJournalLine,
+  type MemoTaxLeg,
+} from "./build-memo-journal.ts";
 
 const pool = getConnectionPool(1);
 const db = getDatabaseClient<DB>(pool);
@@ -92,6 +98,10 @@ serve(async (req: Request) => {
           );
         }
 
+        // Stamped onto the reversing tax rows below; stays null when accounting
+        // is disabled (the subledger is still reversed — it is not GL-gated).
+        let voidJournalId: string | null = null;
+
         if (accountingEnabled && memo.data.journalId) {
           // Mirror the original journal's lines into a reversing journal (the
           // same paired-journal approach post-payment/post-purchase-invoice use
@@ -128,6 +138,7 @@ serve(async (req: Request) => {
               })
               .returning(["id"])
               .executeTakeFirstOrThrow();
+            voidJournalId = voidJournal.id;
 
             const voidLineResults = await trx
               .insertInto("journalLine")
@@ -179,6 +190,52 @@ serve(async (req: Request) => {
           }
         }
 
+        // Reverse the tax subledger as well as the GL. The liability report
+        // reads this table, not the journal, so a GL-only void would leave a
+        // voided memo permanently adjusting a period's tax. Reversing ROWS
+        // rather than deleting keeps the subledger append-only.
+        const originalTaxLedger = await trx
+          .selectFrom("taxLedger")
+          .selectAll()
+          .where("documentId", "=", memoId)
+          .where("documentType", "=", "Memo")
+          .where("companyId", "=", companyId)
+          .execute();
+
+        if (originalTaxLedger.length > 0) {
+          await trx
+            .insertInto("taxLedger")
+            .values(
+              originalTaxLedger.map((entry) => ({
+                source: entry.source,
+                documentType: entry.documentType,
+                documentId: entry.documentId,
+                documentLineId: entry.documentLineId,
+                journalId: voidJournalId,
+                postingDate: today,
+                taxCodeId: entry.taxCodeId,
+                taxCodeComponentId: entry.taxCodeComponentId,
+                componentName: entry.componentName,
+                taxAuthorityId: entry.taxAuthorityId,
+                customerId: entry.customerId,
+                supplierId: entry.supplierId,
+                rate: entry.rate,
+                taxableAmount: -entry.taxableAmount,
+                taxAmount: -entry.taxAmount,
+                exemptAmount: -entry.exemptAmount,
+                currencyCode: entry.currencyCode,
+                exchangeRate: entry.exchangeRate,
+                // The reversal unwinds the same account the original hit.
+                postedToInputAccount: entry.postedToInputAccount,
+                // A reversal is never part of the original's filed return.
+                taxReturnId: null,
+                createdBy: userId,
+                companyId,
+              }))
+            )
+            .execute();
+        }
+
         await trx
           .updateTable("memo")
           .set({
@@ -217,6 +274,18 @@ serve(async (req: Request) => {
     // `buildMemoJournal` so they are unit-tested (post-memo.test.ts).
     const journalLineInserts: MemoJournalLine[] = [];
     const partyDimensions: { dimensionId: string; valueId: string }[] = [];
+    // Collected while the journal is built, written inside the same transaction.
+    const memoTaxLedgerRows: {
+      componentTax: {
+        componentId: string;
+        name: string;
+        taxAuthorityId: string | null;
+        rate: number;
+        isRecoverable: boolean;
+      };
+      taxAmountBase: number;
+      accountId: string;
+    }[] = [];
     // The offset ("reason") account is derived here (not a user choice) and
     // stored on the memo at posting for the audit trail / list display.
     let derivedReasonAccountId: string | null = null;
@@ -259,17 +328,125 @@ serve(async (req: Request) => {
         throw new Error("Failed to fetch the derived reason account");
       }
 
+      // ---- Tax split ------------------------------------------------------
+      // A memo amount is tax-INCLUSIVE. `memo.taxAmount` is the authoritative
+      // total (typed or derived in the form); the components only decide how it
+      // is APPORTIONED and which accounts it hits — exactly the supplier-
+      // authoritative treatment on the purchase side, which is why the same
+      // reconciliation helper is reused. Guarded so a memo with no tax code
+      // posts byte-identically to before this feature.
+      const memoTaxAmount = Number(memo.data.taxAmount ?? 0);
+      const memoTaxCodeId = memo.data.taxCodeId as string | null;
+      const exchangeRate = Number(memo.data.exchangeRate);
+      const amountBase = Number(memo.data.amount) * exchangeRate;
+      const taxLegs: MemoTaxLeg[] = [];
+
+      if (memoTaxCodeId && memoTaxAmount > 0) {
+        const components = await client
+          .from("taxCodeComponent")
+          .select("*")
+          .eq("companyId", companyId)
+          .eq("taxCodeId", memoTaxCodeId);
+        if (components.error) {
+          throw new Error("Failed to fetch tax code components");
+        }
+
+        // Apportion over the NET base so compound components cascade the way
+        // they do on an invoice; the result is then scaled to the stored total.
+        const netBase = Number(memo.data.amount) - memoTaxAmount;
+        const split = splitLineTax({
+          taxableBase: netBase,
+          taxCodeId: memoTaxCodeId,
+          components: (components.data ?? []).map((component) => ({
+            id: component.id,
+            name: component.name,
+            taxAuthorityId: component.taxAuthorityId,
+            rate: Number(component.rate),
+            sequence: component.sequence,
+            isCompound: component.isCompound,
+            isRecoverable: component.isRecoverable,
+            salesTaxAccountId: component.salesTaxAccountId,
+            purchaseTaxAccountId: component.purchaseTaxAccountId,
+            effectiveDate: component.effectiveDate,
+            expirationDate: component.expirationDate,
+          })),
+          legacyTaxPercent: 0,
+          date: (memo.data.memoDate as string) ?? today,
+        });
+
+        if (split.componentTaxes.length === 0) {
+          throw new Error(
+            "Memo carries a tax amount but its tax code resolves to no effective components on the memo date"
+          );
+        }
+
+        const reconciled = reconcileToStoredTaxAmount(
+          split.componentTaxes.map((componentTax) => componentTax.tax),
+          memoTaxAmount
+        );
+
+        // One batched read of the classes: the account a tax leg posts to is
+        // configuration, so its class cannot be assumed (see lib/account-sign).
+        const defaultTaxAccountId = isAR
+          ? ad.salesTaxPayableAccount
+          : ad.purchaseTaxPayableAccount;
+        const legAccountIds = split.componentTaxes.map(
+          (componentTax) =>
+            (isAR
+              ? componentTax.salesTaxAccountId
+              : componentTax.purchaseTaxAccountId) ?? defaultTaxAccountId
+        );
+        if (legAccountIds.some((accountId) => !accountId)) {
+          throw new Error(
+            `Missing ${isAR ? "salesTaxPayableAccount" : "purchaseTaxPayableAccount"} account default; cannot post memo tax`
+          );
+        }
+        const taxAccounts = await client
+          .from("account")
+          .select("id, class")
+          .in("id", [...new Set(legAccountIds as string[])]);
+        if (taxAccounts.error) {
+          throw new Error("Failed to fetch memo tax account classes");
+        }
+        const classById = new Map(
+          (taxAccounts.data ?? []).map((account) => [account.id, account.class])
+        );
+
+        split.componentTaxes.forEach((componentTax, index) => {
+          const accountId = legAccountIds[index] as string;
+          const accountClass = classById.get(accountId);
+          if (!accountClass) {
+            throw new Error(
+              `Tax account ${accountId} could not be classified; refusing to post memo tax`
+            );
+          }
+          const taxAmountBase = reconciled[index] * exchangeRate;
+          taxLegs.push({
+            componentName: componentTax.name,
+            taxAmountBase,
+            accountId,
+            accountClass: accountClass as string,
+          });
+          memoTaxLedgerRows.push({
+            componentTax,
+            taxAmountBase,
+            accountId,
+          });
+        });
+      }
+
       const journalLineReference = nanoid();
       const { lines } = buildMemoJournal({
         memoId,
         companyId,
         isAR,
         direction: memo.data.direction as "Credit" | "Debit",
-        amountBase: Number(memo.data.amount) * Number(memo.data.exchangeRate),
+        amountBase,
         journalLineReference,
         controlAccountId,
         reasonAccountId,
         reasonAccountClass: reasonAccount.data.class as string,
+        taxLegs,
       });
       journalLineInserts.push(...lines);
 
@@ -403,6 +580,54 @@ serve(async (req: Request) => {
               )
               .execute();
           }
+        }
+
+        // The tax subledger, signed so a period's totals move the way the memo
+        // moves the obligation. A customer CREDIT memo hands tax back, so it
+        // REDUCES output tax (negative); a customer DEBIT memo increases it. On
+        // the supplier side the same control-account rule inverts the meaning:
+        // a supplier credit memo increases what we owe, hence more input tax.
+        // Both reduce to the control side — the tax leg always sits opposite it.
+        if (memoTaxLedgerRows.length > 0) {
+          const increasesTax = isAR
+            ? memo.data.direction === "Debit"
+            : memo.data.direction === "Credit";
+          const sign = increasesTax ? 1 : -1;
+          const netBaseSigned =
+            sign *
+            (Number(memo.data.amount) - Number(memo.data.taxAmount ?? 0)) *
+            Number(memo.data.exchangeRate);
+
+          await trx
+            .insertInto("taxLedger")
+            .values(
+              memoTaxLedgerRows.map((row) => ({
+                source: isAR ? "Sales" : "Purchase",
+                documentType: "Memo",
+                documentId: memoId,
+                documentLineId: null,
+                journalId,
+                postingDate: today,
+                taxCodeId: memo.data.taxCodeId,
+                taxCodeComponentId: row.componentTax.componentId,
+                componentName: row.componentTax.name,
+                taxAuthorityId: row.componentTax.taxAuthorityId,
+                customerId: memo.data.customerId,
+                supplierId: memo.data.supplierId,
+                rate: row.componentTax.rate,
+                taxableAmount: netBaseSigned,
+                taxAmount: sign * row.taxAmountBase,
+                exemptAmount: 0,
+                currencyCode: memo.data.currencyCode,
+                exchangeRate: memo.data.exchangeRate,
+                // A memo's purchase-side tax lands on the same input account the
+                // invoice used, so it nets against it in the liability report.
+                postedToInputAccount: !isAR && row.componentTax.isRecoverable,
+                createdBy: userId,
+                companyId,
+              }))
+            )
+            .execute();
         }
       }
 

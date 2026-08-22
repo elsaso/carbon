@@ -90,3 +90,97 @@ Deno.test("rejects an unknown reason account class", () => {
     "Unknown GL account class"
   );
 });
+
+// ---------------------------------------------------------------------------
+// Tax split (Task 19). A memo amount is tax-INCLUSIVE: the control leg keeps
+// the GROSS, the tax is carved out onto its own leg(s), and the reason leg
+// takes only the NET. All three legs still sum to zero.
+// ---------------------------------------------------------------------------
+
+Deno.test("memo with tax: control gross, reason net, tax carved out; balances", () => {
+  const r = buildMemoJournal(
+    base({
+      isAR: true,
+      direction: "Credit",
+      amountBase: 1082.5,
+      taxLegs: [
+        {
+          componentName: "TX State",
+          taxAmountBase: 62.5,
+          accountId: "acct_tax",
+          accountClass: "Liability",
+        },
+      ],
+    })
+  );
+  assertEquals(r.lines.length, 3);
+  // AR (asset) credited the GROSS.
+  assertEquals(line(r, "acct_ar").amount, -1082.5);
+  // Reason (revenue) debited the NET only.
+  assertEquals(line(r, "acct_reason").amount, -1020);
+  // Tax leg sits on the reason side: a DEBIT to a Liability stores −magnitude,
+  // which is what reduces the tax the credit memo hands back.
+  assertEquals(line(r, "acct_tax").amount, -62.5);
+  assert(Math.abs(r.signedDebitTotal) < 0.0001);
+});
+
+Deno.test("memo tax legs are signed from the account's REAL class", () => {
+  // Same leg against an Asset-class tax account: a debit stores +magnitude.
+  const r = buildMemoJournal(
+    base({
+      isAR: false,
+      direction: "Credit",
+      amountBase: 120,
+      reasonAccountClass: "Expense",
+      controlAccountId: "acct_ap",
+      taxLegs: [
+        {
+          componentName: "VAT",
+          taxAmountBase: 20,
+          accountId: "acct_input_tax",
+          accountClass: "Asset",
+        },
+      ],
+    })
+  );
+  assertEquals(line(r, "acct_input_tax").amount, 20);
+  assert(Math.abs(r.signedDebitTotal) < 0.0001);
+});
+
+Deno.test("multi-component memo tax splits into one leg each", () => {
+  const r = buildMemoJournal(
+    base({
+      amountBase: 1082.5,
+      taxLegs: [
+        { componentName: "TX State", taxAmountBase: 62.5, accountId: "a1", accountClass: "Liability" },
+        { componentName: "Austin City", taxAmountBase: 20, accountId: "a2", accountClass: "Liability" },
+      ],
+    })
+  );
+  assertEquals(r.lines.length, 4);
+  assertEquals(line(r, "acct_reason").amount, -1000);
+  assert(Math.abs(r.signedDebitTotal) < 0.0001);
+});
+
+Deno.test("memo tax exceeding the amount refuses to post", () => {
+  assertThrows(
+    () =>
+      buildMemoJournal(
+        base({
+          amountBase: 100,
+          taxLegs: [
+            { componentName: "VAT", taxAmountBase: 150, accountId: "a1", accountClass: "Liability" },
+          ],
+        })
+      ),
+    Error,
+    "exceeds the memo amount"
+  );
+});
+
+Deno.test("no tax legs posts the same two lines as before the feature", () => {
+  const withEmpty = buildMemoJournal(base({ taxLegs: [] }));
+  const without = buildMemoJournal(base({}));
+  assertEquals(withEmpty.lines.length, 2);
+  assertEquals(JSON.stringify(withEmpty.lines), JSON.stringify(without.lines));
+});

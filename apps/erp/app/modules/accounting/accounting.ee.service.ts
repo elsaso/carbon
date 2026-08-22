@@ -6162,6 +6162,39 @@ export async function getTaxCodesList(
     .order("name", { ascending: true });
 }
 
+/**
+ * Active tax codes with the rate each one charges ON `date` — the shape a
+ * document-side select needs: the caller shows the rate next to the name and
+ * uses it to derive an amount, without refetching components per selection.
+ * Effective-dated components mean the rate is a function of the document's own
+ * date, so it is a required argument rather than "today".
+ */
+export async function getTaxCodesListWithRates(
+  client: SupabaseClient<Database>,
+  companyId: string,
+  date: string
+) {
+  const { data, error } = await client
+    .from("taxCode")
+    .select("id, name, taxCodeComponent(*)")
+    .eq("companyId", companyId)
+    .eq("active", true)
+    .order("name", { ascending: true });
+
+  if (error) return { data: null, error };
+
+  return {
+    data: (data ?? []).map(({ taxCodeComponent, ...taxCode }) => ({
+      ...taxCode,
+      effectiveRate: computeEffectiveTaxPercent(
+        1,
+        filterEffectiveComponents(taxCodeComponent ?? [], date)
+      )
+    })),
+    error: null
+  };
+}
+
 /** How specifically a suggested code matches the address it was suggested for. */
 export type TaxCodeSuggestionMatch = "state" | "country" | "global";
 

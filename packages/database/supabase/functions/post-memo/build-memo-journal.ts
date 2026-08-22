@@ -25,28 +25,12 @@
 // entry balances exactly.
 
 import { assertBalanced, round } from "../shared/precision.ts";
-import { credit, debit } from "../lib/utils.ts";
+import type { AccountType } from "../lib/account-sign.ts";
+import { accountTypeFromClass, credit, debit } from "../lib/account-sign.ts";
 
-type AccountType = "asset" | "liability" | "equity" | "revenue" | "expense";
-
-// glAccountClass (Asset|Liability|Equity|Revenue|Expense) → the lowercase
-// AccountType the debit/credit helpers expect.
-export function accountTypeFromClass(glClass: string): AccountType {
-  switch (glClass) {
-    case "Asset":
-      return "asset";
-    case "Liability":
-      return "liability";
-    case "Equity":
-      return "equity";
-    case "Revenue":
-      return "revenue";
-    case "Expense":
-      return "expense";
-    default:
-      throw new Error(`Unknown GL account class: ${glClass}`);
-  }
-}
+// Re-exported for the existing unit tests, which imported it from here before
+// the convention moved to its own shared module.
+export { accountTypeFromClass };
 
 // A journal line this builder emits. Self-contained — a pure unit shouldn't
 // depend on the generated DB types, and `journalLine.documentType`'s "Memo" enum
@@ -79,6 +63,22 @@ export interface BuildMemoJournalInput {
   // the memo's chosen reason account + its glAccountClass.
   reasonAccountId: string;
   reasonAccountClass: string;
+  /** Per-component tax carved OUT of `amountBase` (memo amounts are
+   *  tax-INCLUSIVE: the party is credited/debited the gross, and the reason
+   *  account takes only the net). Empty/omitted on a memo with no tax code, in
+   *  which case this builder emits exactly the two lines it always has. */
+  taxLegs?: MemoTaxLeg[];
+}
+
+export interface MemoTaxLeg {
+  componentName: string;
+  /** Positive magnitude in base currency; the side is derived, not passed. */
+  taxAmountBase: number;
+  /** The component's own account, else the party-side tax payable default. */
+  accountId: string;
+  /** The REAL class of `accountId` — never a literal at the call site, or an
+   *  intended debit stored on another class silently becomes a credit. */
+  accountClass: string;
 }
 
 export interface BuildMemoJournalResult {
@@ -103,6 +103,7 @@ export function buildMemoJournal(
     controlAccountId,
     reasonAccountId,
     reasonAccountClass,
+    taxLegs = [],
   } = input;
 
   if (!controlAccountId) {
@@ -123,16 +124,17 @@ export function buildMemoJournal(
     side: "debit" | "credit",
     accountType: AccountType,
     accountId: string,
-    description: string
+    description: string,
+    lineAmount: number = magnitude
   ) => {
-    signedDebitTotal += side === "debit" ? magnitude : -magnitude;
+    signedDebitTotal += side === "debit" ? lineAmount : -lineAmount;
     lines.push({
       accountId,
       description,
       amount:
         side === "debit"
-          ? debit(accountType, magnitude)
-          : credit(accountType, magnitude),
+          ? debit(accountType, lineAmount)
+          : credit(accountType, lineAmount),
       quantity: 1,
       documentType: "Memo",
       documentId: memoId,
@@ -154,12 +156,37 @@ export function buildMemoJournal(
     isAR ? "Accounts Receivable" : "Accounts Payable"
   );
 
-  // 2) Reason leg — always the inverse side, so the entry balances.
+  // 2) Tax legs — the tax is carved OUT of the gross, so each sits on the same
+  // side as the reason leg (the inverse of the control side) and the three
+  // legs still sum to zero: control gross = reason net + tax.
+  const taxSide: "debit" | "credit" = controlIsDebit ? "credit" : "debit";
+  let taxTotal = 0;
+  for (const leg of taxLegs) {
+    const legAmount = round(Math.abs(leg.taxAmountBase));
+    if (legAmount < 0.0001) continue;
+    taxTotal = round(taxTotal + legAmount);
+    pushLine(
+      taxSide,
+      accountTypeFromClass(leg.accountClass),
+      leg.accountId,
+      `${direction === "Credit" ? "Credit" : "Debit"} memo tax — ${leg.componentName}`,
+      legAmount
+    );
+  }
+
+  if (taxTotal > magnitude) {
+    throw new Error(
+      `Memo tax (${taxTotal}) exceeds the memo amount (${magnitude}); refusing to post`
+    );
+  }
+
+  // 3) Reason leg — the inverse side at the NET amount.
   pushLine(
-    controlIsDebit ? "credit" : "debit",
+    taxSide,
     reasonType,
     reasonAccountId,
-    direction === "Credit" ? "Credit memo" : "Debit memo"
+    direction === "Credit" ? "Credit memo" : "Debit memo",
+    round(magnitude - taxTotal)
   );
 
   // BALANCE_TOLERANCE is a business threshold (multi-currency memos carry

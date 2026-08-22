@@ -341,12 +341,24 @@ export const memoValidator = z
     currencyCode: z.string().min(1, { message: "Currency is required" }),
     exchangeRate: zfd.numeric(z.number().positive().default(1)),
     amount: zfd.numeric(z.number().positive({ message: "Amount must be > 0" })),
+    taxCodeId: zfd.text(z.string().optional()),
+    // A memo amount is tax-INCLUSIVE, so the tax is carved out of it rather
+    // than added on top — it can never exceed the amount (refine below).
+    taxAmount: zfd.numeric(z.number().min(0).default(0)),
     reference: zfd.text(z.string().optional()),
     notes: zfd.text(z.string().optional())
   })
   .refine((d) => Boolean(d.customerId) !== Boolean(d.supplierId), {
     message: "A memo is for exactly one party (customer or supplier)",
     path: ["customerId"]
+  })
+  .refine((d) => d.taxAmount <= d.amount, {
+    message: "Tax cannot exceed the memo amount",
+    path: ["taxAmount"]
+  })
+  .refine((d) => d.taxAmount === 0 || Boolean(d.taxCodeId), {
+    message: "Select a tax code to record tax on this memo",
+    path: ["taxCodeId"]
   });
 
 // ----------------------------------------------------------------------

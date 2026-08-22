@@ -4998,6 +4998,9 @@ msgstr "減価償却開始日"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "このアイテムの有効期間を、その成分の最短有効期間から導き出します。上記のDaysフィールドは無視します。"
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "説明"
 
@@ -14415,6 +14418,9 @@ msgstr "税金と配送"
 msgid "Tax Amount"
 msgstr "税額"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "税コード、レート"
 
@@ -14429,6 +14435,9 @@ msgstr "税務上免除"
 
 msgid "Tax ID"
 msgstr "税務ID"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "税務情報"
@@ -14886,6 +14895,9 @@ msgstr "その特定の注文のためにサプライヤーから購入された
 
 msgid "The material types you organize your stock by"
 msgstr "あなたが在庫を整理する材料タイプ"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "財務年度が開始される月。期間はこの月から番号が付けられます。"

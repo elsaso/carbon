@@ -4998,6 +4998,9 @@ msgstr "Depreciation Start Date"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 
+msgid "Derived from the code; edit to match the original document"
+msgstr "Derived from the code; edit to match the original document"
+
 msgid "Description"
 msgstr "Description"
 
@@ -14415,6 +14418,9 @@ msgstr "Tax & Shipping"
 msgid "Tax Amount"
 msgstr "Tax Amount"
 
+msgid "Tax Code"
+msgstr "Tax Code"
+
 msgid "Tax codes, rates"
 msgstr "Tax codes, rates"
 
@@ -14429,6 +14435,9 @@ msgstr "Tax Exempt"
 
 msgid "Tax ID"
 msgstr "Tax ID"
+
+msgid "Tax Included"
+msgstr "Tax Included"
 
 msgid "Tax Information"
 msgstr "Tax Information"
@@ -14886,6 +14895,9 @@ msgstr "The material is purchased from a supplier for that specific order, rathe
 
 msgid "The material types you organize your stock by"
 msgstr "The material types you organize your stock by"
+
+msgid "The memo amount includes this tax"
+msgstr "The memo amount includes this tax"
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "The month your financial year begins; periods are numbered from this month."

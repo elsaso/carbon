@@ -4998,6 +4998,9 @@ msgstr "Amortisman Başlangıç Tarihi"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "Bu öğenin raf ömrünü, bileşenlerinin en kısa raf ömründen türet, yukarıdaki Günler alanını yok say."
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "Açıklama"
 
@@ -14415,6 +14418,9 @@ msgstr "Vergi ve Nakliye"
 msgid "Tax Amount"
 msgstr "Vergi Tutarı"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "Vergi kodları, oranları"
 
@@ -14429,6 +14435,9 @@ msgstr "Vergi Muaf"
 
 msgid "Tax ID"
 msgstr "Vergi Kimlik Numarası"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "Vergi Bilgileri"
@@ -14886,6 +14895,9 @@ msgstr "Malzeme, yapılmak veya stoktan çekilmek yerine, bu belirli sipariş i�
 
 msgid "The material types you organize your stock by"
 msgstr "Stok organizasyonunuz için kullandığınız malzeme türleri"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "Mali yılınızın başladığı ay; dönemler bu aydan itibaren numaralandırılır."

@@ -4998,6 +4998,9 @@ msgstr "Abschreibungsstartdatum"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "Leiten Sie die Haltbarkeitsdauer dieses Elements aus der kürzesten Haltbarkeitsdauer seiner Komponenten ab, wobei das obige Feld \"Tage\" ignoriert wird."
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -14415,6 +14418,9 @@ msgstr "Steuern & Versand"
 msgid "Tax Amount"
 msgstr "Steuerbetrag"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "Steuercodes, Sätze"
 
@@ -14429,6 +14435,9 @@ msgstr "Steuerbefreit"
 
 msgid "Tax ID"
 msgstr "Steuernummer"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "Steuerinformationen"
@@ -14886,6 +14895,9 @@ msgstr "Das Material wird für diese spezifische Bestellung von einem Lieferante
 
 msgid "The material types you organize your stock by"
 msgstr "Die Materialtypen, nach denen Sie Ihren Bestand organisieren"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "Der Monat, in dem Ihr Geschäftsjahr beginnt; Perioden werden von diesem Monat an nummeriert."

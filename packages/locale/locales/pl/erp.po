@@ -4998,6 +4998,9 @@ msgstr "Data Rozpoczęcia Amortyzacji"
 msgid "Derive this item's shelf life from the shortest shelf life of its components, ignoring the Days field above."
 msgstr "Wyprowadź trwałość tego artykułu z najkrótszej trwałości jego komponentów, ignorując powyższe pole Dni."
 
+msgid "Derived from the code; edit to match the original document"
+msgstr ""
+
 msgid "Description"
 msgstr "Opis"
 
@@ -14415,6 +14418,9 @@ msgstr "Podatek i wysyłka"
 msgid "Tax Amount"
 msgstr "Kwota podatku"
 
+msgid "Tax Code"
+msgstr ""
+
 msgid "Tax codes, rates"
 msgstr "Kody podatkowe, stawki"
 
@@ -14429,6 +14435,9 @@ msgstr "Zwolniony z Podatku"
 
 msgid "Tax ID"
 msgstr "Numer identyfikacyjny podatnika"
+
+msgid "Tax Included"
+msgstr ""
 
 msgid "Tax Information"
 msgstr "Informacje Podatkowe"
@@ -14886,6 +14895,9 @@ msgstr "Materiał jest kupowany od dostawcy dla tego konkretnego zamówienia, za
 
 msgid "The material types you organize your stock by"
 msgstr "Typy materiałów, według których organizujesz swoje zapasy"
+
+msgid "The memo amount includes this tax"
+msgstr ""
 
 msgid "The month your financial year begins; periods are numbered from this month."
 msgstr "Miesiąc, w którym rozpoczyna się Twój rok obrachunkowy; okresy są numerowane od tego miesiąca."
